@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vinícius Andrey — Recortes & Código</title>
+<meta name="description" content="Software, Dados & IA — portfolio em colagem brutalista com WebGL.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Special+Elite&family=Playfair+Display:ital,wght@0,500;0,700;1,600&family=Space+Mono:wght@400;700&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=6">
+</head>
+<body>
+
+<div class="intro" id="intro" aria-hidden="true">
+  <div class="intro__bar intro__bar--top"></div>
+  <div class="intro__bar intro__bar--bottom"></div>
+  <div class="intro__mark">
+    <span class="stamp-circle">V·A</span>
+    <p>RECORTES &amp; CÓDIGO</p>
+  </div>
+</div>
+
+<div class="vignette"></div>
+<div class="grain"></div>
+<div class="cursor-dot" id="cursorDot"><span class="cursor-dot__icon">&#9986;&#65039;</span></div>
+
+<!-- ===== FILM REEL SCROLL NAV ===== -->
+<nav class="reel" aria-label="Progresso do site">
+  <div class="reel__track"><div class="reel__fill" id="reelFill"></div></div>
+  <ul class="reel__chapters">
+    <li><a href="#sobre" data-chapter="sobre" data-label="Sobre" aria-label="Sobre">01</a></li>
+    <li><a href="#atuacao" data-chapter="atuacao" data-label="Atuação" aria-label="Atuação">02</a></li>
+    <li><a href="#projetos" data-chapter="projetos" data-label="Recortes" aria-label="Recortes">03</a></li>
+    <li><a href="#trajetoria" data-chapter="trajetoria" data-label="Trajetória" aria-label="Trajetória">04</a></li>
+    <li><a href="#skills" data-chapter="skills" data-label="Skills" aria-label="Skills">05</a></li>
+    <li><a href="#certificacoes" data-chapter="certificacoes" data-label="Certificações" aria-label="Certificações">06</a></li>
+    <li><a href="#depoimentos" data-chapter="depoimentos" data-label="Depoimentos" aria-label="Depoimentos">07</a></li>
+    <li><a href="#contato" data-chapter="contato" data-label="Contato" aria-label="Contato">08</a></li>
+  </ul>
+</nav>
+
+<button class="sound-toggle" id="soundToggle" type="button" aria-pressed="false" aria-label="Ativar som">
+  <span class="sound-toggle__icon">&#128263;</span>
+</button>
+
+<!-- ===== NAV ===== -->
+<header class="nav">
+  <a href="#top" class="nav__mark">
+    <span class="stamp-circle">V·A</span>
+  </a>
+  <nav class="nav__links">
+    <a href="#sobre">Sobre</a>
+    <a href="#atuacao">Atuação</a>
+    <a href="#projetos">Recortes</a>
+    <a href="#trajetoria">Trajetória</a>
+    <a href="#skills">Skills</a>
+    <a href="#contato" class="nav__cta">Contato</a>
+  </nav>
+  <button class="nav__burger" id="burger" aria-label="menu">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#sobre">Sobre</a>
+  <a href="#atuacao">Atuação</a>
+  <a href="#projetos">Recortes</a>
+  <a href="#trajetoria">Trajetória</a>
+  <a href="#skills">Skills</a>
+  <a href="#certificacoes">Certificações</a>
+  <a href="#depoimentos">Depoimentos</a>
+  <a href="#contato">Contato</a>
+</div>
+
+<!-- ===== HERO ===== -->
+<section id="top" class="hero">
+  <canvas id="webgl" class="hero__canvas"></canvas>
+  <div class="hero__tape tape tape--tl">FRÁGIL / HANDLE WITH CODE</div>
+  <div class="hero__frame">
+
+    <h1 class="hero__title">
+      <span class="cut cut--1" style="--r:-3deg">SOFT</span><span class="cut cut--2" style="--r:2deg">WARE</span><br>
+      <span class="cut cut--3" style="--r:1.5deg">DADOS</span><span class="cut cut--4" style="--r:-2deg">·</span><span class="cut cut--1" style="--r:3deg">IA</span><br>
+      <span class="cut cut--2 hero__title--outline" style="--r:-1deg">NEGÓ</span><span class="cut cut--3" style="--r:2deg">CIOS</span>
+    </h1>
+
+    <p class="hero__lede">
+      Construindo na interseção entre <strong>Tecnologia</strong>, <strong>Dados</strong>,
+      <strong>IA</strong> e <strong>Negócios</strong> — colando código, análise e visão
+      de produto como quem monta um recorte que faz sentido.
+    </p>
+
+    <div class="hero__ctas">
+      <a href="#projetos" class="btn btn--ticket">Explorar projetos <span>&#9986;</span></a>
+      <a href="#contato" class="btn btn--stamp">Vamos conversar</a>
+    </div>
+  </div>
+
+  <div class="hero__scroll">
+    <span>ROLE PARA EXPLORAR</span>
+    <div class="hero__scroll-line"></div>
+  </div>
+
+  <div class="hero__polaroid poly--drift" data-depth="0.4">
+    <div class="polaroid">
+      <div class="polaroid__img polaroid__img--marble"></div>
+      <p>fig. 01 — em construção</p>
+    </div>
+  </div>
+
+  <div class="collage-cutout cutout--capstone">
+    <img src="assets/cutouts/capital_stone.png" alt="" loading="lazy">
+  </div>
+</section>
+
+<div class="ticker" aria-hidden="true">
+  <div class="ticker__track">
+    <span>SOFTWARE&nbsp;·&nbsp;DADOS&nbsp;·&nbsp;IA&nbsp;·&nbsp;NEGÓCIOS&nbsp;·&nbsp;DISPONÍVEL&nbsp;PARA&nbsp;NOVOS&nbsp;PROJETOS&nbsp;·&nbsp;</span>
+    <span>SOFTWARE&nbsp;·&nbsp;DADOS&nbsp;·&nbsp;IA&nbsp;·&nbsp;NEGÓCIOS&nbsp;·&nbsp;DISPONÍVEL&nbsp;PARA&nbsp;NOVOS&nbsp;PROJETOS&nbsp;·&nbsp;</span>
+  </div>
+</div>
+
+<!-- ===== SOBRE ===== -->
+<section id="sobre" class="sec sec--about">
+  <div class="torn torn--top"></div>
+  <div class="collage-cutout cutout--angelwing"><img src="assets/cutouts/angelwing.png" alt="" loading="lazy"></div>
+  <div class="collage-cutout cutout--creationhands"><img src="assets/cutouts/creationhands.png" alt="" loading="lazy"></div>
+  <p class="sec__kicker">01 / SOBRE</p>
+  <div class="about__grid">
+    <div class="about__photo">
+      <div class="polaroid polaroid--big">
+        <div class="polaroid__img polaroid__img--photo">
+          <img src="assets/photos/profile.jpg" alt="Retrato de Vinícius Andrey" loading="lazy">
+        </div>
+        <p>Vinícius Andrey — Santo André, SP</p>
+      </div>
+      <div class="washi washi--a"></div>
+      <div class="pin"></div>
+    </div>
+
+    <div class="about__text">
+      <h2 class="sec__title">Quem é <span class="marker">Vinícius</span>?</h2>
+      <p class="clip clip--news">
+        Vinícius transita entre operações de negócio e construção de software — uma
+        combinação pouco comum, nascida da experiência prática em atendimento, suporte
+        técnico e processos administrativos, e que evoluiu para uma dedicação séria à
+        programação e aos dados.
+      </p>
+      <p class="clip clip--news">
+        Atualmente cursando <strong>Ciência da Computação</strong> (UNIP) e
+        <strong>Engenharia de Software</strong> (UNICID), desenvolve com Python,
+        JavaScript e React, e usa dados — com Pandas, NumPy e SQL — para automatizar
+        processos e apoiar decisões.
+      </p>
+      <p class="pull-quote">"Entender o problema de negócio a fundo antes de escrever
+        a primeira linha de código."</p>
+
+      <div class="index-cards">
+        <div class="index-card"><span>Computer Science</span><small>UNIP · 4º semestre</small></div>
+        <div class="index-card"><span>Software Engineering</span><small>UNICID · 3º semestre</small></div>
+        <div class="index-card"><span>Idiomas</span><small>Português · English · Español</small></div>
+        <div class="index-card"><span>Local</span><small>Santo André, São Paulo, Brasil</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ATUAÇÃO ===== -->
+<section id="atuacao" class="sec sec--dark">
+  <div class="torn torn--top torn--light"></div>
+  <div class="collage-cutout cutout--fresco"><img src="assets/cutouts/fresco_oval.png" alt="" loading="lazy"></div>
+  <div class="collage-cutout cutout--altarfresco"><img src="assets/cutouts/altar_fresco.png" alt="" loading="lazy"></div>
+  <p class="sec__kicker sec__kicker--light">02 / ATUAÇÃO</p>
+  <h2 class="sec__title sec__title--light">O que eu <span class="marker marker--light">faço</span></h2>
+
+  <div class="stub-grid">
+    <article class="stub" style="--r:-2deg">
+      <span class="stub__num">01</span>
+      <h3>Software &amp; Web</h3>
+      <p>Interfaces e aplicações web construídas com atenção a estrutura, performance
+        e experiência do usuário.</p>
+    </article>
+    <article class="stub" style="--r:1.5deg">
+      <span class="stub__num">02</span>
+      <h3>Artificial Intelligence</h3>
+      <p>Aplicação prática de IA e prompt engineering para resolver problemas reais
+        e acelerar fluxos de trabalho.</p>
+    </article>
+    <article class="stub" style="--r:-1deg">
+      <span class="stub__num">03</span>
+      <h3>Data &amp; Automation</h3>
+      <p>Automação de processos e análise de dados com Python, transformando
+        planilhas e tarefas manuais em fluxos confiáveis.</p>
+    </article>
+    <article class="stub" style="--r:2deg">
+      <span class="stub__num">04</span>
+      <h3>Business &amp; Digital Operations</h3>
+      <p>Vivência prática em operações, atendimento e processos — a base que conecta
+        tecnologia a resultado de negócio.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ===== PROJETOS ===== -->
+<section id="projetos" class="sec sec--work">
+  <div class="torn torn--top"></div>
+  <p class="sec__kicker">03 / RECORTES</p>
+  <h2 class="sec__title">Trabalho <span class="marker">selecionado</span></h2>
+
+  <div class="work-wall">
+
+    <a class="work-card" style="--r:-3deg" href="https://portfolio-vinicius-andrey.onrender.com/pt/projects/viktori" target="_blank" rel="noopener">
+      <div class="work-card__photo work-card__photo--1"><img src="assets/photos/viktori.jpg" alt="Viktori" loading="lazy"></div>
+      <div class="washi washi--b"></div>
+      <h3>Viktori</h3>
+      <p>Clube B2B de produtos personalizados sob demanda, com orçamento assistido por IA.</p>
+    </a>
+
+    <a class="work-card" style="--r:2deg" href="https://portfolio-vinicius-andrey.onrender.com/pt/projects/homeiq" target="_blank" rel="noopener">
+      <div class="work-card__photo work-card__photo--2"><img src="assets/photos/homeiq.jpg" alt="HomeIQ" loading="lazy"></div>
+      <div class="washi washi--a"></div>
+      <h3>HomeIQ</h3>
+      <p>Marketplace imobiliário em leilão reverso: corretores disputam a exclusividade de imóveis.</p>
+      <span class="tagstamp">VITE</span>
+    </a>
+
+    <a class="work-card" style="--r:-1.5deg" href="https://portfolio-vinicius-andrey.onrender.com/pt/projects/connect" target="_blank" rel="noopener">
+      <div class="work-card__photo work-card__photo--3"><img src="assets/photos/connect.jpg" alt="Connect" loading="lazy"></div>
+      <div class="pin"></div>
+      <h3>Connect</h3>
+      <p>Sistema de gestão de clínicas para fonoaudiologia e psicologia.</p>
+      <span class="tagstamp">BASE44</span>
+    </a>
+
+    <a class="work-card" style="--r:2.5deg" href="https://portfolio-vinicius-andrey.onrender.com/pt/projects/bruna-fono" target="_blank" rel="noopener">
+      <div class="work-card__photo work-card__photo--4"><img src="assets/photos/brunafono.jpg" alt="Bruna Fono" loading="lazy"></div>
+      <div class="washi washi--b"></div>
+      <h3>Bruna Fono</h3>
+      <p>Site de fonoaudiologia infantil 100% online, com teletherapy para brasileiros no exterior.</p>
+      <span class="tagstamp">THREE.JS · GSAP</span>
+    </a>
+
+    <a class="work-card" style="--r:-2.5deg" href="https://portfolio-vinicius-andrey.onrender.com/pt/projects/fuja-da-faca" target="_blank" rel="noopener">
+      <div class="work-card__photo work-card__photo--5"><img src="assets/photos/fujadafaca.jpg" alt="Fuja da Faca" loading="lazy"></div>
+      <div class="pin"></div>
+      <h3>Fuja da Faca</h3>
+      <p>Jogo de navegador em JavaScript puro: desvie das facas o maior tempo possível.</p>
+      <span class="tagstamp">JAVASCRIPT</span>
+    </a>
+
+    <a class="work-card" style="--r:1.5deg" href="https://portfolio-vinicius-andrey.onrender.com/pt/projects/ribeiro-bonfim-financas" target="_blank" rel="noopener">
+      <div class="work-card__photo work-card__photo--6"><img src="assets/photos/ribeirobonfim.jpg" alt="Ribeiro & Bonfim Finanças" loading="lazy"></div>
+      <div class="washi washi--a"></div>
+      <h3>Ribeiro &amp; Bonfim Finanças</h3>
+      <p>SaaS de finanças pessoais com leitura de recibos por OCR e insights via IA.</p>
+      <span class="tagstamp">LOVABLE</span>
+    </a>
+
+    <a class="work-card work-card--muted" style="--r:-2deg" href="https://portfolio-vinicius-andrey.onrender.com/pt/projects/cheeklist-auti" target="_blank" rel="noopener">
+      <div class="work-card__photo work-card__photo--7"><img src="assets/photos/cheeklistauti.jpg" alt="Cheeklist Auti" loading="lazy"></div>
+      <h3>Cheeklist Auti</h3>
+      <p>Aplicação web voltada a checklists de rotina — atualmente indisponível.</p>
+    </a>
+
+  </div>
+</section>
+
+<!-- ===== TRAJETÓRIA ===== -->
+<section id="trajetoria" class="sec sec--timeline">
+  <div class="torn torn--top"></div>
+  <div class="collage-cutout cutout--ruin"><img src="assets/cutouts/ruin_painting.png" alt="" loading="lazy"></div>
+  <p class="sec__kicker">04 / TRAJETÓRIA</p>
+  <h2 class="sec__title">Experiência <span class="marker">profissional</span></h2>
+
+  <ul class="receipt">
+    <li class="receipt__row receipt__row--current">
+      <span class="receipt__role">SDR (Sales Development Representative)</span>
+      <span class="receipt__co">Moveleiros</span>
+      <span class="receipt__date">Jan 2026 — Present</span>
+      <span class="stamp-atual">ATUAL</span>
+    </li>
+    <li class="receipt__row">
+      <span class="receipt__role">Administrative Assistant</span>
+      <span class="receipt__co">Flowtex</span>
+      <span class="receipt__date">2025 — Out 2025</span>
+    </li>
+    <li class="receipt__row">
+      <span class="receipt__role">Commercial Assistant</span>
+      <span class="receipt__co">Arte Formatti Planejados</span>
+      <span class="receipt__date">Mar 2025 — Abr 2025</span>
+    </li>
+    <li class="receipt__row">
+      <span class="receipt__role">Administrative Assistant</span>
+      <span class="receipt__co">Neo BPO – Enel Brasil</span>
+      <span class="receipt__date">2022 — 2023</span>
+    </li>
+    <li class="receipt__row">
+      <span class="receipt__role">Administrative Assistant</span>
+      <span class="receipt__co">Amapola Confecções</span>
+      <span class="receipt__date">2017 — 2021</span>
+    </li>
+    <li class="receipt__row">
+      <span class="receipt__role">Technical Support Representative</span>
+      <span class="receipt__co">Centro Médico Unihosp</span>
+      <span class="receipt__date">2017</span>
+    </li>
+    <li class="receipt__row">
+      <span class="receipt__role">Production Assistant</span>
+      <span class="receipt__co">Atento do Brasil / Vivo</span>
+      <span class="receipt__date">Jan 2016 — Mai 2016 · Mar 2015 — Out 2015</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ===== SKILLS ===== -->
+<section id="skills" class="sec sec--skills">
+  <div class="torn torn--top"></div>
+  <div class="collage-cutout cutout--capsketch"><img src="assets/cutouts/capital_sketch.png" alt="" loading="lazy"></div>
+  <p class="sec__kicker">05 / SKILLS</p>
+  <h2 class="sec__title">Ferramentas &amp; <span class="marker">competências</span></h2>
+
+  <div class="skill-groups">
+    <div class="skill-group">
+      <h3>Programação</h3>
+      <div class="ransom">
+        <span class="rletter" style="--r:-6deg">Python</span>
+        <span class="rletter" style="--r:4deg">JavaScript</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <h3>Frontend</h3>
+      <div class="ransom">
+        <span class="rletter" style="--r:5deg">HTML</span>
+        <span class="rletter" style="--r:-3deg">CSS</span>
+        <span class="rletter" style="--r:6deg">React</span>
+        <span class="rletter" style="--r:-5deg">Angular</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <h3>Backend</h3>
+      <div class="ransom"><span class="rletter" style="--r:3deg">Node.js</span></div>
+    </div>
+    <div class="skill-group">
+      <h3>Dados</h3>
+      <div class="ransom">
+        <span class="rletter" style="--r:-4deg">Pandas</span>
+        <span class="rletter" style="--r:5deg">NumPy</span>
+        <span class="rletter" style="--r:-2deg">Streamlit</span>
+        <span class="rletter" style="--r:3deg">KPI Analysis</span>
+        <span class="rletter" style="--r:-5deg">Dashboards</span>
+        <span class="rletter" style="--r:2deg">Data Management</span>
+        <span class="rletter" style="--r:-3deg">Automation w/ Python</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <h3>Banco de Dados</h3>
+      <div class="ransom">
+        <span class="rletter" style="--r:4deg">MySQL</span>
+        <span class="rletter" style="--r:-6deg">MongoDB</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <h3>Ferramentas</h3>
+      <div class="ransom">
+        <span class="rletter" style="--r:-2deg">Git</span>
+        <span class="rletter" style="--r:5deg">GitHub</span>
+        <span class="rletter" style="--r:-4deg">Advanced Excel</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <h3>Metodologias</h3>
+      <div class="ransom">
+        <span class="rletter" style="--r:3deg">Scrum</span>
+        <span class="rletter" style="--r:-5deg">Kanban</span>
+        <span class="rletter" style="--r:4deg">Process Automation</span>
+        <span class="rletter" style="--r:-3deg">Analytical Thinking</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CERTIFICAÇÕES ===== -->
+<section id="certificacoes" class="sec sec--dark">
+  <div class="torn torn--top torn--light"></div>
+  <div class="collage-cutout cutout--quadriga"><img src="assets/cutouts/quadriga.png" alt="" loading="lazy"></div>
+  <p class="sec__kicker sec__kicker--light">06 / FORMAÇÃO CONTINUADA</p>
+  <h2 class="sec__title sec__title--light">Certifi<span class="marker marker--light">cações</span></h2>
+
+  <div class="stamp-wall">
+    <div class="stamp-badge"><b>CS50</b><span>Computer Science — Harvard University</span></div>
+    <div class="stamp-badge"><b>DBA</b><span>Database Administration — Santander Foundation</span></div>
+    <div class="stamp-badge"><b>Lean Six Sigma</b><span>Green Belt — FASUL</span></div>
+    <div class="stamp-badge"><b>Prompt Eng.</b><span>Prompt Engineering with ChatGPT — Coursera</span></div>
+    <div class="stamp-badge"><b>Pentest</b><span>Intro to Hacking &amp; Pentesting — Solyd</span></div>
+    <div class="stamp-badge"><b>CCNA Intro</b><span>Networking Academy — Cisco</span></div>
+    <div class="stamp-badge"><b>CPA-20</b><span>Certificação — API School</span></div>
+    <div class="stamp-badge"><b>Office Suite</b><span>Excel &amp; SolidWorks — Instituto Enjoy</span></div>
+    <div class="stamp-badge"><b>Quality</b><span>Quality Management — Prime Cursos</span></div>
+    <div class="stamp-badge"><b>Manufatura</b><span>Desenho técnico, 3D &amp; extrusão — SENAI</span></div>
+  </div>
+</section>
+
+<!-- ===== DEPOIMENTOS ===== -->
+<section id="depoimentos" class="sec sec--testimonials">
+  <div class="torn torn--top"></div>
+  <div class="collage-cutout cutout--wreath"><img src="assets/cutouts/love_wreath.png" alt="" loading="lazy"></div>
+  <p class="sec__kicker">07 / DEPOIMENTOS</p>
+  <h2 class="sec__title">O que dizem sobre o <span class="marker">trabalho</span></h2>
+
+  <div class="notecard">
+    <p>Depoimentos selecionados em breve. Esta seção será atualizada assim que os
+      primeiros forem coletados.</p>
+    <div class="tape tape--corner"></div>
+  </div>
+
+  <form id="testimonialForm" class="scrap-form">
+    <p class="scrap-form__hint">Trabalhou comigo ou quer deixar um comentário?
+      Escreva aqui — leio tudo e publico manualmente.</p>
+    <input type="text" name="nome" placeholder="Nome" required>
+    <input type="text" name="cargo" placeholder="Cargo / Empresa">
+    <textarea name="depoimento" placeholder="Depoimento" rows="3" required></textarea>
+    <button type="submit" class="btn btn--stamp">Enviar pelo WhatsApp</button>
+  </form>
+</section>
+
+<!-- ===== CONTATO ===== -->
+<section id="contato" class="sec sec--contact">
+  <div class="torn torn--top torn--light"></div>
+  <div class="collage-cutout cutout--nike"><img src="assets/cutouts/nike.png" alt="" loading="lazy"></div>
+  <p class="sec__kicker sec__kicker--light">08 / CONTATO</p>
+  <h2 class="sec__title sec__title--light">Tem uma <span class="marker marker--light">ideia?</span></h2>
+  <p class="sec__lede sec__lede--light">Fale sobre o projeto, oportunidade ou desafio — retorno o quanto antes.</p>
+
+  <div class="contact__grid">
+    <div class="postage-wall">
+      <a class="postage" href="mailto:viniciusandrey16@gmail.com">
+        <span class="postage__label">E-mail</span>viniciusandrey16@gmail.com</a>
+      <a class="postage" href="https://wa.me/5511952762479" target="_blank" rel="noopener">
+        <span class="postage__label">WhatsApp</span>+55 11 95276-2479</a>
+      <a class="postage" href="https://www.linkedin.com/in/vin%C3%ADcius-andrey-9a3aa2121" target="_blank" rel="noopener">
+        <span class="postage__label">LinkedIn</span>in/vinícius-andrey</a>
+      <a class="postage" href="https://github.com/Vinishiii" target="_blank" rel="noopener">
+        <span class="postage__label">GitHub</span>@Vinishiii</a>
+      <a class="postage" href="https://www.instagram.com/vinishiii" target="_blank" rel="noopener">
+        <span class="postage__label">Instagram</span>@vinishiii</a>
+      <a class="postage" href="https://youtube.com/@viniciusandrey4755" target="_blank" rel="noopener">
+        <span class="postage__label">YouTube</span>@viniciusandrey4755</a>
+    </div>
+
+    <form id="contactForm" class="scrap-form scrap-form--light">
+      <input type="text" name="nome" placeholder="Nome" required>
+      <input type="email" name="email" placeholder="E-mail" required>
+      <input type="text" name="empresa" placeholder="Empresa">
+      <select name="tipo">
+        <option value="">Tipo de projeto</option>
+        <option>Oportunidade de trabalho</option>
+        <option>Projeto freelance</option>
+        <option>Produto / SaaS</option>
+        <option>Consultoria</option>
+        <option>Outro</option>
+      </select>
+      <textarea name="mensagem" placeholder="Mensagem" rows="3" required></textarea>
+      <button type="submit" class="btn btn--ticket">Enviar pelo WhatsApp <span>&#9986;</span></button>
+    </form>
+  </div>
+</section>
+
+<footer class="footer">
+  <a href="#top">Voltar ao topo &uarr;</a>
+  <div class="signature" aria-hidden="true">
+    <span class="signature__text">Vinícius Andrey</span>
+    <span class="signature__tip">&#9998;</span>
+  </div>
+  <p>Vinícius Andrey — recortado &amp; colado em 2026.</p>
+</footer>
+
+<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+<script src="https://unpkg.com/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://unpkg.com/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="main.js?v=6"></script>
+</body>
+</html>
