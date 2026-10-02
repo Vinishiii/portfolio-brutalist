@@ -152,7 +152,7 @@ M.stages = (function () {
       dyn(ctx, st) { bandeirinhas(ctx, st, 50, 2); }
     },
     rio: {
-      name: 'Beira do Tocanduva', sub: 'O rio não tem pressa', palette: ['#1a2a24', '#1f2f2a', '#142420'], music: 'fight', firePos: [480, 400], fireflies: true,
+      name: 'Beira do Tocanduva', sub: 'O rio não tem pressa', palette: ['#1a2a24', '#1f2f2a', '#142420'], music: 'fight', firePos: [480, 400], fireflies: true, dustColor: '#e8c58a',
       build(ctx, rnd) {
         sky(ctx, '#2a1a4a', '#c7267a', '#e8712b');
         ctx.fillStyle = '#1f3a2e'; ctx.beginPath(); ctx.moveTo(0, 290); for (let x = 0; x <= W; x += 40) ctx.lineTo(x, 270 + Math.sin(x * 0.02) * 20 + rnd() * 10); ctx.lineTo(W, 330); ctx.lineTo(0, 330); ctx.closePath(); ctx.fill();
@@ -168,7 +168,7 @@ M.stages = (function () {
       }
     },
     sertao: {
-      name: 'Serra do Vento', sub: 'Meio-dia no sertão', palette: ['#4a2a1a', '#5a3322', '#3e2416'], music: 'fight', firePos: [480, 400], dust: true,
+      name: 'Serra do Vento', sub: 'Meio-dia no sertão', palette: ['#4a2a1a', '#5a3322', '#3e2416'], music: 'fight', firePos: [480, 400], dust: true, dustColor: '#d98a5a',
       build(ctx, rnd) {
         sky(ctx, '#f7e7b8', '#f2c27a', '#e8a35b');
         ctx.fillStyle = '#fff2c4'; ctx.beginPath(); ctx.arc(480, 120, 70, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = INK; ctx.lineWidth = 4; ctx.stroke();
@@ -187,7 +187,7 @@ M.stages = (function () {
       }
     },
     pantanal: {
-      name: 'Pantanal de Taquari', sub: 'Onde a serpente de fogo dorme', palette: ['#0f1a26', '#14202e', '#0c1620'], music: 'fight', firePos: [480, 400], boitata: true,
+      name: 'Pantanal de Taquari', sub: 'Onde a serpente de fogo dorme', palette: ['#0f1a26', '#14202e', '#0c1620'], music: 'fight', firePos: [480, 400], boitata: true, dustColor: '#4a6a3a',
       build(ctx, rnd) {
         sky(ctx, '#050a1a', '#0f1f45', '#1a3560'); stars(ctx, rnd, 140); moon(ctx, 180, 110, 60, '#e9e2d2');
         ctx.fillStyle = '#0a1420'; for (let i = 0; i < 6; i++) { const x = 80 + i * 170 + rnd() * 40, h = 120 + rnd() * 90; ctx.fillRect(x - 5, 330 - h, 10, h); ctx.beginPath(); ctx.moveTo(x, 330 - h); ctx.lineTo(x - 40, 330 - h - 30); ctx.moveTo(x, 330 - h + 20); ctx.lineTo(x + 36, 330 - h - 12); ctx.moveTo(x, 330 - h + 40); ctx.lineTo(x - 30, 330 - h + 10); ctx.strokeStyle = '#0a1420'; ctx.lineWidth = 6; ctx.stroke(); }
@@ -204,7 +204,7 @@ M.stages = (function () {
       }
     },
     cinzas: {
-      name: 'Praça das Cinzas', sub: 'Onde a Brasa vai morrer', palette: ['#2a2724', '#33302c', '#1f1d1a'], music: 'boss', firePos: [480, 400], ash: true, fireLevel: 0.4,
+      name: 'Praça das Cinzas', sub: 'Onde a Brasa vai morrer', palette: ['#2a2724', '#33302c', '#1f1d1a'], music: 'boss', firePos: [480, 400], ash: true, fireLevel: 0.4, dustColor: '#8d8a84',
       build(ctx, rnd) {
         sky(ctx, '#2b2a2e', '#5a564f', '#8d8a84');
         ctx.fillStyle = '#4a4744';

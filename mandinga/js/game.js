@@ -396,6 +396,7 @@ M.Match = class Match {
     this.crowdExcite = 1.5; M.audio.cheer(1.5);
     this.wins[winner.side - 1]++; this.roundWinner = winner;
     this.projectiles = []; this.traps = [];
+    if (winner.hp >= winner.maxHp && !timeout) { this.popup('SEM UM ARRANHÃO!', winner.x, winner.y - 220, M.C.yellow, 26); this.gainAxe(winner, 0.3); this.confetti(winner.x, winner.y - 120, 40); }
   }
   startPhase2() {
     this.phase2 = true; this.phase2T = 0;
@@ -482,7 +483,7 @@ M.Match = class Match {
       ctx.strokeStyle = C.ink; ctx.lineWidth = 2; for (let i = 1; i < 10; i++) { const px = x0 + bw * i / 10; ctx.beginPath(); ctx.moveTo(px, y); ctx.lineTo(px, y + bh); ctx.stroke(); }
       M.text(ctx, f.def.name.toUpperCase(), right ? x0 + bw : x0, y + bh + 16, { size: 17, align: right ? 'right' : 'left', color: C.paper, lw: 3 });
       if (f.ctrl === 'cpu') M.text(ctx, 'CPU', right ? x0 : x0 + bw, y + bh + 16, { size: 12, align: right ? 'left' : 'right', color: '#8d8a84', lw: 2 });
-      for (let i = 0; i < Math.min(3, this.winsNeeded); i++) { const sx = right ? x0 + bw - 14 - i * 26 : x0 + 14 + i * 26; M.star(ctx, sx, y + bh + 40, 9, 4, 5, -Math.PI / 2); ctx.fillStyle = i < this.wins[f.side - 1] ? C.yellow : '#3a2a1e'; ctx.fill(); ctx.lineWidth = 2.5; ctx.strokeStyle = C.ink; ctx.stroke(); }
+      for (let i = 0; i < (this.winsNeeded <= 3 ? this.winsNeeded : 0); i++) { const sx = right ? x0 + bw - 14 - i * 26 : x0 + 14 + i * 26; M.star(ctx, sx, y + bh + 40, 9, 4, 5, -Math.PI / 2); ctx.fillStyle = i < this.wins[f.side - 1] ? C.yellow : '#3a2a1e'; ctx.fill(); ctx.lineWidth = 2.5; ctx.strokeStyle = C.ink; ctx.stroke(); }
       if (f.burn > 0 && this.frame % 20 < 14) M.text(ctx, 'QUEIMANDO', right ? x0 : x0 + bw, y + bh + 40, { size: 12, align: right ? 'left' : 'right', color: C.orange, lw: 2.5 });
     };
     bar(this.p1, false); bar(this.p2, true);
@@ -536,6 +537,22 @@ M.Match = class Match {
       const b = this.bigText, k = b.t / b.life; const sc = k < 0.12 ? M.easeBack(k / 0.12) : 1; const al = k > 0.8 ? 1 - (k - 0.8) / 0.2 : 1;
       ctx.save(); ctx.translate(W / 2, 250); ctx.scale(sc, sc); M.text(ctx, b.text, 0, 0, { size: b.size, color: b.color, alpha: al }); ctx.restore();
       if (this.phase === 'end' && this.roundWinner) M.text(ctx, this.tutorial ? 'Zeca Ventania está pronto.' : this.roundWinner.def.name.toUpperCase(), W / 2, 300, { size: 24, color: C.paper, alpha: al });
+    }
+    if (this.phase === 'intro' && this.phaseT < 72 && !this.tutorial) {
+      const k = this.phaseT / 72; const sl = k < 0.2 ? M.easeOut(k / 0.2) : k > 0.85 ? 1 - M.easeIn((k - 0.85) / 0.15) : 1;
+      ctx.save(); ctx.globalAlpha = sl;
+      const plate = (f, side) => {
+        const x = side === 1 ? 250 - (1 - sl) * 300 : W - 250 + (1 - sl) * 300;
+        ctx.save(); ctx.translate(x, 330); ctx.rotate(side === 1 ? -0.04 : 0.04);
+        ctx.fillStyle = f.def.colors.accent; ctx.fillRect(-170, -34, 340, 68); ctx.lineWidth = 5; ctx.strokeStyle = C.ink; ctx.strokeRect(-170, -34, 340, 68);
+        M.text(ctx, f.def.name.toUpperCase(), 0, -6, { size: 26, color: C.paper });
+        M.text(ctx, f.def.alias, 0, 20, { size: 13, color: C.paper, font: M.FONT_TEXT, lw: 2.5 });
+        ctx.restore();
+      };
+      plate(this.p1, 1); plate(this.p2, 2);
+      M.text(ctx, 'VS', W / 2, 330, { size: 40, color: C.red });
+      M.text(ctx, this.stage.def.name.toUpperCase() + ' — ' + this.stage.def.sub, W / 2, 392, { size: 14, color: C.yellow, lw: 3 });
+      ctx.restore();
     }
     if (this.tutorial && this.phase === 'fight') {
       const step = M.TUTORIAL[this.tut.step];
