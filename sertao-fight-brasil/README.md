@@ -1,4 +1,4 @@
-# CAPOEIRA FIGHT BRASIL — A Rinha Nunca Para
+# SERTÃO FIGHT BRASIL — A Rinha Nunca Para
 
 Jogo de luta 1v1 brasileiro, em xilogravura de cordel, feito do zero em HTML, CSS e JavaScript puro.
 Sem dependências, sem assets externos: personagens, cenários, efeitos e música são todos procedurais.
@@ -8,8 +8,8 @@ Golpes variados, esquivas perfeitas e acertos no compasso da zabumba puxam a rin
 
 ## Como executar
 
-- Abra `capoeira-fight-brasil/index.html` direto no navegador (funciona via `file://`), ou
-- Sirva a pasta com qualquer servidor estático: `python3 -m http.server 8000` e acesse `http://localhost:8000/capoeira-fight-brasil/`.
+- Abra `sertao-fight-brasil/index.html` direto no navegador (funciona via `file://`), ou
+- Sirva a pasta com qualquer servidor estático: `python3 -m http.server 8000` e acesse `http://localhost:8000/sertao-fight-brasil/`.
 
 Funciona em desktop (teclado ou gamepad) e no celular (controles de toque, melhor na horizontal).
 
@@ -26,9 +26,10 @@ Funciona em desktop (teclado ou gamepad) e no celular (controles de toque, melho
 | Provocar | O | Num 4 ou ; |
 | Agarrão | H (ou J+K) | Num 6 ou ] |
 | Dash | toque duplo ← / → | toque duplo ← / → |
+| Golpe corrido | Dash + K | Dash + forte |
 | Pausa | ESC | ESC |
 
-Variações: agachado + golpe (baixo), frente + forte (comando), golpes no ar, agachado + especial.
+Variações: agachado + golpe (baixo), frente + forte (comando), dash + forte (golpe corrido), golpes no ar, agachado + especial. Lançadores aceitam pulo-cancel para combos aéreos.
 
 ## Modos
 
@@ -47,7 +48,7 @@ Variações: agachado + golpe (baixo), frente + forte (comando), golpes no ar, a
 ## Estrutura
 
 ```
-capoeira-fight-brasil/
+sertao-fight-brasil/
   index.html
   css/style.css        interface (menus, diálogos, toque)
   js/util.js           utilitários, paleta, salvamento

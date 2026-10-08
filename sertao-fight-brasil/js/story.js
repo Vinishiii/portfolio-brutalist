@@ -14,13 +14,13 @@ M.PATUAS = [
 
 M.STORY = {
   intro: [
-    'Em Porto Brabo, cidade\nque o mar não quis engolir,\ntoda Quarta de Cinzas\na festa insiste em seguir:\nacende-se a Brasa na praça\npra ninguém poder dormir.',
+    'Em Vila Brasa, cidade\nque a seca não quis engolir,\ntoda noite de São João\na festa insiste em seguir:\nacende-se a Brasa na praça\npra ninguém poder dormir.',
     'Mas a Brasa só se alimenta\nda energia de quem bate palma,\ne quem quiser ser guardião\ntem que entrar na rinha com calma,\nganhar o povo no xaxado\ne nunca perder a alma.',
     'Zeca Ventania, menino\nque o Mestre Cinzas criou,\nhoje entra pela primeira vez\nna rinha que o fogo guardou.\nToca a sanfona. É agora.\nA rinha nunca parou.'
   ],
   fights: [
     {
-      opp: 'cinzas', stage: 'porto', tutorial: true, title: 'TREINO NO CAIS',
+      opp: 'cinzas', stage: 'porto', tutorial: true, title: 'TREINO NO AÇUDE',
       pre: [
         { who: 'cinzas', text: 'Antes da rinha, o treino. Me mostra o que aprendeu, menino.' },
         { who: 'zeca', text: 'Mestre, o povo já tá chegando na praça...' },
@@ -36,20 +36,20 @@ M.STORY = {
       opp: 'bia', stage: 'ladeira', title: 'PRIMEIRA RINHA — A LADEIRA',
       pre: [
         { who: 'lourdes', text: 'Primeira rinha da noite! Bia Sombrinha, a dona da ladeira, contra o menino do Mestre Cinzas!' },
-        { who: 'bia', text: 'Capoeira na minha ladeira? Aqui o passo é frevo, meu bem. Pisa certo ou cai.' },
+        { who: 'bia', text: 'Peia na minha ladeira? Aqui o passo é forró, meu bem. Pisa certo ou cai.' },
         { who: 'zeca', text: 'Então abre a sombrinha, que vai chover peia.' }
       ],
       post: [
         { who: 'bia', text: 'Tu dança bonito, menino. A ladeira é tua por hoje.' },
-        { who: 'bia', text: 'Mas cuidado com o rio. A Maré não perdoa quem tem pressa.' }
+        { who: 'bia', text: 'Mas cuidado com o Velho Chico. A Maré não perdoa quem tem pressa.' }
       ],
       patua: true
     },
     {
-      opp: 'mare', stage: 'rio', title: 'SEGUNDA RINHA — O RIO',
+      opp: 'mare', stage: 'rio', title: 'SEGUNDA RINHA — O VELHO CHICO',
       pre: [
         { who: 'mare', text: 'Você veio de longe pra afundar aqui, moço? O rio não tem pressa. Eu também não.' },
-        { who: 'zeca', text: 'Água não me assusta. Eu nasci no cais.' },
+        { who: 'zeca', text: 'Água não me assusta. Eu nasci na beira do açude.' },
         { who: 'mare', text: 'Então vem pegar a onda.' }
       ],
       post: [
@@ -75,20 +75,20 @@ M.STORY = {
       patua: true
     },
     {
-      opp: 'bene', stage: 'terreiro', title: 'QUARTA RINHA — A RINHA DO BENÉ',
+      opp: 'bene', stage: 'terreiro', title: 'QUARTA RINHA — O FORRÓ DO BENÉ',
       pre: [
         { who: 'bene', text: 'Foi teu Mestre que me ensinou a tocar. E fui eu que ensinei ele a escutar. Hoje ele não escuta mais ninguém.' },
         { who: 'zeca', text: 'Então me ensina o que ele esqueceu.' },
         { who: 'bene', text: 'Escuta a zabumba. Bate junto com ela. O resto, a rinha faz.' }
       ],
       post: [
-        { who: 'bene', text: 'Tá no compasso, menino. Agora vai lá no Pantanal.' },
+        { who: 'bene', text: 'Tá no compasso, menino. Agora vai lá na lagoa da caatinga.' },
         { who: 'bene', text: 'O Boitatá guarda a chama há mais tempo que todo mundo. Ele sabe o que o Cinzas quer fazer com a Brasa — e por quê.' }
       ],
       patua: true
     },
     {
-      opp: 'juvenal', stage: 'pantanal', title: 'QUINTA RINHA — O PANTANAL',
+      opp: 'juvenal', stage: 'pantanal', title: 'QUINTA RINHA — A LAGOA',
       pre: [
         { who: 'juvenal', text: 'Eu sou o fogo que o Mestre quer apagar. Se ele vencer a rinha hoje, a Brasa morre. E a cidade dorme pra sempre.' },
         { who: 'zeca', text: '...O Mestre nunca faria isso.' },
@@ -147,12 +147,12 @@ M.STORY = {
     descansar: {
       title: 'FINAL: UMA NOITE DE SILÊNCIO',
       cordel: [
-        'Naquela noite, a cidade\ndormiu pela primeira vez.\nSem fogo, sem sanfona,\nsó o mar e a sua maré.\nO Mestre chorou baixinho\ne Zeca não disse por quê.',
+        'Naquela noite, a cidade\ndormiu pela primeira vez.\nSem fogo, sem sanfona,\nsó o vento no cata-vento.\nO Mestre chorou baixinho\ne Zeca não disse por quê.',
         'E de manhã, sem guardião,\no povo acendeu outra vez:\ncada um trouxe um graveto,\ncada um trouxe um talvez.\nA Brasa não é de ninguém.\nÉ de quem bate palma. É de vocês.'
       ]
     }
   },
-  credits: 'CAPOEIRA FIGHT BRASIL — A Rinha Nunca Para\nUm jogo de luta brasileiro em xilogravura.\n\nPersonagens, mundo, música e código: criados do zero.\nTudo procedural — nenhum asset externo.\n\nObrigado por jogar. Agora vai lá e ensina alguém a arredar.'
+  credits: 'SERTÃO FIGHT BRASIL — A Rinha Nunca Para\nUm jogo de luta brasileiro em xilogravura.\n\nPersonagens, mundo, música e código: criados do zero.\nTudo procedural — nenhum asset externo.\n\nObrigado por jogar. Agora vai lá e ensina alguém a arredar.'
 };
 
 M.SPEAKERS = {

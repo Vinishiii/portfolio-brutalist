@@ -80,7 +80,7 @@ M.AI = (function () {
     const first = !ai.started; ai.started = true;
     switch (ai.intent) {
       case 'approach': h[fwd] = true; if (dist < 110) ai.timer = 0; break;
-      case 'dashIn': if (first && f.actionable) { if (fwd === 'right') inp.dashRight = true; else inp.dashLeft = true; } h[fwd] = true; if (dist < 120) ai.timer = 0; break;
+      case 'dashIn': if (first && f.actionable) { if (fwd === 'right') inp.dashRight = true; else inp.dashLeft = true; } h[fwd] = true; if (f.state === 'dash' && dist < 170 && f.def.moves.dH && Math.random() < ai.p.combo) { pr.heavy = true; ai.timer = 0; } else if (dist < 120) ai.timer = 0; break;
       case 'retreat': h[back] = true; if (Math.random() < 0.3) h.down = true; break;
       case 'wait': if (Math.random() < 0.5) h[back] = true; break;
       case 'block': if (first) ai.crouchBlock = ai.arg === 'low' || (ai.arg !== 'high' && Math.random() < 0.35); h[back] = true; if (ai.crouchBlock) h.down = true; break;
@@ -107,6 +107,8 @@ M.AI = (function () {
       }
       case 'combo': {
         const stunned = opp.state === 'hitstun' || opp.state === 'blockstun' || opp.state === 'thrown';
+        if (f.state === 'attack' && f.moveHit && f.move.launch && !f.move.super && f.grounded && Math.random() < ai.p.combo * 0.6) { pr.up = true; h[fwd] = true; ai.seq = ['aL', 'aH']; break; }
+        if (!f.grounded && f.airActs < 1 && ai.seq.length && ai.seq[0][0] === 'a' && opp.state === 'hitstun' && dist < 130) { const id = ai.seq.shift(); pr[id === 'aL' ? 'light' : 'heavy'] = true; break; }
         if (f.state === 'attack' && f.moveHit && f.move.cancel && ai.seq.length && Math.random() < ai.p.combo) { pressMove(inp, f, ai.seq.shift()); }
         else if (f.actionable) { if (stunned && dist < 160 && ai.seq.length && Math.random() < ai.p.combo) pressMove(inp, f, ai.seq.shift()); else if (!stunned) ai.timer = 0; else h[fwd] = true; }
         break;

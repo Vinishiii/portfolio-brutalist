@@ -54,7 +54,7 @@ M.ui = (function () {
   // ---------- TÍTULO ----------
   function title() {
     show(`<div class="screen title">
-      <div class="logo"><span class="logo-top">A RINHA NUNCA PARA</span><h1>CAPOEIRA<br><em>FIGHT BRASIL</em></h1><span class="logo-sub">UM JOGO DE LUTA EM XILOGRAVURA</span></div>
+      <div class="logo"><span class="logo-top">A RINHA NUNCA PARA</span><h1>SERTÃO<br><em>FIGHT BRASIL</em></h1><span class="logo-sub">UM JOGO DE LUTA EM XILOGRAVURA</span></div>
       <p class="blink">PRESSIONE QUALQUER TECLA • TOQUE NA TELA</p>
       <p class="tiny">v${M.VERSION} • teclado, toque ou controle</p>
     </div>`, { onKey: () => { M.audio.init(); menu(); return true; } });
@@ -67,7 +67,7 @@ M.ui = (function () {
     const d = M.store.data; const cont = d.story && d.story.idx > 0 && d.story.idx < M.STORY.fights.length;
     const free = d.progress.storyDone;
     show(`<div class="screen menu">
-      <div class="menu-left"><div class="logo small"><h1>CAPOEIRA <em>FIGHT BRASIL</em></h1><span class="logo-sub">A RINHA NUNCA PARA</span></div>
+      <div class="menu-left"><div class="logo small"><h1>SERTÃO <em>FIGHT BRASIL</em></h1><span class="logo-sub">A RINHA NUNCA PARA</span></div>
         <nav>
           ${cont ? `<button class="mi" data-go="cont">CONTINUAR HISTÓRIA <small>luta ${d.story.idx + 1}/${M.STORY.fights.length}</small></button>` : ''}
           <button class="mi" data-go="story">${cont ? 'NOVA ' : ''}HISTÓRIA <small>a Rinha do Fogo, com Zeca Ventania</small></button>
@@ -78,7 +78,7 @@ M.ui = (function () {
           <button class="mi" data-go="options">OPÇÕES</button>
           <button class="mi" data-go="credits">CRÉDITOS</button>
         </nav></div>
-      <div class="menu-right"><div class="stamp">${free ? 'GUARDIÃO DA BRASA' : 'PORTO BRABO, BA'}</div>
+      <div class="menu-right"><div class="stamp">${free ? 'GUARDIÃO DA BRASA' : 'VILA BRASA, SERTÃO'}</div>
         <p class="pitch">Quem tem <b>Energia</b> manda na rinha.<br>O público é a barra de poder — e ele escolhe quem merece a Peia.</p>
         ${d.progress.bestTime ? `<p class="tiny">Melhor História: ${M.fmtTime(d.progress.bestTime)} • Finais vistos: ${d.progress.endings.length}/2</p>` : ''}
       </div>
@@ -329,6 +329,7 @@ M.ui = (function () {
           <tr><td>Provocar</td><td>O</td><td>Num 4 / ;</td></tr>
           <tr><td>Agarrão</td><td>H (ou J+K)</td><td>Num 6 / ]</td></tr>
           <tr><td>Dash</td><td colspan="2">toque duplo ← ou →</td></tr>
+          <tr><td>Golpe corrido</td><td colspan="2">Dash + forte</td></tr>
           <tr><td>Pausa</td><td colspan="2">ESC</td></tr></table>
           <p class="tiny">Controle (gamepad) também funciona: analógico/d-pad, X leve, Y forte, B especial, A arreda, RB peia, LB provocar, LT agarrão, Start pausa.</p>
         </div>
@@ -341,7 +342,7 @@ M.ui = (function () {
           <p><b>PROVOCAR</b> dá Energia — se ninguém te bater antes. Risco e recompensa.</p>
           <p><b>AGARRÃO</b> (H ou J+K): ignora defesa. <b>ESCAPAR</b>: em um combo de 3+ golpes, aperte ARREDA gastando 30% de Energia.</p>
           <p><b>PEIA BRABA</b>: com a barra em 100%, a Peia causa 30% a mais. Soltar aos 70% ou esperar?</p>
-          <p><b>SEQUÊNCIAS</b>: leve ▸ leve ▸ forte ▸ especial ▸ peia, se os golpes acertarem.</p>
+          <p><b>SEQUÊNCIAS</b>: leve ▸ leve ▸ forte ▸ especial ▸ peia, se os golpes acertarem. Lançou o oponente pro alto? Aperte PULAR na hora (<b>PULO-CANCEL</b>) e continue no ar.</p>
         </div>
       </div>
       <nav><button class="mi back" data-go="back">VOLTAR</button></nav>

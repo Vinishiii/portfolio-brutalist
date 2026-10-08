@@ -1,6 +1,6 @@
 'use strict';
 // ============================================================
-// CAPOEIRA FIGHT BRASIL — utilitários globais
+// SERTÃO FIGHT BRASIL — utilitários globais
 // ============================================================
 const M = window.M = window.M || {};
 M.W = 960; M.H = 540; M.GROUND = 452;
@@ -34,7 +34,7 @@ M.C = {
 
 // Persistência
 M.store = {
-  key: 'cfb.save.v1',
+  key: 'sfb.save.v1',
   data: null,
   load() {
     try { this.data = JSON.parse(localStorage.getItem(this.key)) || {}; } catch (e) { this.data = {}; }

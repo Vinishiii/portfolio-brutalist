@@ -113,6 +113,7 @@ M.Fighter = class Fighter {
       }
       case 'dash': {
         this.t++; this.vx *= 0.93;
+        if (this.t >= 2 && this.buf.heavy > 0 && this.def.moves.dH) { this.buf.heavy = 0; this.startMove('dH', G); G.popup('CORRIDO!', this.x, this.y - 200, '#f2b70c', 16); break; }
         if (this.t >= 5 && this.tryAct(G, false, false, true)) break;
         if (this.t >= 15) { this.state = 'idle'; this.vx = 0; }
         break;
@@ -217,6 +218,7 @@ M.Fighter = class Fighter {
       else if (this.buf.light > 0 && mv.cancel.includes('L')) next = h.down ? 'cL' : 'L';
       if (next) { this.buf.special = this.buf.heavy = this.buf.light = this.buf.mandinga = 0; this.startMove(next, G); return; }
     }
+    if (this.moveHit && mv.launch && !mv.super && this.grounded && this.buf.up > 0 && f > mv.startup && f <= mv.total - 3) { this.buf.up = 0; this.move = null; this.jump(G); G.popup('PULO-CANCEL!', this.x, this.y - 200, '#2aa9b8', 16); return; }
     if (f >= mv.total + this.extraRec) {
       this.move = null; this.throwing = null;
       if (this.grounded) { this.state = 'idle'; this.crouching = false; } else this.state = 'jump';

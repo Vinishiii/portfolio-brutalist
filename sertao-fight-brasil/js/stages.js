@@ -108,25 +108,26 @@ M.stages = (function () {
   // ---------- definição dos cenários ----------
   const DEFS = {
     porto: {
-      name: 'Cais de Porto Brabo', sub: 'A noite começa no cais', palette: ['#1d1a2a', '#241f33', '#2a2440'], music: 'fight', firePos: [480, 400],
+      name: 'Açude de Vila Brasa', sub: 'A noite começa no açude', palette: ['#1d1a2a', '#241f33', '#2a2440'], music: 'fight', firePos: [480, 400],
       build(ctx, rnd) {
         sky(ctx, '#0a1430', '#1c4e9c', '#2a3f7a'); stars(ctx, rnd, 90); moon(ctx, 790, 90, 44);
         // mar
         ctx.fillStyle = '#10244f'; ctx.fillRect(0, 300, W, 150);
-        // navios e guindastes
-        ctx.fillStyle = '#0c1226';
-        ctx.fillRect(120, 250, 220, 50); ctx.beginPath(); ctx.moveTo(100, 300); ctx.lineTo(120, 250); ctx.lineTo(340, 250); ctx.lineTo(370, 300); ctx.closePath(); ctx.fill();
-        ctx.fillRect(200, 210, 60, 40); ctx.fillRect(230, 190, 14, 24);
-        ctx.strokeStyle = '#0c1226'; ctx.lineWidth = 8; ctx.beginPath(); ctx.moveTo(620, 300); ctx.lineTo(620, 150); ctx.lineTo(760, 190); ctx.moveTo(620, 180); ctx.lineTo(560, 300); ctx.stroke();
-        ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(760, 190); ctx.lineTo(760, 260); ctx.stroke(); ctx.fillRect(748, 260, 24, 18);
-        ctx.strokeStyle = '#0c1226'; ctx.lineWidth = 8; ctx.beginPath(); ctx.moveTo(860, 300); ctx.lineTo(860, 170); ctx.lineTo(940, 200); ctx.stroke();
-        // cais
+        // margem do açude: casa de taipa, cata-vento e serra ao fundo
+        ctx.fillStyle = '#0c1226'; ctx.beginPath(); ctx.moveTo(0, 300); ctx.quadraticCurveTo(200, 210, 400, 290); ctx.quadraticCurveTo(650, 200, 960, 300); ctx.lineTo(960, 310); ctx.lineTo(0, 310); ctx.closePath(); ctx.fill();
+        ctx.fillRect(130, 250, 150, 50); ctx.beginPath(); ctx.moveTo(120, 250); ctx.lineTo(205, 205); ctx.lineTo(290, 250); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = 'rgba(242,183,12,0.8)'; ctx.fillRect(160, 268, 16, 18); ctx.fillRect(235, 268, 16, 18);
+        ctx.strokeStyle = '#0c1226'; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(700, 300); ctx.lineTo(715, 150); ctx.moveTo(730, 300); ctx.lineTo(715, 150); ctx.moveTo(695, 240); ctx.lineTo(735, 240); ctx.stroke();
+        ctx.lineWidth = 4; for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4; ctx.beginPath(); ctx.moveTo(715, 150); ctx.lineTo(715 + Math.cos(a) * 42, 150 + Math.sin(a) * 42); ctx.stroke(); }
+        ctx.beginPath(); ctx.arc(715, 150, 42, 0, Math.PI * 2); ctx.stroke();
+        ctx.fillStyle = '#0c1226'; ctx.fillRect(850, 200, 60, 40); ctx.fillRect(862, 240, 8, 60); ctx.fillRect(890, 240, 8, 60);
+        // beira do açude
         ctx.fillStyle = '#4a3828'; ctx.fillRect(0, 410, W, 50);
         ctx.strokeStyle = '#2d2117'; ctx.lineWidth = 3; for (let i = 0; i < 24; i++) { ctx.beginPath(); ctx.moveTo(i * 42, 410); ctx.lineTo(i * 42 + 12, 460); ctx.stroke(); }
         ground(ctx, '#5a4634', INK, c => { c.strokeStyle = '#3d2e21'; c.lineWidth = 2; for (let i = 0; i < 30; i++) { c.beginPath(); c.moveTo(i * 34, G); c.lineTo(i * 34 + 10, H); c.stroke(); } });
       },
       dyn(ctx, st) {
-        // reflexos
+        // reflexos no açude
         ctx.save(); ctx.globalAlpha = 0.5;
         for (let i = 0; i < 14; i++) { const y = 320 + i * 9; const w = 40 + Math.sin(st * 0.02 + i) * 25; ctx.fillStyle = i % 3 === 0 ? '#f2b70c' : '#2aa9b8'; ctx.fillRect(760 + Math.sin(st * 0.03 + i * 0.7) * 30 - w / 2, y, w, 2); }
         ctx.restore();
@@ -136,7 +137,7 @@ M.stages = (function () {
       }
     },
     ladeira: {
-      name: 'Ladeira do Frevo', sub: 'Fim de tarde em Recife', palette: ['#3a2a1e', '#4a3328', '#2e2a3a'], music: 'fight', firePos: [480, 400], confetti: true, baloes: true,
+      name: 'Ladeira do Forró', sub: 'Fim de tarde em Campina Grande', palette: ['#3a2a1e', '#4a3328', '#2e2a3a'], music: 'fight', firePos: [480, 400], confetti: true, baloes: true,
       build(ctx, rnd) {
         sky(ctx, '#f2b70c', '#e8712b', '#c7267a');
         ctx.fillStyle = '#f7d774'; ctx.beginPath(); ctx.arc(170, 160, 60, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = INK; ctx.lineWidth = 3; ctx.stroke();
@@ -152,7 +153,7 @@ M.stages = (function () {
       dyn(ctx, st) { bandeirinhas(ctx, st, 50, 2); }
     },
     rio: {
-      name: 'Beira do Tocanduva', sub: 'O rio não tem pressa', palette: ['#1a2a24', '#1f2f2a', '#142420'], music: 'fight', firePos: [480, 400], fireflies: true, dustColor: '#e8c58a',
+      name: 'Beira do Velho Chico', sub: 'O rio não tem pressa', palette: ['#1a2a24', '#1f2f2a', '#142420'], music: 'fight', firePos: [480, 400], fireflies: true, dustColor: '#e8c58a',
       build(ctx, rnd) {
         sky(ctx, '#2a1a4a', '#c7267a', '#e8712b');
         ctx.fillStyle = '#1f3a2e'; ctx.beginPath(); ctx.moveTo(0, 290); for (let x = 0; x <= W; x += 40) ctx.lineTo(x, 270 + Math.sin(x * 0.02) * 20 + rnd() * 10); ctx.lineTo(W, 330); ctx.lineTo(0, 330); ctx.closePath(); ctx.fill();
@@ -188,7 +189,7 @@ M.stages = (function () {
       }
     },
     pantanal: {
-      name: 'Pantanal de Taquari', sub: 'Onde a serpente de fogo dorme', palette: ['#0f1a26', '#14202e', '#0c1620'], music: 'fight', firePos: [480, 400], boitata: true, dustColor: '#4a6a3a',
+      name: 'Lagoa da Caatinga', sub: 'Onde a serpente de fogo dorme', palette: ['#0f1a26', '#14202e', '#0c1620'], music: 'fight', firePos: [480, 400], boitata: true, dustColor: '#4a6a3a',
       build(ctx, rnd) {
         sky(ctx, '#050a1a', '#0f1f45', '#1a3560'); stars(ctx, rnd, 140); moon(ctx, 180, 110, 60, '#e9e2d2');
         ctx.fillStyle = '#0a1420'; for (let i = 0; i < 6; i++) { const x = 80 + i * 170 + rnd() * 40, h = 120 + rnd() * 90; ctx.fillRect(x - 5, 330 - h, 10, h); ctx.beginPath(); ctx.moveTo(x, 330 - h); ctx.lineTo(x - 40, 330 - h - 30); ctx.moveTo(x, 330 - h + 20); ctx.lineTo(x + 36, 330 - h - 12); ctx.moveTo(x, 330 - h + 40); ctx.lineTo(x - 30, 330 - h + 10); ctx.strokeStyle = '#0a1420'; ctx.lineWidth = 6; ctx.stroke(); }
@@ -236,7 +237,7 @@ M.stages = (function () {
       }
     },
     galpao: {
-      name: 'Galpão Tech do Cais', sub: 'Onde o código briga', palette: ['#141a2e', '#1a2240', '#0f1526'], music: 'fight', firePos: [480, 400], dustColor: '#6b7a8a', code: true,
+      name: 'Galpão Tech da Vila', sub: 'Onde o código briga', palette: ['#141a2e', '#1a2240', '#0f1526'], music: 'fight', firePos: [480, 400], dustColor: '#6b7a8a', code: true,
       build(ctx, rnd) {
         sky(ctx, '#0a0e1c', '#101a33', '#15203f');
         // telhado e paredes de zinco
