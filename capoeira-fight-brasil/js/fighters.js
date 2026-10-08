@@ -154,6 +154,30 @@
       }
     },
 
+    vinicius: {
+      id: 'vinicius', name: 'Vinícius Andrey', alias: 'O Dev do Cais', origin: 'Porto Brabo, BA', style: 'Capoeira & código',
+      bio: 'Programador de software, dados e IA. Entrou na roda pra provar que lógica também ginga. Lê o padrão do adversário como quem lê um log — e quando acha o bug, não perdoa.',
+      quote: 'Funciona na minha máquina. E na roda também.',
+      colors: { skin: '#c9956b', torso: '#f6f1e6', arms: '#f6f1e6', legs: '#a0622d', shoes: '#1c2e5c', accent: '#2aa9b8', hair: '#1a140f' },
+      hair: 'pompadour', prop: null, idle: 'stance', idleOver: { na: [50, 100], fa: [35, 90], torso: 8 }, beard: true, body: { height: 1.0, build: 1.15 }, details: ['glasses', 'watch', 'sneakers'],
+      stats: { hp: 1050, speed: 3.0, jumpV: -12.8, weight: 1.1, dashV: 9.5, airSpeed: 3.0, maxJumps: 1 },
+      superName: 'Deploy em Produção', superDesc: 'Sobe tudo de uma vez: sequência de golpes que não dá rollback.',
+      ai: { zone: 0.3, air: 0.2, grab: 0.1, rush: 0.5, poke: 0.5 },
+      moves: {
+        L: mv({ id: 'L', name: 'Clique', startup: 4, active: 3, recovery: 9, dmg: 52, hitstun: 18, blockstun: 9, kb: 3, hitbox: { x: 20, y: 95, w: 66, h: 34 }, pose: 'jab', cancel: ['L', 'H', 'S'], sfx: 'whoosh' }),
+        cL: mv({ id: 'cL', name: 'Chute de ponteiro', startup: 5, active: 3, recovery: 10, dmg: 44, type: 'low', crouch: true, hitstun: 17, blockstun: 8, kb: 2, hitbox: { x: 16, y: 0, w: 72, h: 32 }, pose: 'cKick', cancel: ['H', 'S'], sfx: 'whoosh' }),
+        aL: mv({ id: 'aL', name: 'Pisão', startup: 5, active: 5, recovery: 8, dmg: 52, type: 'high', air: true, hitstun: 14, kb: 3, hitbox: { x: 10, y: 20, w: 68, h: 50 }, pose: 'airKick', sfx: 'whoosh' }),
+        H: mv({ id: 'H', name: 'Refatoração', startup: 10, active: 5, recovery: 16, dmg: 112, hitstun: 20, blockstun: 12, kb: 6, hitbox: { x: 10, y: 70, w: 110, h: 80 }, pose: 'spinKick', cancel: ['S'], sfx: 'whooshH', fx: 'arc' }),
+        cH: mv({ id: 'cH', name: 'Rasteira recursiva', startup: 8, active: 4, recovery: 18, dmg: 92, type: 'low', crouch: true, knockdown: true, hitstun: 20, blockstun: 12, kb: 4, hitbox: { x: 10, y: 0, w: 100, h: 30 }, pose: 'sweep', sfx: 'whooshH' }),
+        aH: mv({ id: 'aH', name: 'Queda de servidor', startup: 8, active: 6, recovery: 10, dmg: 105, type: 'high', air: true, knockdown: true, hitstun: 19, kb: 4, hitbox: { x: -10, y: -10, w: 90, h: 80 }, pose: 'slam', sfx: 'whooshH' }),
+        fH: mv({ id: 'fH', name: 'Deploy', startup: 12, active: 4, recovery: 19, dmg: 115, hitstun: 21, blockstun: 13, kb: 8, armor: [1, 12], hitbox: { x: 10, y: 60, w: 90, h: 90 }, pose: 'charge', move: [{ f: 5, t: 15, vx: 5 }], sfx: 'whooshH' }),
+        S: mv({ id: 'S', name: 'Bug', startup: 11, active: 1, recovery: 20, dmg: 70, hitstun: 16, blockstun: 10, kb: 4, chip: 7, lag: 150, pose: 'cast', projectile: { kind: 'bug', vx: 6.5, vy: 0, w: 46, h: 46, y: 60, life: 90 }, sfx: 'projectile' }),
+        dS: mv({ id: 'dS', name: 'Firewall', startup: 12, active: 1, recovery: 18, dmg: 55, launch: 10, hitstun: 20, blockstun: 10, kb: 3, chip: 5, pose: 'trap', trap: { dist: 110, life: 200, w: 40, h: 150, wall: true }, sfx: 'axe' }),
+        aS: mv({ id: 'aS', name: 'Download', startup: 7, active: 10, recovery: 10, dmg: 95, type: 'high', air: true, knockdown: true, hitstun: 20, kb: 5, chip: 8, hitbox: { x: 10, y: 0, w: 80, h: 60 }, pose: 'dive', move: [{ f: 0, t: 16, vx: 5, vy: 6 }], sfx: 'whooshH' }),
+        M: mv({ id: 'M', name: 'Deploy em Produção', super: true, startup: 14, active: 36, recovery: 22, dmg: 60, hits: 7, hitInterval: 5, launch: 14, hitstun: 22, blockstun: 15, kb: 1.5, chip: 16, invuln: [0, 16], hitbox: { x: 0, y: 30, w: 130, h: 130 }, pose: 'superRush', move: [{ f: 4, t: 14, vx: 13 }, { f: 14, t: 50, vx: 2.5 }], sfx: 'super', fx: 'arc' })
+      }
+    },
+
     cinzas: {
       id: 'cinzas', name: 'Mestre Cinzas', alias: 'O Último da Roda Velha', origin: 'Porto Brabo, BA', style: 'Capoeira antiga',
       bio: 'Mestre de Zeca e guardião da Roda do Fogo há trinta anos. Perdeu a esposa, Rosa, num incêndio durante uma roda. Desde então acredita que toda festa cobra um preço — e decidiu encerrar a conta.',
@@ -179,7 +203,7 @@
     }
   };
 
-  M.ROSTER = ['zeca', 'bia', 'mare', 'tiao', 'bene', 'juvenal', 'cinzas'];
+  M.ROSTER = ['zeca', 'bia', 'mare', 'tiao', 'bene', 'juvenal', 'vinicius', 'cinzas'];
   for (const id in M.FIGHTERS) {
     const f = M.FIGHTERS[id];
     // agarrão universal (J + K juntos ou tecla H)

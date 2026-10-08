@@ -101,6 +101,19 @@ M.STORY = {
       patua: true
     },
     {
+      opp: 'vinicius', stage: 'galpao', title: 'SEXTA RODA — O GALPÃO',
+      pre: [
+        { who: 'vinicius', text: 'Zeca! Eu mapeei a roda inteira hoje: cada golpe, cada passo. Teu padrão tá todo aqui no meu log.' },
+        { who: 'zeca', text: 'Então apaga o log, que eu vou mudar de padrão.' },
+        { who: 'vinicius', text: 'Isso eu quero ver. Bora rodar.' }
+      ],
+      post: [
+        { who: 'vinicius', text: 'Sem padrão, sem bug. Tu tá pronto, menino.' },
+        { who: 'vinicius', text: 'O Mestre tá esperando na praça. Vai lá — e deixa a Brasa compilar.' }
+      ],
+      patua: true
+    },
+    {
       opp: 'cinzas', stage: 'cinzas', boss: true, title: 'RODA DO FOGO — A PRAÇA DAS CINZAS',
       pre: [
         { who: 'cinzas', text: 'Você chegou mais longe do que eu queria, Zeca.' },
@@ -150,5 +163,6 @@ M.SPEAKERS = {
   tiao: { name: 'Tião Sertão', color: '#c8371d' },
   juvenal: { name: 'Juvenal Boitatá', color: '#e8712b' },
   bene: { name: 'Bené Berimbau', color: '#c47a4a' },
+  vinicius: { name: 'Vinícius Andrey', color: '#2aa9b8' },
   lourdes: { name: 'Dona Lourdes (no pandeiro)', color: '#1f7a4d' }
 };

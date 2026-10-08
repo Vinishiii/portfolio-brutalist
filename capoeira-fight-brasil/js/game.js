@@ -134,6 +134,7 @@ M.Match = class Match {
       // partículas de identidade
       if (x.def.prop === 'fire' && this.frame % 4 === 0) this.particles.push({ x: x.x + (Math.random() - 0.5) * 40, y: x.y - 60 - Math.random() * 80, vx: (Math.random() - 0.5) * 0.6, vy: -1.2 - Math.random(), life: 30, max: 30, size: 4, color: Math.random() < 0.5 ? '#f2b70c' : '#e8712b', type: 'ember', rot: 0 });
       if (x.def.prop === 'ash' && this.frame % 6 === 0) this.particles.push({ x: x.x + (Math.random() - 0.5) * 50, y: x.y - 100 - Math.random() * 50, vx: (Math.random() - 0.5) * 0.4, vy: 0.4 + Math.random() * 0.5, life: 50, max: 50, size: 3, color: '#8d8a84', type: 'ash', rot: 0 });
+      if (x.lag > 0 && this.frame % 6 === 0) this.particles.push({ x: x.x + (Math.random() - 0.5) * 70, y: x.y - 20 - Math.random() * 130, vx: (Math.random() - 0.5) * 2, vy: 0, life: 12, max: 12, size: 5, color: Math.random() < 0.5 ? '#2aa9b8' : '#c7267a', type: 'confetti', rot: 0 });
       if (x.burn > 0 && this.frame % 5 === 0) this.particles.push({ x: x.x + (Math.random() - 0.5) * 40, y: x.y - 40 - Math.random() * 90, vx: 0, vy: -1.5, life: 24, max: 24, size: 5, color: '#e8712b', type: 'ember', rot: 0 });
     }
     this.axe -= Math.sign(this.axe) * 0.00022;
@@ -258,6 +259,7 @@ M.Match = class Match {
     if (src && (src.kind === 'wave' || src.kind === 'ripple' || src.kind === 'rain' || src.kind === 'pororoca')) this.drops(hx, hy, 10);
     M.audio.play(mv.super ? 'hitS' : heavy ? 'hitH' : 'hitL');
     if (mv.burn) { def.burn = 150; this.popup('QUEIMANDO!', def.x, def.y - 200, M.C.orange, 20); }
+    if (mv.lag) { def.lag = mv.lag; this.popup('LAG!', def.x, def.y - 200, M.C.cyan, 22); }
     let gain = 0.035 + dmg / 1000 * 0.3;
     const same = att.recent.filter(id => id === mv.id).length; gain *= 1 / (1 + same * 0.8);
     if (same >= 2 && !mv.super) this.popup('REPETIDO...', att.x, att.y - 200, '#8d8a84', 16);
@@ -388,6 +390,7 @@ M.Match = class Match {
       tr.age++; tr.life--; if (tr.age > 18) tr.armed = true;
       const box = { x: tr.x - tr.w / 2, y: M.GROUND - tr.h, w: tr.w, h: tr.h };
       const def = this.other(tr.owner);
+      if (tr.mv.trap.wall && tr.armed) for (const pr of this.projectiles) if (pr.owner !== tr.owner && !pr.mv.super && M.rects(box, { x: pr.x - pr.w / 2, y: pr.y - pr.h / 2, w: pr.w, h: pr.h })) { pr.dead = true; this.spark(pr.x, pr.y, 10, '#2aa9b8'); this.popup('BLOQUEADO', tr.x, M.GROUND - tr.h - 24, M.C.cyan, 16); M.audio.play('block'); }
       if (tr.armed && tr.life > 0 && def.invuln <= 0 && def.grounded && !['knockdown', 'getup', 'thrown', 'ko', 'dodge'].includes(def.state) && M.rects(box, def.hurtbox())) {
         tr.life = 0; this.hit(tr.owner, def, tr.mv, box, { dir: def.x >= tr.x ? 1 : -1, kind: 'trap' }); this.embers(tr.x, M.GROUND - 30, 14); M.audio.play('fire');
       }

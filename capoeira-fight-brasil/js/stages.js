@@ -235,6 +235,39 @@ M.stages = (function () {
         bandeirinhas(ctx, st, 60, 1);
       }
     },
+    galpao: {
+      name: 'Galpão Tech do Cais', sub: 'Onde o código ginga', palette: ['#141a2e', '#1a2240', '#0f1526'], music: 'fight', firePos: [480, 400], dustColor: '#6b7a8a', code: true,
+      build(ctx, rnd) {
+        sky(ctx, '#0a0e1c', '#101a33', '#15203f');
+        // telhado e paredes de zinco
+        ctx.fillStyle = '#1c2438'; ctx.fillRect(0, 120, W, 300);
+        ctx.strokeStyle = '#111827'; ctx.lineWidth = 3; for (let x = 0; x < W; x += 28) { ctx.beginPath(); ctx.moveTo(x, 120); ctx.lineTo(x, 415); ctx.stroke(); }
+        ctx.strokeStyle = INK; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(0, 120); ctx.lineTo(W, 120); ctx.stroke();
+        for (let i = 0; i < 5; i++) { ctx.beginPath(); ctx.moveTo(i * 240, 120); ctx.lineTo(i * 240 + 120, 40); ctx.lineTo(i * 240 + 240, 120); ctx.strokeStyle = '#2a3450'; ctx.lineWidth = 6; ctx.stroke(); }
+        // monitores
+        for (const [x, y, w, h] of [[80, 200, 140, 90], [240, 230, 110, 70], [630, 190, 150, 95], [800, 240, 120, 75]]) {
+          ctx.fillStyle = '#0b0f1a'; ctx.fillRect(x, y, w, h); ctx.strokeStyle = INK; ctx.lineWidth = 3; ctx.strokeRect(x, y, w, h);
+          ctx.fillStyle = '#2aa9b8'; for (let k = 0; k < Math.floor(h / 12); k++) { ctx.globalAlpha = 0.5 + rnd() * 0.5; ctx.fillRect(x + 8, y + 8 + k * 12, 10 + rnd() * (w - 30), 4); } ctx.globalAlpha = 1;
+          ctx.fillStyle = '#2a3450'; ctx.fillRect(x + w / 2 - 6, y + h, 12, 14); ctx.fillRect(x + w / 2 - 24, y + h + 14, 48, 5);
+        }
+        // letreiro neon
+        ctx.fillStyle = '#0b0f1a'; ctx.fillRect(360, 150, 240, 56); ctx.strokeStyle = INK; ctx.lineWidth = 3; ctx.strokeRect(360, 150, 240, 56);
+        M.text(ctx, '< GALPÃO TECH />', 480, 178, { size: 24, color: '#c7267a', lw: 3 });
+        // rack de servidores
+        ctx.fillStyle = '#2a3450'; ctx.fillRect(430, 260, 100, 150); ctx.strokeStyle = INK; ctx.strokeRect(430, 260, 100, 150);
+        for (let k = 0; k < 7; k++) { ctx.fillStyle = '#0b0f1a'; ctx.fillRect(438, 268 + k * 20, 84, 14); ctx.fillStyle = k % 2 ? '#1f7a4d' : '#2aa9b8'; ctx.fillRect(506, 272 + k * 20, 6, 6); ctx.fillStyle = '#c8371d'; ctx.fillRect(496, 272 + k * 20, 6, 6); }
+        // cabos pendurados
+        ctx.strokeStyle = '#111827'; ctx.lineWidth = 4; for (let i = 0; i < 6; i++) { const x = 60 + i * 170 + rnd() * 40; ctx.beginPath(); ctx.moveTo(x, 120); ctx.quadraticCurveTo(x + 30, 200 + rnd() * 60, x + 90, 120); ctx.stroke(); }
+        ground(ctx, '#3a4150', INK, c => { c.strokeStyle = '#f2b70c'; c.lineWidth = 3; c.setLineDash([24, 18]); c.beginPath(); c.moveTo(0, G + 40); c.lineTo(W, G + 40); c.stroke(); c.setLineDash([]); });
+      },
+      dyn(ctx, st) {
+        ctx.save(); ctx.font = `12px ${M.FONT_TEXT}`; ctx.textAlign = 'center';
+        const chars = '01{}<>;=/*+#$'; const rnd = M.seeded(7);
+        for (let i = 0; i < 26; i++) { const x = rnd() * W, sp = 0.6 + rnd() * 1.2; const y = ((st * sp) + rnd() * 300) % 300 + 120; ctx.globalAlpha = 0.25 + (rnd() * 0.4); ctx.fillStyle = i % 5 === 0 ? '#c7267a' : '#2aa9b8'; ctx.fillText(chars[(i + Math.floor(st / 10)) % chars.length], x, y); }
+        ctx.restore();
+        if (Math.floor(st / 7) % 23 === 0) { ctx.fillStyle = 'rgba(199,38,122,0.08)'; ctx.fillRect(0, 0, W, 420); }
+      }
+    },
     cinzas: {
       name: 'Praça das Cinzas', sub: 'Onde a Brasa vai morrer', palette: ['#2a2724', '#33302c', '#1f1d1a'], music: 'boss', firePos: [480, 400], ash: true, fireLevel: 0.4, dustColor: '#8d8a84',
       build(ctx, rnd) {
@@ -318,5 +351,5 @@ M.stages = (function () {
     }
   }
 
-  return { DEFS, Stage, bandeirinhas, drawFire, order: ['porto', 'ladeira', 'rio', 'sertao', 'terreiro', 'pantanal', 'cinzas'] };
+  return { DEFS, Stage, bandeirinhas, drawFire, order: ['porto', 'ladeira', 'rio', 'sertao', 'terreiro', 'pantanal', 'galpao', 'cinzas'] };
 })();

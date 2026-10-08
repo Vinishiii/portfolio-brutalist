@@ -21,7 +21,7 @@ M.Fighter = class Fighter {
     this.held = { fwd: false, back: false, down: false, up: false };
     this.launched = false; this.kdPending = false; this.hurtKind = 'hi'; this.extraRec = 0;
     this.superFlash = 0; this.armorNow = false; this.throwing = null; this.threw = false; this.throwT = 0;
-    this.forwardDodge = false; this.poseFrom = M.poses.S.idle; this.moveHit = false; this.spawned = false; this.counterWin = 0; this.ritmo = 0; this.superBoost = 1;
+    this.forwardDodge = false; this.poseFrom = M.poses.S.idle; this.moveHit = false; this.spawned = false; this.counterWin = 0; this.ritmo = 0; this.superBoost = 1; this.lag = 0;
     this.hitIds = new Set(); this.hitCount = 0; this.lastHitFrame = -99; this.dodgedBy = null;
     this.stats = this.stats || { hits: 0, blocks: 0, perfect: 0, supers: 0, taunts: 0, jumps: 0, landed: {}, dmg: 0 };
     this.updatePose();
@@ -75,6 +75,8 @@ M.Fighter = class Fighter {
     if (this.invuln > 0) this.invuln--;
     if (this.dodgeCd > 0) this.dodgeCd--;
     if (this.counterWin > 0) this.counterWin--;
+    if (this.lag > 0) this.lag--;
+    const lagK = this.lag > 0 ? 0.65 : 1;
     if (this.ritmo > 0) { this.ritmo--; if (this.ritmo % 12 === 0) G.fx.push({ type: 'text', text: '♪', x: this.x + (Math.random() - 0.5) * 60, y: this.y - 150, t: 0, life: 40, color: '#f2b70c', size: 18 }); }
     this.armorNow = false;
     if (this.burn > 0) { this.burn--; if (this.burn % 30 === 0 && this.hp > 1) { this.hp = Math.max(1, this.hp - 10); G.burnTick(this); } }
@@ -89,8 +91,8 @@ M.Fighter = class Fighter {
         this.crouching = false;
         if (this.tryAct(G, dashF, dashB, false)) break;
         if (h.down) { this.state = 'crouch'; this.crouching = true; this.vx = 0; }
-        else if (h.fwd) { this.state = 'walk'; this.vx = this.def.stats.speed * this.mods.speed * this.facing; }
-        else if (h.back) { this.state = 'walk'; this.vx = -this.def.stats.speed * 0.82 * this.mods.speed * this.facing; }
+        else if (h.fwd) { this.state = 'walk'; this.vx = this.def.stats.speed * this.mods.speed * lagK * this.facing; }
+        else if (h.back) { this.state = 'walk'; this.vx = -this.def.stats.speed * 0.82 * this.mods.speed * lagK * this.facing; }
         else { this.state = 'idle'; this.vx = 0; }
         break;
       }
@@ -154,7 +156,7 @@ M.Fighter = class Fighter {
     if (this.buf.up > 0 && !h.down) { this.buf.up = 0; this.jump(G); return true; }
     if (fromDash) return false;
     if (this.buf.taunt > 0) { this.buf.taunt = 0; this.state = 'taunt'; this.t = 0; this.vx = 0; this.stats.taunts++; M.audio.play('taunt'); return true; }
-    if (dashF) { this.state = 'dash'; this.t = 0; this.vx = this.def.stats.dashV * this.mods.speed * this.facing; G.dust(this); M.audio.play('dash'); return true; }
+    if (dashF) { this.state = 'dash'; this.t = 0; this.vx = this.def.stats.dashV * this.mods.speed * (this.lag > 0 ? 0.65 : 1) * this.facing; G.dust(this); M.audio.play('dash'); return true; }
     if (dashB) { this.state = 'backdash'; this.t = 0; this.vx = -this.def.stats.dashV * 0.8 * this.mods.speed * this.facing; this.invuln = 7; G.dust(this); M.audio.play('dash'); return true; }
     return false;
   }

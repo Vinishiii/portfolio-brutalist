@@ -32,7 +32,7 @@ Variações: agachado + golpe (baixo), frente + forte (comando), golpes no ar, a
 
 ## Modos
 
-- **História** — a Roda do Fogo com Zeca Ventania: tutorial, cinco rodas, patuás, chefe em duas fases e dois finais.
+- **História** — a Roda do Fogo com Zeca Ventania: tutorial, seis rodas, patuás, chefe em duas fases e dois finais.
 
 ## Dinâmica
 
@@ -53,10 +53,10 @@ capoeira-fight-brasil/
   js/util.js           utilitários, paleta, salvamento
   js/audio.js          síntese: berimbau, atabaque, pandeiro, agogô, efeitos, torcida
   js/input.js          teclado, toque, gamepad, dash
-  js/fighters.js       os sete lutadores: stats, visual, frame data
+  js/fighters.js       os oito lutadores: stats, visual, frame data
   js/poses.js          rig esquelético e poses
   js/render.js         desenho xilogravura, projéteis, efeitos
-  js/stages.js         sete cenários, torcida, fogueira
+  js/stages.js         oito cenários, torcida, fogueira
   js/fighter.js        máquina de estados do lutador
   js/ai.js             IA por intenção e personalidade
   js/game.js           partida: rodadas, Energia, colisões, chefe, tutorial, HUD

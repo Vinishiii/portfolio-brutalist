@@ -89,7 +89,7 @@ M.ui = (function () {
     const cur = M.store.data.settings.difficulty;
     show(`<div class="screen center"><div class="panel">
       <h2>A RODA DO FOGO</h2>
-      <p>Sete rodas numa noite. Entre cada vitória você escolhe um <b>patuá</b>. Caiu? Levanta e tenta de novo.</p>
+      <p>Oito rodas numa noite. Entre cada vitória você escolhe um <b>patuá</b>. Caiu? Levanta e tenta de novo.</p>
       <p class="label">Escolha a dificuldade</p>
       <div class="row">
         <button class="mi diff ${cur === 'novato' ? 'sel' : ''}" data-go="novato">NOVATO<small>a roda vai com calma</small></button>
