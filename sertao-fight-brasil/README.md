@@ -49,7 +49,8 @@ Variações: agachado + golpe (baixo), frente + forte (comando), dash + forte (g
 - **Fôlego**: K+L gasta 25% de Energia por um especial reforçado (dano, armadura, projétil duplo).
 - **Mobilidade**: corrida, dash aéreo, super pulo, pulo na parede e rolamento ao levantar.
 - **No Compasso**: acertar na batida da zabumba dobra a Energia. Bené Sanfona toca para alargar sua própria janela.
-- **Versus** — dois jogadores no mesmo teclado.
+- **Versus CPU** — você contra a máquina, escolhendo o adversário e a dificuldade.
+- **Versus 2 jogadores** — dois no mesmo teclado.
 - **Treino** — boneco configurável (parado, defende, pula, CPU).
 - **Rinha Livre** — liberado ao terminar a História: a rinha inteira com qualquer lutador.
 

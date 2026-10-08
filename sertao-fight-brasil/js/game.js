@@ -602,7 +602,7 @@ M.Match = class Match {
         wrapText(ctx, step.text, W / 2, 440, W - 300, 17, C.ink);
       }
     }
-    if (this.mode === 'training' && this.phase === 'fight') M.text(ctx, 'TREINO LIVRE — ESC: boneco e opções', W / 2, 92, { size: 13, color: C.paper, lw: 2.5 });
+    if (this.mode === 'training' && this.phase === 'fight') { const lbl = { stand: 'PARADO', block: 'DEFENDE', jump: 'PULA', cpu: 'LUTA (CPU)' }[this.dummyMode] || this.dummyMode; M.text(ctx, 'TREINO — BONECO: ' + lbl + '  (ESC pra mudar)', W / 2, 92, { size: 13, color: this.dummyMode === 'stand' && this.frame % 60 < 40 ? C.yellow : C.paper, lw: 2.5 }); }
     if (this.phase === 'fight' && this.frame < 240 && this.mode !== 'training' && !this.tutorial && this.p1.ctrl === 'human') { }
   }
 };

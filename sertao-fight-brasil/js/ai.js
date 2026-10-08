@@ -5,7 +5,7 @@
 // ============================================================
 M.AI = (function () {
   const PROFILES = {
-    novato: { react: 0.1, think: 24, aggro: 0.3, block: 0.3, dodge: 0.04, combo: 0.2, mistake: 0.3, antiair: 0.15, superUse: 0.35 },
+    novato: { react: 0.1, think: 20, aggro: 0.4, block: 0.3, dodge: 0.04, combo: 0.25, mistake: 0.15, antiair: 0.15, superUse: 0.35 },
     brabo: { react: 0.42, think: 12, aggro: 0.55, block: 0.6, dodge: 0.25, combo: 0.6, mistake: 0.08, antiair: 0.55, superUse: 0.7 },
     lendario: { react: 0.72, think: 7, aggro: 0.72, block: 0.8, dodge: 0.45, combo: 0.9, mistake: 0.02, antiair: 0.8, superUse: 0.9 }
   };
@@ -42,10 +42,10 @@ M.AI = (function () {
     if (oppStunned && dist < 150 && Math.random() < p.combo) return set(ai, 'combo', 36);
     if (oppDown) { if (dist > 220) return set(ai, 'approach', 20); if (Math.random() < 0.12 * (1 - p.aggro) && dist > 160) return set(ai, 'taunt', 60); return set(ai, 'wait', 16); }
     const w = [];
-    if (dist > 340) { w.push(['approach', 0.5 + pers.rush * 0.6]); w.push(['dashIn', pers.rush * 0.5]); w.push(['projectile', pers.zone * 2.2]); w.push(['jumpIn', pers.air]); w.push(['wait', 0.3]); }
-    else if (dist > 175) { w.push(['approach', 0.4 + pers.rush * 0.5]); w.push(['projectile', pers.zone]); w.push(['jumpIn', pers.air * 1.3]); w.push(['poke', pers.poke * 0.8]); w.push(['wait', 0.35]); w.push(['retreat', pers.zone * 0.8]); w.push(['dashIn', pers.rush * 0.6]); w.push(['trap', pers.zone * 0.6]); }
-    else { w.push(['attack', 0.7 + pers.rush * 0.7 + p.aggro * 0.5]); w.push(['grab', pers.grab * 1.8 + (opp.held.back ? 0.5 : 0.15)]); w.push(['block', 0.35 * (1 - p.aggro)]); w.push(['retreat', 0.2 + pers.zone * 0.6]); w.push(['poke', pers.poke * 0.5]); w.push(['jumpIn', pers.air * 0.5]); }
-    if (Math.random() < p.mistake) w.push(['wait', 2.5]);
+    if (dist > 340) { w.push(['approach', 0.5 + pers.rush * 0.6]); w.push(['dashIn', pers.rush * 0.5]); w.push(['projectile', pers.zone * 2.2]); w.push(['jumpIn', pers.air]); w.push(['wait', 0.12]); }
+    else if (dist > 175) { w.push(['approach', 0.4 + pers.rush * 0.5]); w.push(['projectile', pers.zone]); w.push(['jumpIn', pers.air * 1.3]); w.push(['poke', pers.poke * 0.8]); w.push(['wait', 0.18]); w.push(['retreat', pers.zone * 0.8]); w.push(['dashIn', pers.rush * 0.6]); w.push(['trap', pers.zone * 0.6]); }
+    else { w.push(['attack', 0.7 + pers.rush * 0.7 + p.aggro * 0.5]); w.push(['grab', pers.grab * 1.2 + (opp.held.back ? 0.5 : 0.15)]); w.push(['block', 0.35 * (1 - p.aggro)]); w.push(['retreat', 0.2 + pers.zone * 0.6]); w.push(['poke', pers.poke * 0.5]); w.push(['jumpIn', pers.air * 0.5]); }
+    if (Math.random() < p.mistake) w.push(['wait', 1.2]);
     return set(ai, weighted(w), 18);
   }
 

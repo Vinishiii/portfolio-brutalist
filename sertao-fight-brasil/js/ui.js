@@ -71,7 +71,8 @@ M.ui = (function () {
         <nav>
           ${cont ? `<button class="mi" data-go="cont">CONTINUAR HISTÓRIA <small>luta ${d.story.idx + 1}/${M.STORY.fights.length}</small></button>` : ''}
           <button class="mi" data-go="story">${cont ? 'NOVA ' : ''}HISTÓRIA <small>a Rinha do Fogo, com Zeca Ventania</small></button>
-          <button class="mi" data-go="versus">VERSUS <small>2 jogadores no mesmo teclado</small></button>
+          <button class="mi" data-go="cpu">VERSUS CPU <small>você contra a máquina, escolha o adversário</small></button>
+          <button class="mi" data-go="versus">VERSUS 2 JOGADORES <small>dois no mesmo teclado</small></button>
           <button class="mi" data-go="training">TREINO <small>pratique golpes e combos</small></button>
           <button class="mi ${free ? '' : 'locked'}" data-go="free">RINHA LIVRE <small>${free ? 'enfrente toda a rinha com qualquer lutador' : 'vença a História para liberar'}</small></button>
           <button class="mi" data-go="howto">COMO JOGAR</button>
@@ -84,7 +85,7 @@ M.ui = (function () {
       </div>
     </div>`, {
       actions: {
-        cont: () => M.flow.continueStory(), story: () => storyStart(), versus: () => charselect({ players: 2, mode: 'versus' }),
+        cont: () => M.flow.continueStory(), story: () => storyStart(), versus: () => charselect({ players: 2, mode: 'versus' }), cpu: () => charselect({ players: 2, mode: 'cpu' }),
         training: () => charselect({ players: 1, mode: 'training' }), free: () => { if (free) charselect({ players: 1, mode: 'free' }); else M.audio.play('uiBack'); },
         howto: () => howto(menu), options: () => options(menu), credits: () => credits()
       }
@@ -190,7 +191,7 @@ M.ui = (function () {
     const roster = M.ROSTER;
     const sel = { p1: 0, p2: 1, stage: 0, step: 1 };
     const stages = ['aleatorio'].concat(M.stages.order);
-    const modeName = { versus: 'VERSUS', training: 'TREINO', free: 'RINHA LIVRE' }[o.mode];
+    const modeName = { versus: 'VERSUS 2P', cpu: 'VERSUS CPU', training: 'TREINO', free: 'RINHA LIVRE' }[o.mode];
     show(`<div class="screen cs">
       <div class="cs-head"><span class="stamp">${modeName}</span><span id="csTurn" class="cs-turn"></span><button class="btn ghost" data-go="back">◂ voltar</button></div>
       <div class="cs-main">
@@ -201,7 +202,7 @@ M.ui = (function () {
       <div class="cs-foot">
         <div class="cs-stage"><span>CENÁRIO</span><button class="btn small" data-go="stPrev">◂</button><b id="csStage"></b><button class="btn small" data-go="stNext">▸</button></div>
         ${o.mode !== 'versus' ? `<div class="cs-stage"><span>DIFICULDADE</span><button class="btn small" data-go="dfPrev">◂</button><b id="csDiff"></b><button class="btn small" data-go="dfNext">▸</button></div>` : ''}
-        <div class="cs-hint">P1: WASD + J confirma • K volta${o.players === 2 ? ' • P2: setas + Num1 ou vírgula' : ''}</div>
+        <div class="cs-hint">P1: WASD + J confirma • K volta${o.players === 2 && o.mode !== 'cpu' ? ' • P2: setas + Num1 ou vírgula' : ''}</div>
         <button class="btn primary" data-go="go" id="csGo">LUTAR!</button>
       </div>
     </div>`, {
@@ -238,8 +239,8 @@ M.ui = (function () {
       grid.querySelectorAll('.cs-card').forEach((el, i) => { el.classList.toggle('c1', i === sel.p1); el.classList.toggle('c2', o.players === 2 && i === sel.p2 && sel.step === 2 || (o.players === 2 && sel.step === 3 && i === sel.p2)); });
       info(document.getElementById('csInfo1'), sel.p1, 'JOGADOR 1');
       const i2 = document.getElementById('csInfo2');
-      if (o.players === 2) info(i2, sel.p2, sel.step >= 2 ? 'JOGADOR 2' : 'JOGADOR 2 (aguardando)'); else i2.innerHTML = `<div class="cs-label">${o.mode === 'free' ? 'A RINHA INTEIRA' : 'BONECO / CPU'}</div><p>${o.mode === 'free' ? 'Você enfrenta os outros cinco em ordem aleatória e o Mestre por último. Garrafada a cada vitória.' : 'No treino, o oponente começa parado. Pause (ESC) para mudar o comportamento do boneco.'}</p>`;
-      document.getElementById('csTurn').textContent = o.players === 2 ? (sel.step === 1 ? 'JOGADOR 1 ESCOLHE' : sel.step === 2 ? 'JOGADOR 2 ESCOLHE' : 'PRONTO!') : '';
+      if (o.players === 2) info(i2, sel.p2, o.mode === 'cpu' ? 'ADVERSÁRIO (CPU)' : (sel.step >= 2 ? 'JOGADOR 2' : 'JOGADOR 2 (aguardando)')); else i2.innerHTML = `<div class="cs-label">${o.mode === 'free' ? 'A RINHA INTEIRA' : 'BONECO / CPU'}</div><p>${o.mode === 'free' ? 'Você enfrenta os outros cinco em ordem aleatória e o Mestre por último. Garrafada a cada vitória.' : 'No treino, o oponente começa parado. Pause (ESC) para mudar o comportamento do boneco.'}</p>`;
+      document.getElementById('csTurn').textContent = o.players === 2 ? (sel.step === 1 ? (o.mode === 'cpu' ? 'ESCOLHA SEU LUTADOR' : 'JOGADOR 1 ESCOLHE') : sel.step === 2 ? (o.mode === 'cpu' ? 'ESCOLHA O ADVERSÁRIO (CPU)' : 'JOGADOR 2 ESCOLHE') : 'PRONTO!') : '';
       document.getElementById('csStage').textContent = stages[sel.stage] === 'aleatorio' ? 'Aleatório' : M.stages.DEFS[stages[sel.stage]].name;
       const dEl = document.getElementById('csDiff'); if (dEl) dEl.textContent = diffLabel(M.store.data.settings.difficulty);
     }

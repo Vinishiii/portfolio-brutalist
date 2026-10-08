@@ -140,7 +140,7 @@
       bio: 'Sanfoneiro e lutador de Caruaru. Foi o Mestre Cinzas quem lhe ensinou a lutar, e foi ele quem ensinou o Mestre a escutar. O fole marca o compasso da rinha — e quebra guarda. Todo golpe tem hora certa, e Bené sempre sabe qual é.',
       quote: 'Golpe fora do baião é só barulho.', winQuote: 'Isso é que é baião!',
       colors: { skin: '#6b4a30', torso: '#fff8e8', arms: '#6b4a30', legs: '#1c4e9c', shoes: '#fff8e8', accent: '#f2b70c', hair: '#141210' },
-      hair: 'cap', prop: 'sanfona', idle: 'bounce', idleOver: { na: [38, 110], fa: [30, 105] }, body: { height: 1.02, build: 0.98 }, details: ['necklace', 'stripe', 'kerchief'],
+      hair: 'cap', prop: 'sanfona', idle: 'bounce', idleOver: { na: [38, 110], fa: [30, 105] }, body: { height: 1.02, build: 0.98 }, details: ['necklace', 'stripe', 'kerchief', 'suspenders'],
       stats: { hp: 980, speed: 3.1, jumpV: -13, weight: 0.95, dashV: 9.5, airSpeed: 3.2, maxJumps: 1 },
       superName: 'Baião de Dois', superDesc: 'Acelera o fole: uma sequência em que todo golpe cai no compasso.',
       ai: { zone: 0.2, air: 0.25, grab: 0, rush: 0.45, poke: 0.8 },

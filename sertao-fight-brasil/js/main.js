@@ -74,7 +74,9 @@
     },
     startFromSelect(sel) {
       const diff = M.store.data.settings.difficulty;
-      if (sel.mode === 'versus') {
+      if (sel.mode === 'cpu') {
+        flow.startMatch({ mode: 'versus', p1: { id: sel.p1, ctrl: 'human' }, p2: { id: sel.p2, ctrl: 'cpu' }, stage: sel.stage, rounds: 2, timer: 99, difficulty: diff, onEnd: r => flow.versusEnd(r, sel) });
+      } else if (sel.mode === 'versus') {
         flow.startMatch({ mode: 'versus', p1: { id: sel.p1, ctrl: 'human' }, p2: { id: sel.p2, ctrl: 'human' }, stage: sel.stage, rounds: 2, timer: 99, onEnd: r => flow.versusEnd(r, sel) });
       } else if (sel.mode === 'training') {
         flow.startMatch({ mode: 'training', p1: { id: sel.p1, ctrl: 'human' }, p2: { id: sel.p2, ctrl: 'dummy' }, stage: sel.stage, rounds: 99, timer: 0, difficulty: diff, dummy: 'stand', onEnd: () => M.ui.menu() });
@@ -85,7 +87,7 @@
     },
     versusEnd(r, sel) {
       M.state = 'results';
-      M.ui.results({ result: r, buttons: [{ id: 'again', label: 'REVANCHE', fn: () => flow.startFromSelect(sel) }, { id: 'change', label: 'TROCAR LUTADORES', fn: () => { M.match = null; M.ui.charselect({ players: 2, mode: 'versus' }); } }, { id: 'menu', label: 'MENU', fn: () => M.ui.menu() }] });
+      M.ui.results({ result: r, buttons: [{ id: 'again', label: 'REVANCHE', fn: () => flow.startFromSelect(sel) }, { id: 'change', label: 'TROCAR LUTADORES', fn: () => { M.match = null; M.ui.charselect({ players: 2, mode: sel.mode }); } }, { id: 'menu', label: 'MENU', fn: () => M.ui.menu() }] });
     },
     // ---- rinha livre ----
     freeFight() {
