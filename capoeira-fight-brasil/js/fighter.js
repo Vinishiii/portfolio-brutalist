@@ -21,7 +21,7 @@ M.Fighter = class Fighter {
     this.held = { fwd: false, back: false, down: false, up: false };
     this.launched = false; this.kdPending = false; this.hurtKind = 'hi'; this.extraRec = 0;
     this.superFlash = 0; this.armorNow = false; this.throwing = null; this.threw = false; this.throwT = 0;
-    this.forwardDodge = false; this.poseFrom = M.poses.S.idle; this.moveHit = false; this.spawned = false; this.counterWin = 0; this.ritmo = 0; this.superBoost = 1; this.lag = 0;
+    this.forwardDodge = false; this.poseFrom = M.poses.S.idle; this.moveHit = false; this.spawned = false; this.counterWin = 0; this.ritmo = 0; this.superBoost = 1; this.lag = 0; this.backAt = -99; this.arretado = false;
     this.hitIds = new Set(); this.hitCount = 0; this.lastHitFrame = -99; this.dodgedBy = null;
     this.stats = this.stats || { hits: 0, blocks: 0, perfect: 0, supers: 0, taunts: 0, jumps: 0, landed: {}, dmg: 0 };
     this.updatePose();
@@ -70,6 +70,7 @@ M.Fighter = class Fighter {
     h.fwd = this.facing === 1 ? inp.held.right : inp.held.left;
     h.back = this.facing === 1 ? inp.held.left : inp.held.right;
     h.down = inp.held.down; h.up = inp.held.up;
+    if (h.back && !this.wasBack) this.backAt = G.frame; this.wasBack = h.back;
     const dashF = this.facing === 1 ? inp.dashRight : inp.dashLeft;
     const dashB = this.facing === 1 ? inp.dashLeft : inp.dashRight;
     if (this.invuln > 0) this.invuln--;

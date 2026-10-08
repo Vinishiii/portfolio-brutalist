@@ -65,7 +65,7 @@ nav { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
 .logo h1 { font-family: var(--display); font-size: 96px; line-height: .9; margin: 0; color: var(--paper); -webkit-text-stroke: 3px var(--ink); text-shadow: 6px 6px 0 var(--ink), 12px 12px 0 var(--red); letter-spacing: 2px; transform: rotate(-2deg); }
 .logo.small h1 { font-size: 46px; text-shadow: 4px 4px 0 var(--ink), 8px 8px 0 var(--red); }
 .logo h1 em { font-style: normal; color: var(--yellow); font-size: .62em; letter-spacing: 6px; display: block; }
-.logo.small h1 em { display: inline; font-size: .8em; letter-spacing: 2px; }
+.logo.small h1 { font-size: 44px; line-height: 1.05; } .logo.small h1 em { display: block; font-size: .6em; letter-spacing: 5px; margin-top: 8px; text-shadow: 3px 3px 0 var(--ink); }
 .logo-top, .logo-sub { display: block; font-family: var(--display); letter-spacing: 4px; font-size: 14px; color: var(--yellow); text-shadow: 2px 2px 0 var(--ink); }
 .logo-top { margin-bottom: 6px; }
 .logo-sub { margin-top: 10px; }

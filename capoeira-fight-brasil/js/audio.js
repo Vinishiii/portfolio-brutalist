@@ -117,34 +117,50 @@ M.audio = (function () {
   function stab(when, freqs, dur = 0.22) { freqs.forEach(f => tone({ when, freq: f, dur, vol: 0.055, type: 'sawtooth', dest: musicBus, filter: { type: 'lowpass', freq: 1800, freqEnd: 400 } })); }
   function pad(when, freqs, dur = 1.6) { freqs.forEach(f => tone({ when, freq: f, dur, vol: 0.035, type: 'triangle', attack: 0.4, dest: musicBus, vibrato: 5, vibDepth: 3 })); }
 
-  // ---------- padrões (32 passos = 2 compassos de 4/4 em semicolcheias) ----------
+  // ---------- instrumentos nordestinos ----------
+  function zabumba(when, kind) {
+    if (kind === 'B') { tone({ when, freq: 95, freqEnd: 42, dur: 0.32, vol: 0.6, type: 'sine', dest: musicBus }); noise({ when, dur: 0.04, type: 'lowpass', freq: 700, vol: 0.22, dest: musicBus }); }
+    else { noise({ when, dur: 0.05, type: 'highpass', freq: 2500, vol: 0.18, dest: musicBus }); tone({ when, freq: 420, freqEnd: 200, dur: 0.05, vol: 0.12, type: 'triangle', dest: musicBus }); }
+  }
+  function triangulo(when, open) {
+    tone({ when, freq: 2640, dur: open ? 0.35 : 0.07, vol: 0.05, type: 'square', dest: musicBus, filter: { type: 'bandpass', freq: 5200, Q: 6 } });
+    tone({ when, freq: 3960, dur: open ? 0.3 : 0.06, vol: 0.03, type: 'sine', dest: musicBus });
+    noise({ when, dur: 0.03, type: 'highpass', freq: 7000, vol: 0.05, dest: musicBus });
+  }
+  function sanfona(when, freqs, dur = 0.26, vol = 0.06, dest) {
+    freqs.forEach(f => { for (const dt of [-7, 7]) tone({ when, freq: f, detune: dt, dur, vol, type: 'sawtooth', attack: 0.02, dest: dest || musicBus, filter: { type: 'bandpass', freq: 1400, Q: 0.9 } }); });
+  }
+  function pifano(when, freq, dur = 0.3, vol = 0.07, dest) { tone({ when, freq, dur, vol, type: 'triangle', attack: 0.03, vibrato: 6, vibDepth: 6, dest: dest || musicBus }); tone({ when, freq: freq * 2, dur, vol: vol * 0.25, type: 'sine', dest: dest || musicBus }); }
+
+  // ---------- padrões (32 passos = 2 compassos de 4/4 em semicolcheias; baião em 2/4 = 8 passos) ----------
   const _ = null;
   const PAT = {
     fight: {
-      bpm: 100,
-      berimbau: ['B', _, 'L', _, 'H', _, _, _, 'B', _, 'L', _, 'H', _, 'H', _, 'B', _, 'L', _, 'H', _, _, _, 'B', _, 'L', 'L', 'H', _, 'L', _],
-      atabaque: ['O', _, _, 'S', _, _, 'O', _, 'O', _, _, 'S', _, _, 'S', _, 'O', _, _, 'S', _, _, 'O', _, 'O', _, 'S', _, 'S', _, 'S', 'S'],
-      pandeiro: ['P', 'p', 'p', 'p', 'P', 'p', 'p', 'p', 'P', 'p', 'p', 'p', 'P', 'p', 'P', 'p', 'P', 'p', 'p', 'p', 'P', 'p', 'p', 'p', 'P', 'p', 'p', 'p', 'P', 'p', 'P', 'P'],
-      agogo: [_, _, _, 'a', _, _, 'A', _, _, _, 'a', _, 'A', _, _, _, _, _, _, 'a', _, _, 'A', _, _, _, 'a', _, 'A', _, 'A', _],
-      bass: [110, _, _, _, _, _, 110, _, _, _, 98, _, _, _, _, _, 110, _, _, _, _, _, 110, _, _, _, 130.8, _, _, _, 123.5, _],
-      stab: [_, _, _, _, _, _, [220, 277, 330], _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, [196, 247, 294], _, _, _, _, _, [261, 329, 392], _, _, _]
+      bpm: 104,
+      zabumba: ['B', _, _, 'B', 'b', _, 'b', _, 'B', _, _, 'B', 'b', _, 'b', _, 'B', _, _, 'B', 'b', _, 'b', _, 'B', _, 'B', 'B', 'b', _, 'b', 'b'],
+      triangulo: ['O', 'x', 'x', 'x', 'O', 'x', 'x', 'x', 'O', 'x', 'x', 'x', 'O', 'x', 'x', 'x', 'O', 'x', 'x', 'x', 'O', 'x', 'x', 'x', 'O', 'x', 'x', 'x', 'O', 'x', 'O', 'x'],
+      sanfona: [[196, 247], _, [220], [247], _, _, [196, 247], _, [174.6, 220], _, [196], [220], _, _, [174.6, 220], _, [196, 247], _, [220], [247], _, _, [293.7, 349.2], _, [261.6, 329.6], _, [247], [220], _, _, [196, 247], _],
+      pifano: [_, _, _, _, _, _, _, _, 392, _, 440, _, 392, _, _, _, _, _, _, _, _, _, _, _, 587.3, _, 523.3, _, 440, _, 392, _],
+      bass: [98, _, _, 98, _, _, 98, _, 87.3, _, _, 87.3, _, _, 87.3, _, 98, _, _, 98, _, _, 98, _, 130.8, _, _, 123.5, _, _, 110, _],
+      stab: []
     },
     menu: {
-      bpm: 84,
-      berimbau: ['B', _, 'L', _, 'H', _, _, _, 'B', _, 'L', _, 'H', _, _, _, 'B', _, 'L', _, 'H', _, _, _, 'B', _, 'L', _, 'H', _, 'L', _],
-      atabaque: ['O', _, _, _, _, _, _, _, 'S', _, _, _, _, _, _, _, 'O', _, _, _, _, _, 'O', _, 'S', _, _, _, _, _, _, _],
-      pandeiro: ['P', _, 'p', _, 'p', _, 'p', _, 'P', _, 'p', _, 'p', _, 'p', _, 'P', _, 'p', _, 'p', _, 'p', _, 'P', _, 'p', _, 'p', _, 'p', _],
-      agogo: [], bass: [], stab: [],
-      pad: [[110, 165, 220], _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, [98, 147, 196], _, _, _, _, _, _, _, _, _, _, _, _, _, _, _]
+      bpm: 92,
+      zabumba: ['B', _, _, 'B', _, _, 'b', _, 'B', _, _, 'B', _, _, 'b', _, 'B', _, _, 'B', _, _, 'b', _, 'B', _, _, 'B', 'b', _, 'b', _],
+      triangulo: ['O', _, 'x', _, 'O', _, 'x', _, 'O', _, 'x', _, 'O', _, 'x', _, 'O', _, 'x', _, 'O', _, 'x', _, 'O', _, 'x', _, 'O', _, 'x', _],
+      sanfona: [[196, 247, 293.7], _, _, _, _, _, _, _, [174.6, 220, 261.6], _, _, _, _, _, _, _, [196, 247, 293.7], _, _, _, _, _, _, _, [146.8, 174.6, 220], _, _, _, [164.8, 196, 246.9], _, _, _],
+      pifano: [], bass: [], stab: [],
+      pad: []
     },
-    boss: { bpm: 112, inherit: 'fight' },
+    boss: { bpm: 114, inherit: 'fight' },
     boss2: { bpm: 128, inherit: 'fight', bassAlways: true, dark: true },
     ending: {
-      bpm: 72,
-      berimbau: ['L', _, _, _, 'H', _, _, _, 'L', _, _, _, 'H', _, _, _, 'L', _, _, _, 'H', _, _, _, 'L', _, 'L', _, 'H', _, _, _],
-      atabaque: ['O', _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, 'O', _, _, _, _, _, _, _, 'S', _, _, _, _, _, _, _],
-      pandeiro: [], agogo: [], bass: [], stab: [],
-      pad: [[131, 196, 262], _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, [110, 165, 220], _, _, _, _, _, _, _, _, _, _, _, _, _, _, _]
+      bpm: 76,
+      zabumba: ['B', _, _, _, _, _, _, _, _, _, _, _, 'b', _, _, _, 'B', _, _, 'B', _, _, _, _, _, _, _, _, 'b', _, _, _],
+      triangulo: ['O', _, _, _, _, _, _, _, 'O', _, _, _, _, _, _, _, 'O', _, _, _, _, _, _, _, 'O', _, _, _, _, _, _, _],
+      sanfona: [[130.8, 164.8, 196], _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, [110, 130.8, 164.8], _, _, _, _, _, _, _, [98, 123.5, 146.8], _, _, _, _, _, _, _],
+      pifano: [_, _, _, _, 392, _, _, _, 440, _, _, _, 392, _, _, _, 329.6, _, _, _, _, _, _, _, 293.7, _, _, _, 261.6, _, _, _],
+      bass: [], stab: [], pad: []
     },
     none: { bpm: 100 }
   };
@@ -169,13 +185,12 @@ M.audio = (function () {
       let p = PAT[this.mode] || PAT.none;
       const base = p.inherit ? PAT[p.inherit] : p;
       const get = k => (base[k] || [])[s];
-      const b = get('berimbau'); if (b) berimbau(t, b);
-      const a = get('atabaque'); if (a) atabaque(t, a);
-      const pd = get('pandeiro'); if (pd) pandeiro(t, pd === 'P');
+      const z = get('zabumba'); if (z) zabumba(t, z);
+      const tr = get('triangulo'); if (tr) triangulo(t, tr === 'O');
       const hot = this.intensity > 0.35 || p.dark;
-      const ag = get('agogo'); if (ag && hot) agogo(t, ag === 'A');
+      const sf = get('sanfona'); if (sf) sanfona(t, p.dark ? sf.map(f => f * 0.5) : sf, this.mode === 'fight' || this.mode === 'boss' || p.dark ? 0.24 : 0.9, this.mode === 'menu' || this.mode === 'ending' ? 0.045 : 0.06);
+      const pf = get('pifano'); if (pf && (hot || this.mode === 'ending')) pifano(t, pf, this.mode === 'ending' ? 0.7 : 0.25);
       const bs = get('bass'); if (bs && (this.intensity > 0.6 || p.bassAlways)) bass(t, p.dark ? bs * 0.5 : bs);
-      const st = get('stab'); if (st && this.intensity > 0.5) stab(t, st);
       const pa = get('pad'); if (pa) pad(t, pa);
       if (p.dark && s % 8 === 0) noise({ when: t, dur: 0.25, type: 'lowpass', freq: 200, vol: 0.12, dest: musicBus });
     },
@@ -212,32 +227,35 @@ M.audio = (function () {
     whoosh: () => noise({ dur: 0.14, type: 'bandpass', freq: 1400, freqEnd: 400, Q: 1.2, vol: 0.22 }),
     whooshH: () => noise({ dur: 0.22, type: 'bandpass', freq: 900, freqEnd: 250, Q: 1, vol: 0.3 }),
     hitL: () => { noise({ dur: 0.08, type: 'lowpass', freq: 1800, vol: 0.45 }); tone({ freq: 170, freqEnd: 60, dur: 0.1, vol: 0.45, type: 'sine' }); },
-    hitH: () => { noise({ dur: 0.15, type: 'lowpass', freq: 1200, vol: 0.65 }); tone({ freq: 125, freqEnd: 38, dur: 0.2, vol: 0.8, type: 'sine' }); tone({ freq: 240, dur: 0.03, vol: 0.3, type: 'square' }); },
+    hitH: () => { noise({ dur: 0.15, type: 'lowpass', freq: 1200, vol: 0.65 }); tone({ freq: 125, freqEnd: 38, dur: 0.2, vol: 0.8, type: 'sine' }); tone({ freq: 240, dur: 0.03, vol: 0.3, type: 'square' }); zabumbaSfx(now(), false); },
     hitS: () => { noise({ dur: 0.25, type: 'lowpass', freq: 900, vol: 0.8, echo: true }); tone({ freq: 100, freqEnd: 30, dur: 0.35, vol: 1, type: 'sine', echo: true }); tone({ freq: 400, freqEnd: 120, dur: 0.08, vol: 0.3, type: 'sawtooth' }); },
     block: () => { tone({ freq: 950, freqEnd: 650, dur: 0.05, vol: 0.28, type: 'triangle' }); noise({ dur: 0.04, type: 'highpass', freq: 3000, vol: 0.18 }); },
-    ko: () => { tone({ freq: 95, freqEnd: 28, dur: 0.7, vol: 1, type: 'sine', echo: true }); noise({ dur: 0.45, type: 'lowpass', freq: 650, vol: 0.6, echo: true }); },
+    ko: () => { tone({ freq: 95, freqEnd: 28, dur: 0.7, vol: 1, type: 'sine', echo: true }); noise({ dur: 0.45, type: 'lowpass', freq: 650, vol: 0.6, echo: true }); sanfona(now() + 0.5, [146.8, 174.6, 220], 1.2, 0.07, sfxBus); },
     dodge: () => noise({ dur: 0.13, type: 'bandpass', freq: 2600, freqEnd: 700, Q: 1.5, vol: 0.18 }),
     perfect: () => { tone({ freq: 660, dur: 0.35, vol: 0.2, type: 'sine', vibrato: 7, vibDepth: 10, echo: true }); tone({ freq: 990, dur: 0.35, vol: 0.14, type: 'sine', vibrato: 7, vibDepth: 10, echo: true }); tone({ freq: 1320, dur: 0.5, vol: 0.08, type: 'triangle', echo: true }); cheer(0.8); },
-    super: () => { [220, 277, 330, 440].forEach((f, i) => tone({ freq: f, dur: 0.6, vol: 0.14, type: 'sawtooth', filter: { type: 'lowpass', freq: 2500, freqEnd: 300 }, when: now() + i * 0.015, echo: true })); noise({ dur: 0.4, type: 'bandpass', freq: 600, freqEnd: 2000, vol: 0.25 }); },
+    super: () => { sanfona(now(), [220, 277, 330, 440], 0.7, 0.12, sfxBus); zabumbaSfx(now(), true); zabumbaSfx(now() + 0.18, true); noise({ dur: 0.4, type: 'bandpass', freq: 600, freqEnd: 2000, vol: 0.25 }); },
     fire: () => { noise({ dur: 0.3, type: 'bandpass', freq: 800, Q: 0.7, vol: 0.3 }); noise({ dur: 0.12, type: 'highpass', freq: 4000, vol: 0.1 }); },
     water: () => { noise({ dur: 0.35, type: 'bandpass', freq: 1600, freqEnd: 300, Q: 0.8, vol: 0.3 }); tone({ freq: 320, freqEnd: 110, dur: 0.25, vol: 0.12, type: 'sine' }); },
     grab: () => { noise({ dur: 0.1, type: 'lowpass', freq: 900, vol: 0.4 }); tone({ freq: 200, freqEnd: 120, dur: 0.1, vol: 0.2, type: 'triangle' }); },
-    taunt: () => { [196, 220, 196].forEach((f, i) => tone({ freq: f, dur: 0.18, vol: 0.14, type: 'triangle', when: now() + i * 0.12, filter: { type: 'bandpass', freq: f * 2.2, Q: 2 } })); },
+    taunt: () => { sanfona(now(), [196, 247, 293.7], 0.22, 0.09, sfxBus); sanfona(now() + 0.2, [220, 277, 330], 0.3, 0.09, sfxBus); },
+    aboio: () => { tone({ freq: 330, freqEnd: 262, dur: 0.9, vol: 0.22, type: 'sawtooth', attack: 0.08, vibrato: 5.5, vibDepth: 12, filter: { type: 'bandpass', freq: 900, freqEnd: 600, Q: 2.5 }, echo: true }); tone({ freq: 660, freqEnd: 524, dur: 0.9, vol: 0.06, type: 'triangle', attack: 0.1, vibrato: 5.5, vibDepth: 10 }); },
+    fogos: () => { noise({ dur: 0.35, type: 'bandpass', freq: 1200, freqEnd: 300, Q: 0.8, vol: 0.25, echo: true }); tone({ freq: 1800, freqEnd: 400, dur: 0.25, vol: 0.06, type: 'sine' }); },
     jump: () => tone({ freq: 280, freqEnd: 520, dur: 0.09, vol: 0.09, type: 'sine' }),
     land: () => noise({ dur: 0.06, type: 'lowpass', freq: 500, vol: 0.2 }),
     dash: () => noise({ dur: 0.1, type: 'bandpass', freq: 1000, freqEnd: 300, vol: 0.14 }),
     projectile: () => { tone({ freq: 420, freqEnd: 180, dur: 0.18, vol: 0.14, type: 'sine' }); noise({ dur: 0.15, type: 'bandpass', freq: 1200, freqEnd: 500, vol: 0.14 }); },
     burn: () => noise({ dur: 0.1, type: 'bandpass', freq: 2200, vol: 0.14 }),
-    axe: () => { tone({ freq: 440, freqEnd: 880, dur: 0.14, vol: 0.12, type: 'sine' }); },
+    axe: () => { tone({ freq: 2640, dur: 0.3, vol: 0.09, type: 'square', filter: { type: 'bandpass', freq: 5200, Q: 6 } }); tone({ freq: 3960, dur: 0.25, vol: 0.05, type: 'sine' }); },
     counter: () => { tone({ freq: 1200, freqEnd: 300, dur: 0.12, vol: 0.2, type: 'square', filter: { type: 'lowpass', freq: 3000 } }); },
     armor: () => { tone({ freq: 150, dur: 0.12, vol: 0.3, type: 'square', filter: { type: 'lowpass', freq: 600 } }); noise({ dur: 0.08, type: 'highpass', freq: 2500, vol: 0.12 }); },
-    roundStart: () => { [0, 0.11, 0.2, 0.27, 0.32].forEach((d, i) => atabaqueSfx(now() + d, i === 4)); cheer(1); },
-    win: () => { [262, 330, 392, 523, 659].forEach((f, i) => tone({ freq: f, dur: 0.35, vol: 0.14, type: 'square', when: now() + i * 0.09, filter: { type: 'lowpass', freq: 2200 }, echo: true })); cheer(1.4); },
+    roundStart: () => { [0, 0.11, 0.2, 0.27, 0.32].forEach((d, i) => zabumbaSfx(now() + d, i === 4)); tone({ freq: 2640, dur: 0.4, vol: 0.08, type: 'square', when: now() + 0.32, filter: { type: 'bandpass', freq: 5200, Q: 6 } }); cheer(1); },
+    win: () => { [392, 440, 494, 587, 659, 784].forEach((f, i) => pifano(now() + i * 0.11, f, 0.32, 0.12, sfxBus)); sanfona(now() + 0.66, [196, 247, 293.7, 392], 0.9, 0.08, sfxBus); zabumbaSfx(now() + 0.66, true); cheer(1.4); },
     lose: () => { [330, 294, 262, 196].forEach((f, i) => tone({ freq: f, dur: 0.45, vol: 0.12, type: 'triangle', when: now() + i * 0.22, echo: true })); },
     dark: () => { tone({ freq: 60, freqEnd: 30, dur: 2.2, vol: 0.5, type: 'sine', echo: true }); noise({ dur: 1.6, type: 'lowpass', freq: 300, vol: 0.3, attack: 0.3 }); },
     patua: () => { [523, 659, 784, 1047].forEach((f, i) => tone({ freq: f, dur: 0.4, vol: 0.1, type: 'triangle', when: now() + i * 0.07, echo: true })); },
     type: () => tone({ freq: 1400 + Math.random() * 600, dur: 0.02, vol: 0.03, type: 'square' }),
   };
+  function zabumbaSfx(when, big) { tone({ when, freq: big ? 95 : 160, freqEnd: big ? 40 : 70, dur: big ? 0.4 : 0.14, vol: big ? 0.6 : 0.3, type: 'sine' }); noise({ when, dur: 0.04, type: 'lowpass', freq: 800, vol: 0.2 }); }
   function atabaqueSfx(when, big) { tone({ when, freq: big ? 150 : 300, freqEnd: big ? 50 : 120, dur: big ? 0.4 : 0.1, vol: big ? 0.6 : 0.3, type: 'sine' }); noise({ when, dur: 0.04, type: 'lowpass', freq: 900, vol: 0.2 }); }
 
   function play(name) { if (!A.ctx || !A.settings.sfx) return; const f = SFX[name]; if (f) try { f(); } catch (e) { /* ignora */ } }

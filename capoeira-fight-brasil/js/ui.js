@@ -1,6 +1,6 @@
 'use strict';
 // ============================================================
-// UI — telas em DOM (menus, seleção, diálogos, patuás, finais)
+// UI — telas em DOM (menus, seleção, diálogos, garrafadas, finais)
 // ============================================================
 M.ui = (function () {
   let root, current = null, items = [], idx = 0, typing = null;
@@ -54,7 +54,7 @@ M.ui = (function () {
   // ---------- TÍTULO ----------
   function title() {
     show(`<div class="screen title">
-      <div class="logo"><span class="logo-top">A RODA NUNCA PARA</span><h1>CAPOEIRA<br><em>FIGHT BRASIL</em></h1><span class="logo-sub">UM JOGO DE LUTA EM XILOGRAVURA</span></div>
+      <div class="logo"><span class="logo-top">A RINHA NUNCA PARA</span><h1>CAPOEIRA<br><em>FIGHT BRASIL</em></h1><span class="logo-sub">UM JOGO DE LUTA EM XILOGRAVURA</span></div>
       <p class="blink">PRESSIONE QUALQUER TECLA • TOQUE NA TELA</p>
       <p class="tiny">v${M.VERSION} • teclado, toque ou controle</p>
     </div>`, { onKey: () => { M.audio.init(); menu(); return true; } });
@@ -67,19 +67,19 @@ M.ui = (function () {
     const d = M.store.data; const cont = d.story && d.story.idx > 0 && d.story.idx < M.STORY.fights.length;
     const free = d.progress.storyDone;
     show(`<div class="screen menu">
-      <div class="menu-left"><div class="logo small"><h1>CAPOEIRA <em>FIGHT BRASIL</em></h1><span class="logo-sub">A RODA NUNCA PARA</span></div>
+      <div class="menu-left"><div class="logo small"><h1>CAPOEIRA <em>FIGHT BRASIL</em></h1><span class="logo-sub">A RINHA NUNCA PARA</span></div>
         <nav>
           ${cont ? `<button class="mi" data-go="cont">CONTINUAR HISTÓRIA <small>luta ${d.story.idx + 1}/${M.STORY.fights.length}</small></button>` : ''}
-          <button class="mi" data-go="story">${cont ? 'NOVA ' : ''}HISTÓRIA <small>a Roda do Fogo, com Zeca Ventania</small></button>
+          <button class="mi" data-go="story">${cont ? 'NOVA ' : ''}HISTÓRIA <small>a Rinha do Fogo, com Zeca Ventania</small></button>
           <button class="mi" data-go="versus">VERSUS <small>2 jogadores no mesmo teclado</small></button>
           <button class="mi" data-go="training">TREINO <small>pratique golpes e combos</small></button>
-          <button class="mi ${free ? '' : 'locked'}" data-go="free">RODA LIVRE <small>${free ? 'enfrente toda a roda com qualquer lutador' : 'vença a História para liberar'}</small></button>
+          <button class="mi ${free ? '' : 'locked'}" data-go="free">RINHA LIVRE <small>${free ? 'enfrente toda a rinha com qualquer lutador' : 'vença a História para liberar'}</small></button>
           <button class="mi" data-go="howto">COMO JOGAR</button>
           <button class="mi" data-go="options">OPÇÕES</button>
           <button class="mi" data-go="credits">CRÉDITOS</button>
         </nav></div>
       <div class="menu-right"><div class="stamp">${free ? 'GUARDIÃO DA BRASA' : 'PORTO BRABO, BA'}</div>
-        <p class="pitch">Quem tem <b>Energia</b> manda na roda.<br>O público é a barra de poder — e ele escolhe quem merece a Mandinga.</p>
+        <p class="pitch">Quem tem <b>Energia</b> manda na rinha.<br>O público é a barra de poder — e ele escolhe quem merece a Peia.</p>
         ${d.progress.bestTime ? `<p class="tiny">Melhor História: ${M.fmtTime(d.progress.bestTime)} • Finais vistos: ${d.progress.endings.length}/2</p>` : ''}
       </div>
     </div>`, {
@@ -93,13 +93,13 @@ M.ui = (function () {
   function storyStart() {
     const cur = M.store.data.settings.difficulty;
     show(`<div class="screen center"><div class="panel">
-      <h2>A RODA DO FOGO</h2>
-      <p>Oito rodas numa noite. Entre cada vitória você escolhe um <b>patuá</b>. Caiu? Levanta e tenta de novo.</p>
+      <h2>A RINHA DO FOGO</h2>
+      <p>Oito rinhas numa noite. Entre cada vitória você escolhe um <b>garrafada</b>. Caiu? Levanta e tenta de novo.</p>
       <p class="label">Escolha a dificuldade</p>
       <div class="row">
-        <button class="mi diff ${cur === 'novato' ? 'sel' : ''}" data-go="novato">NOVATO<small>a roda vai com calma</small></button>
+        <button class="mi diff ${cur === 'novato' ? 'sel' : ''}" data-go="novato">NOVATO<small>a rinha vai com calma</small></button>
         <button class="mi diff ${cur === 'brabo' ? 'sel' : ''}" data-go="brabo">BRABO<small>luta de verdade</small></button>
-        <button class="mi diff ${cur === 'lendario' ? 'sel' : ''}" data-go="lendario">LENDÁRIO<small>a roda não perdoa</small></button>
+        <button class="mi diff ${cur === 'lendario' ? 'sel' : ''}" data-go="lendario">LENDÁRIO<small>a rinha não perdoa</small></button>
       </div>
       <button class="mi back" data-go="back">VOLTAR</button>
     </div></div>`, {
@@ -140,10 +140,10 @@ M.ui = (function () {
     render();
   }
 
-  // ---------- PATUÁ ----------
+  // ---------- GARRAFADA ----------
   function patua(options, onPick) {
     show(`<div class="screen center"><div class="panel wide">
-      <h2>ESCOLHA UM PATUÁ</h2><p>A roda te deu uma lembrança. Escolha uma — ela vale até o fim da noite.</p>
+      <h2>ESCOLHA UM GARRAFADA</h2><p>A rinha te deu uma lembrança. Escolha uma — ela vale até o fim da noite.</p>
       <div class="cards">${options.map(p => `<button class="mi card" data-go="${p.id}"><div class="card-icon">${p.icon}</div><div class="card-name">${esc(p.name)}</div><div class="card-desc">${esc(p.desc)}</div></button>`).join('')}</div>
     </div></div>`, { actions: Object.fromEntries(options.map(p => [p.id, () => { M.audio.play('patua'); onPick(p); }])) });
   }
@@ -161,7 +161,7 @@ M.ui = (function () {
     const r = o.result; const w = r.winner;
     const st = r.stats.p1;
     show(`<div class="screen center"><div class="panel">
-      <div class="stamp">${o.defeat ? 'CAIU NA RODA' : 'VENCEU A RODA'}</div>
+      <div class="stamp">${o.defeat ? 'CAIU NA RINHA' : 'VENCEU A RINHA'}</div>
       <h2>${esc(w.def.name.toUpperCase())}</h2>
       <p class="sub">${esc(w.def.alias)} • ${r.wins[0]} × ${r.wins[1]}</p>
       <div class="stats"><span>Tempo ${M.fmtTime(r.frames / 60)}</span><span>Golpes P1 ${st.hits}</span><span>Esquivas perfeitas ${st.perfect}</span><span>No compasso ${r.beatHits}</span></div>
@@ -175,8 +175,8 @@ M.ui = (function () {
     cordel(E.cordel, E.title, () => {
       show(`<div class="screen center"><div class="panel">
         <div class="stamp">FIM</div><h2>${esc(E.title.replace('FINAL: ', ''))}</h2>
-        <div class="stats"><span>Tempo total ${M.fmtTime(stats.frames / 60)}</span><span>Patuás ${stats.patuas.length}</span><span>Quedas ${stats.deaths}</span><span>Dificuldade ${diffLabel(stats.difficulty)}</span></div>
-        <p class="unlock">✦ MESTRE CINZAS liberado no Versus e no Treino<br>✦ RODA LIVRE liberada</p>
+        <div class="stats"><span>Tempo total ${M.fmtTime(stats.frames / 60)}</span><span>Garrafadas ${stats.patuas.length}</span><span>Quedas ${stats.deaths}</span><span>Dificuldade ${diffLabel(stats.difficulty)}</span></div>
+        <p class="unlock">✦ MESTRE CINZAS liberado no Versus e no Treino<br>✦ RINHA LIVRE liberada</p>
         <p class="tiny">Existe outro final. A Brasa ainda tem uma escolha pra você.</p>
         <nav><button class="mi" data-go="credits">CRÉDITOS</button><button class="mi" data-go="menu">VOLTAR AO MENU</button></nav>
       </div></div>`, { actions: { credits: () => credits(), menu: () => onDone() } });
@@ -190,7 +190,7 @@ M.ui = (function () {
     const roster = M.ROSTER;
     const sel = { p1: 0, p2: 1, stage: 0, step: 1 };
     const stages = ['aleatorio'].concat(M.stages.order);
-    const modeName = { versus: 'VERSUS', training: 'TREINO', free: 'RODA LIVRE' }[o.mode];
+    const modeName = { versus: 'VERSUS', training: 'TREINO', free: 'RINHA LIVRE' }[o.mode];
     show(`<div class="screen cs">
       <div class="cs-head"><span class="stamp">${modeName}</span><span id="csTurn" class="cs-turn"></span><button class="btn ghost" data-go="back">◂ voltar</button></div>
       <div class="cs-main">
@@ -232,13 +232,13 @@ M.ui = (function () {
     function cycleDiff(d) { const L = ['novato', 'brabo', 'lendario']; const s = M.store.data.settings; s.difficulty = L[(L.indexOf(s.difficulty) + d + 3) % 3]; M.store.save(); refresh(); }
     function info(el, i, label) {
       const id = roster[i], f = M.FIGHTERS[id]; const locked = id === 'cinzas' && !unlocked;
-      el.innerHTML = locked ? `<div class="cs-label">${label}</div><h3>???</h3><p>Vença a História para liberar.</p>` : `<div class="cs-label">${label}</div><h3>${esc(f.name)}</h3><p class="alias">${esc(f.alias)} • ${esc(f.origin)}</p><p class="style">${esc(f.style)}</p><p>${esc(f.bio)}</p><p class="super"><b>MANDINGA:</b> ${esc(f.superName)} — ${esc(f.superDesc)}</p>`;
+      el.innerHTML = locked ? `<div class="cs-label">${label}</div><h3>???</h3><p>Vença a História para liberar.</p>` : `<div class="cs-label">${label}</div><h3>${esc(f.name)}</h3><p class="alias">${esc(f.alias)} • ${esc(f.origin)}</p><p class="style">${esc(f.style)}</p><p>${esc(f.bio)}</p><p class="super"><b>PEIA:</b> ${esc(f.superName)} — ${esc(f.superDesc)}</p>`;
     }
     function refresh() {
       grid.querySelectorAll('.cs-card').forEach((el, i) => { el.classList.toggle('c1', i === sel.p1); el.classList.toggle('c2', o.players === 2 && i === sel.p2 && sel.step === 2 || (o.players === 2 && sel.step === 3 && i === sel.p2)); });
       info(document.getElementById('csInfo1'), sel.p1, 'JOGADOR 1');
       const i2 = document.getElementById('csInfo2');
-      if (o.players === 2) info(i2, sel.p2, sel.step >= 2 ? 'JOGADOR 2' : 'JOGADOR 2 (aguardando)'); else i2.innerHTML = `<div class="cs-label">${o.mode === 'free' ? 'A RODA INTEIRA' : 'BONECO / CPU'}</div><p>${o.mode === 'free' ? 'Você enfrenta os outros cinco em ordem aleatória e o Mestre por último. Patuá a cada vitória.' : 'No treino, o oponente começa parado. Pause (ESC) para mudar o comportamento do boneco.'}</p>`;
+      if (o.players === 2) info(i2, sel.p2, sel.step >= 2 ? 'JOGADOR 2' : 'JOGADOR 2 (aguardando)'); else i2.innerHTML = `<div class="cs-label">${o.mode === 'free' ? 'A RINHA INTEIRA' : 'BONECO / CPU'}</div><p>${o.mode === 'free' ? 'Você enfrenta os outros cinco em ordem aleatória e o Mestre por último. Garrafada a cada vitória.' : 'No treino, o oponente começa parado. Pause (ESC) para mudar o comportamento do boneco.'}</p>`;
       document.getElementById('csTurn').textContent = o.players === 2 ? (sel.step === 1 ? 'JOGADOR 1 ESCOLHE' : sel.step === 2 ? 'JOGADOR 2 ESCOLHE' : 'PRONTO!') : '';
       document.getElementById('csStage').textContent = stages[sel.stage] === 'aleatorio' ? 'Aleatório' : M.stages.DEFS[stages[sel.stage]].name;
       const dEl = document.getElementById('csDiff'); if (dEl) dEl.textContent = diffLabel(M.store.data.settings.difficulty);
@@ -274,7 +274,7 @@ M.ui = (function () {
         <button class="mi" data-go="options">OPÇÕES</button>
         <button class="mi" data-go="quit">SAIR PRO MENU</button>
       </nav>
-      <p class="tiny">P1: WASD • J leve • K forte • L especial • H agarrão • ESPAÇO ginga • U mandinga • O provoca</p>
+      <p class="tiny">P1: WASD • J leve • K forte • L especial • H agarrão • ESPAÇO arreda • U peia • O provoca</p>
     </div></div>`, {
       onBack: opts.resume, backLabel: 'CONTINUAR',
       actions: {
@@ -324,24 +324,24 @@ M.ui = (function () {
           <tr><td>Golpe leve</td><td>J</td><td>Num 1 / ,</td></tr>
           <tr><td>Golpe forte</td><td>K</td><td>Num 2 / .</td></tr>
           <tr><td>Especial</td><td>L</td><td>Num 3 / /</td></tr>
-          <tr><td>Ginga (esquiva)</td><td>ESPAÇO</td><td>Num 0 / Shift dir.</td></tr>
-          <tr><td>Mandinga (super)</td><td>U</td><td>Num 5 / '</td></tr>
+          <tr><td>Arreda (esquiva)</td><td>ESPAÇO</td><td>Num 0 / Shift dir.</td></tr>
+          <tr><td>Peia (super)</td><td>U</td><td>Num 5 / '</td></tr>
           <tr><td>Provocar</td><td>O</td><td>Num 4 / ;</td></tr>
           <tr><td>Agarrão</td><td>H (ou J+K)</td><td>Num 6 / ]</td></tr>
           <tr><td>Dash</td><td colspan="2">toque duplo ← ou →</td></tr>
           <tr><td>Pausa</td><td colspan="2">ESC</td></tr></table>
-          <p class="tiny">Controle (gamepad) também funciona: analógico/d-pad, X leve, Y forte, B especial, A ginga, RB mandinga, LB provocar, LT agarrão, Start pausa.</p>
+          <p class="tiny">Controle (gamepad) também funciona: analógico/d-pad, X leve, Y forte, B especial, A arreda, RB peia, LB provocar, LT agarrão, Start pausa.</p>
         </div>
-        <div><h3>A RODA</h3>
-          <p><b>ENERGIA</b> é uma barra só, no meio: o público. Cada golpe, esquiva e provocação puxa a barra pro seu lado. Com 70% ela libera sua <b>MANDINGA</b>.</p>
-          <p><b>VARIAÇÃO</b>: repetir o mesmo golpe cansa a roda e rende pouca Energia. Misture.</p>
-          <p><b>NO COMPASSO</b>: acerte junto com a batida do berimbau (o círculo pulsa) para Energia em dobro.</p>
-          <p><b>GINGA</b>: esquiva com invencibilidade. Esquive no instante do golpe = <b>ESQUIVA PERFEITA</b>, tempo lento, muita Energia e um <b>CONTRA-ATAQUE</b> garantido no próximo golpe. Segurando pra frente, a ginga atravessa o oponente.</p>
+        <div><h3>A RINHA</h3>
+          <p><b>ENERGIA</b> é uma barra só, no meio: o público. Cada golpe, esquiva e provocação puxa a barra pro seu lado. Com 70% ela libera sua <b>PEIA</b>.</p>
+          <p><b>VARIAÇÃO</b>: repetir o mesmo golpe cansa a rinha e rende pouca Energia. Misture.</p>
+          <p><b>NO COMPASSO</b>: acerte junto com a batida da zabumba (o círculo pulsa) para Energia em dobro.</p>
+          <p><b>ARREDA</b>: esquiva com invencibilidade. Esquive no instante do golpe = <b>ESQUIVA PERFEITA</b>, tempo lento, muita Energia e um <b>CONTRA-ATAQUE</b> garantido no próximo golpe. Segurando pra frente, a arreda atravessa o oponente.</p>
           <p><b>DEFESA</b>: segure pra trás. Golpes baixos pedem agachar; golpes altos pedem ficar em pé. Agarrões ignoram defesa.</p>
           <p><b>PROVOCAR</b> dá Energia — se ninguém te bater antes. Risco e recompensa.</p>
-          <p><b>AGARRÃO</b> (H ou J+K): ignora defesa. <b>ESCAPAR</b>: em um combo de 3+ golpes, aperte GINGA gastando 30% de Energia.</p>
-          <p><b>MANDINGA MÁXIMA</b>: com a barra em 100%, a Mandinga causa 30% a mais. Soltar aos 70% ou esperar?</p>
-          <p><b>SEQUÊNCIAS</b>: leve ▸ leve ▸ forte ▸ especial ▸ mandinga, se os golpes acertarem.</p>
+          <p><b>AGARRÃO</b> (H ou J+K): ignora defesa. <b>ESCAPAR</b>: em um combo de 3+ golpes, aperte ARREDA gastando 30% de Energia.</p>
+          <p><b>PEIA BRABA</b>: com a barra em 100%, a Peia causa 30% a mais. Soltar aos 70% ou esperar?</p>
+          <p><b>SEQUÊNCIAS</b>: leve ▸ leve ▸ forte ▸ especial ▸ peia, se os golpes acertarem.</p>
         </div>
       </div>
       <nav><button class="mi back" data-go="back">VOLTAR</button></nav>

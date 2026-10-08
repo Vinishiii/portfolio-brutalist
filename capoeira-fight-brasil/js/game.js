@@ -11,10 +11,10 @@ M.TUTORIAL = [
   { text: 'L = especial. S + L é o MACACO (anti-aéreo). Acerte 2 especiais.', check: G => ((G.p1.stats.landed.S || 0) + (G.p1.stats.landed.dS || 0) + (G.p1.stats.landed.aS || 0)) >= 2, mestre: 'passive' },
   { text: 'Segure PRA TRÁS para DEFENDER. Agache para bloquear golpes baixos. Defenda 3 golpes.', check: G => G.tut.blocks >= 3, mestre: 'attack' },
   { text: 'H (ou J + K juntos) = AGARRÃO. Quebra a defesa de quem só bloqueia. Agarre o Mestre.', check: G => (G.p1.stats.landed.TH || 0) >= 1, mestre: 'guard' },
-  { text: 'ESPAÇO = GINGA (esquiva). Esquive NO MOMENTO do golpe: ESQUIVA PERFEITA.', check: G => G.tut.perfect >= 1, mestre: 'attack' },
+  { text: 'ESPAÇO = ARREDA (esquiva). Esquive NO MOMENTO do golpe: ESQUIVA PERFEITA.', check: G => G.tut.perfect >= 1, mestre: 'attack' },
   { text: 'A barra de ENERGIA é o público. Golpes variados, esquivas e acertos NO COMPASSO do berimbau enchem seu lado. Chegue a 70%.', check: G => G.axe >= 0.7, mestre: 'dummy' },
-  { text: 'U = MANDINGA! Solte sua técnica máxima.', check: G => G.p1.stats.supers >= 1, mestre: 'passive', holdEnergy: true },
-  { text: '"Chega por hoje, menino. A roda escuta quem escuta a roda." — Mestre Cinzas', check: G => G.tutT > 220, mestre: 'passive', final: true }
+  { text: 'U = PEIA! Solte sua técnica máxima.', check: G => G.p1.stats.supers >= 1, mestre: 'passive', holdEnergy: true },
+  { text: '"Chega por hoje, menino. A rinha escuta quem escuta a rinha." — Mestre Cinzas', check: G => G.tutT > 220, mestre: 'passive', final: true }
 ];
 
 M.Match = class Match {
@@ -116,8 +116,8 @@ M.Match = class Match {
   updateIntro() {
     const t = this.phaseT;
     for (const f of this.fighters) { f.t = t; f.animT += 0.05; f.updatePose(); }
-    if (t === 1) { this.bigText = { text: this.tutorial ? 'TREINO' : (this.round === 1 ? 'PRIMEIRA RODA' : (this.wins[0] === this.winsNeeded - 1 && this.wins[1] === this.winsNeeded - 1) ? 'RODA FINAL' : 'RODA ' + this.round), t: 0, life: 70, size: 44, color: M.C.paper }; }
-    if (t === 75) { this.bigText = { text: 'RODA!', t: 0, life: 40, size: 72, color: M.C.yellow }; M.audio.play('roundStart'); }
+    if (t === 1) { this.bigText = { text: this.tutorial ? 'TREINO' : (this.round === 1 ? 'PRIMEIRA RINHA' : (this.wins[0] === this.winsNeeded - 1 && this.wins[1] === this.winsNeeded - 1) ? 'RINHA FINAL' : 'RINHA ' + this.round), t: 0, life: 70, size: 44, color: M.C.paper }; }
+    if (t === 75) { this.bigText = { text: 'RINHA!', t: 0, life: 40, size: 72, color: M.C.yellow }; M.audio.play('roundStart'); }
     if (t === 112) { this.bigText = { text: 'VAI!', t: 0, life: 36, size: 80, color: M.C.red }; this.phase = 'fight'; this.phaseT = 0; for (const f of this.fighters) f.state = 'idle'; M.input.clear(); }
   }
   updateFight() {
@@ -141,6 +141,7 @@ M.Match = class Match {
     if (this.timerOn) { this.timeF--; if (this.timeF <= 0) this.timeOver(); }
     if (this.tutorial) this.updateTutorial();
     if (this.mode === 'training') { for (const f of this.fighters) if (f.neutral && f.hp < f.maxHp && this.frame % 2 === 0 && this.other(f).neutral) f.hp = Math.min(f.maxHp, f.hp + 6); }
+    for (const f of this.fighters) if (!f.arretado && f.hp > 0 && f.hp <= f.maxHp * 0.25) { f.arretado = true; this.popup('ARRETADO!', f.x, f.y - 215, M.C.red, 28); this.fx.push({ type: 'ring', x: f.x, y: f.y - 80, r: 130, t: 0, life: 26, color: M.C.red }); M.audio.play('aboio'); M.audio.cheer(0.6); }
     if (this.boss && !this.phase2 && this.p2.hp <= this.p2.maxHp * 0.5) this.startPhase2();
     if (this.phase2) { this.phase2T++; if (this.phase2T === 100) M.audio.music.setMode('boss2'); }
   }
@@ -153,7 +154,7 @@ M.Match = class Match {
     if (t === 24) this.bigText = { text: 'CAIU!', t: 0, life: 80, size: 84, color: M.C.red };
     if (t === 130) {
       const w = this.roundWinner;
-      if (this.wins[w.side - 1] >= this.winsNeeded) { this.phase = 'end'; this.phaseT = 0; w.state = 'win'; w.t = 0; this.bigText = { text: 'VENCEU A RODA', t: 0, life: 150, size: 54, color: M.C.yellow }; M.audio.play('win'); this.camTarget = { zoom: 1.15, x: w.x, y: w.y - 80 }; this.camT = 400; M.audio.music.setMode(this.mode === 'story' && w === this.p1 ? 'ending' : 'menu'); }
+      if (this.wins[w.side - 1] >= this.winsNeeded) { this.phase = 'end'; this.phaseT = 0; w.state = 'win'; w.t = 0; this.bigText = { text: 'VENCEU A RINHA', t: 0, life: 150, size: 54, color: M.C.yellow }; M.audio.play('win'); this.camTarget = { zoom: 1.15, x: w.x, y: w.y - 80 }; this.camT = 400; M.audio.music.setMode(this.mode === 'story' && w === this.p1 ? 'ending' : 'menu'); }
       else { this.startRound(); }
     }
   }
@@ -161,6 +162,7 @@ M.Match = class Match {
     const [a, b] = this.fighters;
     const blank = M.AI.blank();
     a.update(blank, b, this); b.update(blank, a, this);
+    if (this.phaseT % 22 === 0 && this.phaseT < 140) this.fogos(60 + Math.random() * (M.W - 120), 60 + Math.random() * 160);
     if (this.phaseT === 150 && !this.done) { this.done = true; this.finish(); }
   }
   finish() {
@@ -203,10 +205,12 @@ M.Match = class Match {
     const hx = M.clamp(def.x + (att.x < def.x ? -16 : 16), hb.x, hb.x + hb.w), hy = M.clamp(def.y - 95, hb.y, hb.y + hb.h);
     const facing = src ? src.dir : att.facing;
     if (def.canBlock(mv)) {
-      def.state = 'blockstun'; def.t = mv.blockstun; def.crouching = def.held.down; def.move = null;
-      def.vx = -mv.kb * 0.6 * facing / def.def.stats.weight;
+      const seca = this.frame - (def.backAt || -99) <= 7;
+      def.state = 'blockstun'; def.t = seca ? Math.max(4, mv.blockstun - 6) : mv.blockstun; def.crouching = def.held.down; def.move = null;
+      def.vx = seca ? 0 : -mv.kb * 0.6 * facing / def.def.stats.weight;
+      if (seca) { this.popup('DEFESA SECA!', def.x, def.y - 200, M.C.cyan, 22); this.gainAxe(def, 0.06); this.fx.push({ type: 'ring', x: hx, y: hy, r: 50, t: 0, life: 14, color: M.C.cyan }); M.audio.play('axe'); def.backAt = -99; def.stats.secas = (def.stats.secas || 0) + 1; }
       if (!src && att.grounded && (def.x <= 44 || def.x >= M.W - 44)) att.vx = -mv.kb * 0.5 * facing;
-      const chip = Math.round((mv.chip || 0) * def.mods.chip);
+      const chip = seca ? 0 : Math.round((mv.chip || 0) * def.mods.chip);
       if (chip > 0) def.hp = Math.max(mv.super ? 0 : 1, def.hp - chip);
       def.stats.blocks++;
       this.fx.push({ type: 'star', x: hx, y: hy, r: 16, t: 0, life: 10, n: 6, color: '#2aa9b8' });
@@ -226,6 +230,7 @@ M.Match = class Match {
     if (onBeat) dmg *= att.mods.beatDmg * (att.ritmo > 0 ? 1.15 : 1);
     if (counter) dmg *= 1.25;
     if (mv.super) dmg *= att.superBoost || 1;
+    if (att.arretado) dmg *= 1.1;
     if (!mv.super) dmg *= Math.max(0.4, 1 - 0.1 * att.combo);
     if (this.axeSide(att) > 0.5) dmg *= 1.1;
     dmg = Math.round(dmg);
@@ -285,15 +290,15 @@ M.Match = class Match {
   }
   gainAxe(f, amt, label) {
     const sign = f.side === 1 ? 1 : -1;
-    this.axe = M.clamp(this.axe + sign * amt * f.mods.axe * (this.tutorial ? 1.8 : 1), -1, 1);
+    this.axe = M.clamp(this.axe + sign * amt * f.mods.axe * (this.tutorial ? 1.8 : 1) * (f.arretado ? 1.25 : 1), -1, 1);
     if (label) this.popup(label, f.x, f.y - 210, M.C.yellow, 22);
     const i = f.side - 1;
-    if (this.superReady(f) && !this.readyShown[i]) { this.readyShown[i] = true; this.popup(Math.abs(this.axe) >= 0.97 ? 'MANDINGA MÁXIMA!' : 'MANDINGA PRONTA!', f.x, f.y - 230, M.C.magenta, 26); M.audio.play('patua'); M.audio.cheer(0.6); }
+    if (this.superReady(f) && !this.readyShown[i]) { this.readyShown[i] = true; this.popup(Math.abs(this.axe) >= 0.97 ? 'PEIA BRABA!' : 'PEIA PRONTA!', f.x, f.y - 230, M.C.magenta, 26); M.audio.play('patua'); M.audio.cheer(0.6); }
     if (!this.superReady(f)) this.readyShown[i] = false;
   }
   tauntDone(f) {
     const opp = this.other(f);
-    if (opp.state === 'taunt' || (opp.stats.lastTaunt && this.frame - opp.stats.lastTaunt < 70)) { this.gainAxe(f, 0.12, 'A RODA RIU!'); this.gainAxe(opp, 0.12); this.confetti(M.W / 2, 200, 40); M.audio.cheer(1); }
+    if (opp.state === 'taunt' || (opp.stats.lastTaunt && this.frame - opp.stats.lastTaunt < 70)) { this.gainAxe(f, 0.12, 'A RINHA RIU!'); this.gainAxe(opp, 0.12); this.confetti(M.W / 2, 200, 40); M.audio.cheer(1); }
     else this.gainAxe(f, 0.14, 'ENERGIA!');
     f.stats.lastTaunt = this.frame;
     M.audio.cheer(0.5); this.crowdExcite = Math.min(1.5, this.crowdExcite + 0.4);
@@ -333,7 +338,7 @@ M.Match = class Match {
   }
   superStart(f, mv) {
     f.superBoost = Math.abs(this.axe) >= 0.97 ? 1.3 : 1;
-    this.freeze = 26; this.banner = { text: mv.name + (f.superBoost > 1 ? ' MÁXIMA' : ''), who: f, t: 0, life: 75 };
+    this.freeze = 26; this.banner = { text: mv.name + (f.superBoost > 1 ? ' BRABA' : ''), who: f, t: 0, life: 75 };
     f.superFlash = 60; f.invuln = Math.max(f.invuln, 26);
     this.fx.push({ type: 'flash', t: 0, life: 10, color: '#fff8e8', alpha: 0.7 });
     M.audio.play('super'); M.audio.cheer(0.8);
@@ -453,6 +458,7 @@ M.Match = class Match {
   popup(text, x, y, color, size) { this.fx.push({ type: 'text', text, x, y, t: 0, life: 55, color, size: size || 22, rot: (Math.random() - 0.5) * 0.15 }); }
   dust(f) { if (f.grounded) this.fx.push({ type: 'dust', x: f.x, y: f.y, t: 0, life: 16, color: this.stage.def.dustColor || '#d9c27a' }); }
   confetti(x, y, n) { const cols = ['#f2b70c', '#c7267a', '#2aa9b8', '#1f7a4d', '#c8371d', '#fff8e8']; for (let i = 0; i < n; i++) this.particles.push({ x, y, vx: (Math.random() - 0.5) * 9, vy: -Math.random() * 7 - 1, g: 0.25, life: 40 + Math.random() * 25, max: 60, size: 3 + Math.random() * 3, color: M.choice(cols), type: 'confetti', rot: Math.random() * 6, vr: (Math.random() - 0.5) * 0.4 }); }
+  fogos(x, y) { const col = M.choice(['#f2b70c', '#c7267a', '#2aa9b8', '#1f7a4d', '#fff8e8', '#e8712b']); for (let i = 0; i < 26; i++) { const a = i / 26 * Math.PI * 2, v = 2 + Math.random() * 2.5; this.particles.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, g: 0.05, life: 30 + Math.random() * 20, max: 50, size: 3 + Math.random() * 2, color: col, type: 'spark', rot: 0 }); } this.fx.push({ type: 'ring', x, y, r: 60, t: 0, life: 16, color: col }); M.audio.play('fogos'); }
   spark(x, y, n, color) { for (let i = 0; i < n; i++) this.particles.push({ x, y, vx: (Math.random() - 0.5) * 8, vy: (Math.random() - 0.5) * 8, g: 0.1, life: 14 + Math.random() * 10, max: 24, size: 3 + Math.random() * 2, color, type: 'spark', rot: 0 }); }
   embers(x, y, n) { for (let i = 0; i < n; i++) this.particles.push({ x: x + (Math.random() - 0.5) * 20, y, vx: (Math.random() - 0.5) * 3, vy: -1 - Math.random() * 3, g: -0.02, life: 25 + Math.random() * 20, max: 45, size: 4 + Math.random() * 3, color: Math.random() < 0.5 ? '#f2b70c' : '#e8712b', type: 'ember', rot: 0 }); }
   drops(x, y, n) { for (let i = 0; i < n; i++) this.particles.push({ x, y, vx: (Math.random() - 0.5) * 7, vy: -Math.random() * 6, g: 0.3, life: 25 + Math.random() * 15, max: 40, size: 3 + Math.random() * 2, color: Math.random() < 0.5 ? '#2aa9b8' : '#fff8e8', type: 'drop', rot: 0 }); }
@@ -524,10 +530,10 @@ M.Match = class Match {
     ctx.beginPath(); ctx.arc(W / 2, ay + ah / 2, 5, 0, Math.PI * 2); ctx.fillStyle = C.red; ctx.fill();
     M.text(ctx, 'ENERGIA', W / 2, ay - 16, { size: 15, color: C.paper, lw: 3 });
     const favName = this.axe > 0.15 ? this.p1.def.name : this.axe < -0.15 ? this.p2.def.name : null;
-    if (favName) M.text(ctx, 'A RODA TÁ COM ' + favName.toUpperCase(), this.axe > 0 ? ax0 + 6 : ax0 + aw - 6, ay - 16, { size: 12, align: this.axe > 0 ? 'left' : 'right', color: C.yellow, lw: 2.5 });
+    if (favName) M.text(ctx, 'A RINHA TÁ COM ' + favName.toUpperCase(), this.axe > 0 ? ax0 + 6 : ax0 + aw - 6, ay - 16, { size: 12, align: this.axe > 0 ? 'left' : 'right', color: C.yellow, lw: 2.5 });
     for (const f of this.fighters) {
       const x = f.side === 1 ? ax0 - 10 : ax0 + aw + 10, al = f.side === 1 ? 'right' : 'left';
-      if (this.superReady(f) && this.frame % 30 < 20) { const keyHint = f.ctrl === 'human' ? (f.side === 1 ? ' (U)' : ' (Num5)') : ''; const max = Math.abs(this.axe) >= 0.97; M.text(ctx, (max ? 'MANDINGA MÁXIMA' : 'MANDINGA PRONTA') + keyHint, x, ay + 9, { size: 15, align: al, color: max ? C.yellow : C.magenta, lw: 3 }); }
+      if (this.superReady(f) && this.frame % 30 < 20) { const keyHint = f.ctrl === 'human' ? (f.side === 1 ? ' (U)' : ' (Num5)') : ''; const max = Math.abs(this.axe) >= 0.97; M.text(ctx, (max ? 'PEIA BRABA' : 'PEIA PRONTA') + keyHint, x, ay + 9, { size: 15, align: al, color: max ? C.yellow : C.magenta, lw: 3 }); }
       else if (f.ctrl === 'human' && this.canEscape(f)) M.text(ctx, 'ESPAÇO: ESCAPAR (-30%)', x, ay + 9, { size: 13, align: al, color: C.cyan, lw: 2.5 });
       else if (f.counterWin > 0) M.text(ctx, 'CONTRA-ATAQUE!', x, ay + 9, { size: 13, align: al, color: C.red, lw: 2.5 });
     }
@@ -537,13 +543,13 @@ M.Match = class Match {
       if (f.combo >= 2) { f.lastComboN = f.combo; f.lastComboDmg = f.comboDmg; }
       if (f.comboShow > 0 && f.lastComboN >= 2) {
         const k = f.comboShow / 70; const x = f.side === 1 ? 60 : W - 60; const al = f.side === 1 ? 'left' : 'right';
-        const words = ['', '', 'BONITO!', 'MASSA!', 'LAPADA!', 'QUE É ISSO!', 'ARRETADO!', 'MANDINGA PURA!'];
+        const words = ['', '', 'BONITO!', 'MASSA!', 'LAPADA!', 'VIXE!', 'ARRETADO!', 'CABRA DA PESTE!', 'PEIA PURA!'];
         M.text(ctx, f.lastComboN + ' GOLPES', x, 120, { size: 30, align: al, color: C.yellow, alpha: Math.min(1, k * 3) });
         M.text(ctx, words[Math.min(words.length - 1, f.lastComboN)] + '  ' + f.lastComboDmg, x, 148, { size: 16, align: al, color: C.paper, alpha: Math.min(1, k * 3) });
       } else if (f.comboShow <= 0) f.lastComboN = 0;
     }
     // ginga cooldown (P1 humano)
-    for (const f of this.fighters) if (f.ctrl === 'human') { const x = f.side === 1 ? 40 : W - 40; const al = f.side === 1 ? 'left' : 'right'; const ok = f.dodgeCd <= 0; M.text(ctx, ok ? 'GINGA ◆' : 'GINGA ◇', x, 108, { size: 12, align: al, color: ok ? C.cyan : '#8d8a84', lw: 2.5 }); }
+    for (const f of this.fighters) if (f.ctrl === 'human') { const x = f.side === 1 ? 40 : W - 40; const al = f.side === 1 ? 'left' : 'right'; const ok = f.dodgeCd <= 0; M.text(ctx, ok ? 'ARREDA ◆' : 'ARREDA ◇', x, 108, { size: 12, align: al, color: ok ? C.cyan : '#8d8a84', lw: 2.5 }); }
     // banner de mandinga
     if (this.banner) {
       const b = this.banner, k = b.t / b.life; const f = b.who;
@@ -553,13 +559,13 @@ M.Match = class Match {
       ctx.fillStyle = f.def.colors.accent; ctx.fillRect(-700, -46, 1400, 92);
       ctx.fillStyle = C.ink; ctx.fillRect(-700, -52, 1400, 6); ctx.fillRect(-700, 46, 1400, 6);
       M.text(ctx, b.text.toUpperCase(), (1 - slide) * (f.side === 1 ? -300 : 300), 2, { size: 46, color: C.paper });
-      M.text(ctx, f.def.name.toUpperCase() + ' — MANDINGA', 0, 72, { size: 16, color: C.yellow });
+      M.text(ctx, f.def.name.toUpperCase() + ' — PEIA', 0, 72, { size: 16, color: C.yellow });
       ctx.restore();
     }
     if (this.bigText && !(this.banner && this.phase === 'fight')) {
       const b = this.bigText, k = b.t / b.life; const sc = k < 0.12 ? M.easeBack(k / 0.12) : 1; const al = k > 0.8 ? 1 - (k - 0.8) / 0.2 : 1;
       ctx.save(); ctx.translate(W / 2, 250); ctx.scale(sc, sc); M.text(ctx, b.text, 0, 0, { size: b.size, color: b.color, alpha: al }); ctx.restore();
-      if (this.phase === 'end' && this.roundWinner) M.text(ctx, this.tutorial ? 'Zeca Ventania está pronto.' : this.roundWinner.def.name.toUpperCase(), W / 2, 300, { size: 24, color: C.paper, alpha: al });
+      if (this.phase === 'end' && this.roundWinner) { M.text(ctx, this.tutorial ? 'Zeca Ventania está pronto.' : this.roundWinner.def.name.toUpperCase(), W / 2, 300, { size: 24, color: C.paper, alpha: al }); if (!this.tutorial && this.roundWinner.def.winQuote) M.text(ctx, '"' + this.roundWinner.def.winQuote + '"', W / 2, 330, { size: 16, color: C.yellow, font: M.FONT_TEXT, lw: 3, alpha: al }); }
     }
     if (this.phase === 'intro' && this.phaseT < 72 && !this.tutorial) {
       const k = this.phaseT / 72; const sl = k < 0.2 ? M.easeOut(k / 0.2) : k > 0.85 ? 1 - M.easeIn((k - 0.85) / 0.15) : 1;

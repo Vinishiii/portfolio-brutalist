@@ -107,6 +107,7 @@ M.render = (function () {
       ctx.fillStyle = C.accent; ctx.strokeStyle = INK; ctx.lineWidth = 1.5;
       for (let i = -2; i <= 2; i++) { ctx.beginPath(); ctx.arc(rig.neck[0] + i * 4, rig.neck[1] + 9 * s + Math.abs(i) * -1.5 + 3, 2.6, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
     }
+    if (D.includes('kerchief')) { ctx.fillStyle = '#c8371d'; ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(rig.neck[0] - 9, rig.neck[1] + 4); ctx.lineTo(rig.neck[0] + 9, rig.neck[1] + 4); ctx.lineTo(rig.neck[0] + 2, rig.neck[1] + 18); ctx.closePath(); ctx.fill(); ctx.stroke(); }
     if (D.includes('sleeves')) {
       const cols = ['#2aa9b8', '#f2b70c', '#1f7a4d'];
       for (const arm of [rig.fa, rig.na]) for (let i = 0; i < 3; i++) { const p = mid(arm[0], arm[1], 0.25 + i * 0.25); ctx.beginPath(); ctx.arc(p[0], p[1], 7.5 * s, 0, Math.PI * 2); ctx.fillStyle = cols[i]; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = INK; ctx.stroke(); }
@@ -233,6 +234,19 @@ M.render = (function () {
         ctx.fillStyle = col('#c7267a'); ctx.beginPath(); ctx.moveTo(-14, -5); ctx.lineTo(10, 0); ctx.lineTo(-14, 5); ctx.closePath(); ctx.fill(); ctx.lineWidth = 2.5; ctx.strokeStyle = ink; ctx.stroke();
       }
       ctx.restore();
+    } else if (def.prop === 'sanfona') {
+      const hand = rig.na[2], a = M.rad(rig.na[3]);
+      const d = [Math.sin(a), Math.cos(a)];
+      ctx.save(); ctx.translate(hand[0] + 4, hand[1] + 2); ctx.rotate(o.angry ? Math.atan2(d[1], d[0]) : -0.15);
+      const open = 10 + (o.foleOpen || 0) * 10;
+      ctx.lineWidth = 3; ctx.strokeStyle = ink;
+      ctx.fillStyle = col('#c8371d'); ctx.fillRect(-open - 14, -16, 14, 32); ctx.strokeRect(-open - 14, -16, 14, 32);
+      ctx.fillRect(open, -16, 14, 32); ctx.strokeRect(open, -16, 14, 32);
+      ctx.fillStyle = col('#fff8e8'); for (let i = 0; i < 4; i++) ctx.fillRect(open + 3, -13 + i * 8, 8, 5);
+      ctx.fillStyle = ink; for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.arc(-open - 7, -8 + i * 8, 2.2, 0, Math.PI * 2); ctx.fill(); }
+      ctx.beginPath(); for (let i = 0; i <= 6; i++) { const x = -open + i * (open * 2 / 6); ctx.lineTo(x, i % 2 ? -12 : -16); } for (let i = 6; i >= 0; i--) { const x = -open + i * (open * 2 / 6); ctx.lineTo(x, i % 2 ? 12 : 16); } ctx.closePath(); ctx.fillStyle = col('#f2b70c'); ctx.fill(); ctx.stroke();
+      ctx.strokeStyle = ink; ctx.lineWidth = 1.5; for (let i = 1; i < 6; i++) { const x = -open + i * (open * 2 / 6); ctx.beginPath(); ctx.moveTo(x, i % 2 ? -12 : -16); ctx.lineTo(x, i % 2 ? 12 : 16); ctx.stroke(); }
+      ctx.restore();
     } else if (def.prop === 'berimbau') {
       const hand = rig.na[2], a = M.rad(rig.na[3]);
       const d = [Math.sin(a), Math.cos(a)], n = [d[1], -d[0]];
@@ -266,8 +280,8 @@ M.render = (function () {
     const o = Object.assign({
       flash: f.flash > 0, angry: f.state === 'attack', hurt: f.state === 'hitstun' || f.state === 'knockdown' || f.state === 'ko' || f.state === 'thrown',
       shout: f.state === 'taunt' || (f.move && f.move.pose === 'shout'),
-      umbrellaOpen: !!(f.move && f.move.umbrellaOpen) || f.state === 'taunt' || f.state === 'win',
-      glow: def.prop === 'fire' ? 'rgba(232,113,43,0.28)' : (f.armorNow ? 'rgba(242,183,12,0.45)' : (f.superFlash > 0 ? 'rgba(255,255,255,0.5)' : null))
+      umbrellaOpen: !!(f.move && f.move.umbrellaOpen) || f.state === 'taunt' || f.state === 'win', foleOpen: f.state === 'attack' ? 1 : (f.ritmo > 0 ? (Math.sin(f.animT * 8) + 1) / 2 : 0.3),
+      glow: def.prop === 'fire' ? 'rgba(232,113,43,0.28)' : (f.armorNow ? 'rgba(242,183,12,0.45)' : (f.superFlash > 0 ? 'rgba(255,255,255,0.5)' : (f.arretado ? 'rgba(200,55,29,0.3)' : null)))
     }, opts);
     drawRig(ctx, rig, def, o);
     ctx.restore();

@@ -87,7 +87,7 @@
       M.state = 'results';
       M.ui.results({ result: r, buttons: [{ id: 'again', label: 'REVANCHE', fn: () => flow.startFromSelect(sel) }, { id: 'change', label: 'TROCAR LUTADORES', fn: () => { M.match = null; M.ui.charselect({ players: 2, mode: 'versus' }); } }, { id: 'menu', label: 'MENU', fn: () => M.ui.menu() }] });
     },
-    // ---- roda livre ----
+    // ---- rinha livre ----
     freeFight() {
       const F = flow.free; const opp = F.order[F.idx];
       const stage = opp === 'cinzas' ? 'cinzas' : M.choice(M.stages.order.filter(s => s !== 'cinzas'));
@@ -99,7 +99,7 @@
       F.idx++;
       if (F.idx >= F.order.length) {
         const p = M.store.data.progress; if (!p.freeBest || F.frames < p.freeBest) p.freeBest = F.frames; p.wins++; M.store.save();
-        M.ui.results({ result: r, buttons: [{ id: 'menu', label: `VENCEU A RODA INTEIRA! (${M.fmtTime(F.frames / 60)}) — MENU`, fn: () => M.ui.menu() }] });
+        M.ui.results({ result: r, buttons: [{ id: 'menu', label: `VENCEU A RINHA INTEIRA! (${M.fmtTime(F.frames / 60)}) — MENU`, fn: () => M.ui.menu() }] });
         return;
       }
       const opts = M.shuffle(M.PATUAS.filter(p => !F.patuas.includes(p.id))).slice(0, 2);
@@ -111,7 +111,7 @@
       flow.story = { idx: 0, patuas: [], difficulty: diff, frames: 0, deaths: 0 };
       flow.saveStory();
       M.match = null;
-      M.ui.cordel(M.STORY.intro, 'A RODA DO FOGO', () => flow.storyFight());
+      M.ui.cordel(M.STORY.intro, 'A RINHA DO FOGO', () => flow.storyFight());
     },
     continueStory() {
       const s = M.store.data.story; if (!s) return flow.newStory('brabo');

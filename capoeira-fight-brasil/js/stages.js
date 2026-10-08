@@ -136,7 +136,7 @@ M.stages = (function () {
       }
     },
     ladeira: {
-      name: 'Ladeira do Frevo', sub: 'Fim de tarde em Recife', palette: ['#3a2a1e', '#4a3328', '#2e2a3a'], music: 'fight', firePos: [480, 400], confetti: true,
+      name: 'Ladeira do Frevo', sub: 'Fim de tarde em Recife', palette: ['#3a2a1e', '#4a3328', '#2e2a3a'], music: 'fight', firePos: [480, 400], confetti: true, baloes: true,
       build(ctx, rnd) {
         sky(ctx, '#f2b70c', '#e8712b', '#c7267a');
         ctx.fillStyle = '#f7d774'; ctx.beginPath(); ctx.arc(170, 160, 60, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = INK; ctx.lineWidth = 3; ctx.stroke();
@@ -168,7 +168,7 @@ M.stages = (function () {
       }
     },
     sertao: {
-      name: 'Serra do Vento', sub: 'Meio-dia no sertão', palette: ['#4a2a1a', '#5a3322', '#3e2416'], music: 'fight', firePos: [480, 400], dust: true, dustColor: '#d98a5a',
+      name: 'Serra do Vento', sub: 'São João no sertão', palette: ['#4a2a1a', '#5a3322', '#3e2416'], music: 'fight', firePos: [480, 400], dust: true, dustColor: '#d98a5a', baloes: true,
       build(ctx, rnd) {
         sky(ctx, '#f7e7b8', '#f2c27a', '#e8a35b');
         ctx.fillStyle = '#fff2c4'; ctx.beginPath(); ctx.arc(480, 120, 70, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = INK; ctx.lineWidth = 4; ctx.stroke();
@@ -181,6 +181,7 @@ M.stages = (function () {
         ctx.save(); ctx.globalAlpha = 0.25; ctx.fillStyle = '#f7e7b8';
         for (let i = 0; i < 5; i++) { const x = ((st * (1 + i * 0.3)) + i * 200) % (W + 100) - 50; ctx.beginPath(); ctx.ellipse(x, 380 + i * 12, 60, 8, 0, 0, Math.PI * 2); ctx.fill(); }
         ctx.restore();
+        bandeirinhas(ctx, st, 40, 1);
         // urubus
         ctx.strokeStyle = INK; ctx.lineWidth = 2;
         for (let i = 0; i < 3; i++) { const x = ((st * 0.4) + i * 300) % (W + 60) - 30, y = 80 + i * 30 + Math.sin(st * 0.02 + i) * 10; const f = Math.sin(st * 0.1 + i) * 4; ctx.beginPath(); ctx.moveTo(x - 10, y); ctx.lineTo(x, y + f); ctx.lineTo(x + 10, y); ctx.stroke(); }
@@ -204,7 +205,7 @@ M.stages = (function () {
       }
     },
     terreiro: {
-      name: 'Terreiro do Bené', sub: 'Onde o berimbau manda', palette: ['#4a2a1a', '#5a3322', '#3a2416'], music: 'fight', firePos: [480, 400], dustColor: '#d98a5a', motes: true,
+      name: 'Rinha do Bené', sub: 'Onde a sanfona manda', palette: ['#4a2a1a', '#5a3322', '#3a2416'], music: 'fight', firePos: [480, 400], dustColor: '#d98a5a', motes: true, baloes: true,
       build(ctx, rnd) {
         sky(ctx, '#f7d774', '#e8a35b', '#c47a4a');
         // parede de tábuas
@@ -215,16 +216,15 @@ M.stages = (function () {
         // janela e letreiro
         ctx.fillStyle = '#f2c27a'; ctx.fillRect(700, 210, 110, 90); ctx.strokeRect(700, 210, 110, 90); ctx.beginPath(); ctx.moveTo(755, 210); ctx.lineTo(755, 300); ctx.moveTo(700, 255); ctx.lineTo(810, 255); ctx.stroke();
         ctx.fillStyle = '#fff8e8'; ctx.fillRect(330, 196, 300, 54); ctx.strokeRect(330, 196, 300, 54);
-        M.text(ctx, 'TERREIRO DO BENÉ', 480, 223, { size: 26, color: '#c8371d', lw: 3 });
-        // berimbaus pendurados
+        M.text(ctx, 'RINHA DO BENÉ', 480, 223, { size: 26, color: '#c8371d', lw: 3 });
+        // triângulos e chapéus de palha pendurados
         for (let i = 0; i < 6; i++) {
           const x = 70 + i * 100 + (i > 2 ? 230 : 0); if (x > 900) continue;
-          ctx.strokeStyle = INK; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(x, 270); ctx.quadraticCurveTo(x + 26, 340, x, 405); ctx.stroke();
-          ctx.strokeStyle = '#c9a060'; ctx.lineWidth = 4; ctx.stroke();
-          ctx.strokeStyle = '#fff8e8'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x, 270); ctx.lineTo(x, 405); ctx.stroke();
-          ctx.fillStyle = '#c47a4a'; ctx.beginPath(); ctx.arc(x + 8, 388, 11, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = INK; ctx.lineWidth = 2.5; ctx.stroke();
+          ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x, 230); ctx.lineTo(x, 262); ctx.stroke();
+          if (i % 2 === 0) { ctx.strokeStyle = '#d9c27a'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(x, 262); ctx.lineTo(x - 22, 300); ctx.lineTo(x + 22, 300); ctx.closePath(); ctx.stroke(); ctx.strokeStyle = INK; ctx.lineWidth = 1.5; ctx.stroke(); }
+          else { ctx.fillStyle = '#d9c27a'; ctx.beginPath(); ctx.ellipse(x, 280, 30, 8, 0, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.stroke(); ctx.beginPath(); ctx.moveTo(x - 14, 280); ctx.lineTo(x - 11, 262); ctx.lineTo(x + 11, 262); ctx.lineTo(x + 14, 280); ctx.closePath(); ctx.fill(); ctx.stroke(); }
         }
-        // atabaques
+        // zabumbas
         for (const [x, h] of [[640, 80], [690, 62]]) { ctx.fillStyle = '#5a3a22'; ctx.beginPath(); ctx.moveTo(x - 18, 410); ctx.lineTo(x - 24, 410 - h); ctx.lineTo(x + 24, 410 - h); ctx.lineTo(x + 18, 410); ctx.closePath(); ctx.fill(); ctx.strokeStyle = INK; ctx.lineWidth = 3; ctx.stroke(); ctx.fillStyle = '#e9d8b0'; ctx.beginPath(); ctx.ellipse(x, 410 - h, 24, 7, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
         ground(ctx, '#a0522d', INK, c => { c.strokeStyle = '#7a3a1e'; c.lineWidth = 2; for (let i = 0; i < 24; i++) { c.beginPath(); c.moveTo(rnd() * W, G + rnd() * 80); c.lineTo(rnd() * W, G + rnd() * 80); c.stroke(); } });
       },
@@ -236,7 +236,7 @@ M.stages = (function () {
       }
     },
     galpao: {
-      name: 'Galpão Tech do Cais', sub: 'Onde o código ginga', palette: ['#141a2e', '#1a2240', '#0f1526'], music: 'fight', firePos: [480, 400], dustColor: '#6b7a8a', code: true,
+      name: 'Galpão Tech do Cais', sub: 'Onde o código briga', palette: ['#141a2e', '#1a2240', '#0f1526'], music: 'fight', firePos: [480, 400], dustColor: '#6b7a8a', code: true,
       build(ctx, rnd) {
         sky(ctx, '#0a0e1c', '#101a33', '#15203f');
         // telhado e paredes de zinco
@@ -310,6 +310,7 @@ M.stages = (function () {
       this.t++;
       const d = this.def;
       if (d.confetti && this.t % 6 === 0) this.parts.push({ x: Math.random() * W, y: -10, vx: Math.random() - 0.5, vy: 1 + Math.random(), rot: Math.random() * 6, vr: (Math.random() - 0.5) * 0.2, color: M.choice(['#f2b70c', '#c7267a', '#2aa9b8', '#1f7a4d', '#fff8e8']), life: 400 });
+      if (d.baloes && this.t % 240 === 0) this.parts.push({ x: 80 + Math.random() * (W - 160), y: H + 30, vx: (Math.random() - 0.5) * 0.3, vy: -0.35 - Math.random() * 0.3, rot: 0, vr: 0, color: M.choice(['#f2b70c', '#c8371d', '#2aa9b8', '#c7267a', '#1f7a4d']), life: 1800, balao: true, ph: Math.random() * 6 });
       if (d.ash && this.t % 4 === 0) this.parts.push({ x: Math.random() * W, y: -10, vx: Math.sin(this.t * 0.01) * 0.5, vy: 0.6 + Math.random() * 0.8, rot: 0, vr: 0, color: 'rgba(200,196,190,0.6)', life: 600, ash: true });
       if (this.fireLevel > 0.05 && this.t % 3 === 0) this.parts.push({ x: d.firePos[0] + (Math.random() - 0.5) * 30, y: d.firePos[1] - 40, vx: (Math.random() - 0.5) * 0.8, vy: -1.5 - Math.random() * 2, rot: 0, vr: 0, color: Math.random() < 0.5 ? '#f2b70c' : '#e8712b', life: 50 + Math.random() * 40, spark: true });
       for (let i = this.parts.length - 1; i >= 0; i--) { const p = this.parts[i]; p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.life--; if (p.life <= 0 || p.y > H + 20) this.parts.splice(i, 1); }
@@ -325,13 +326,14 @@ M.stages = (function () {
       for (const p of this.parts) {
         if (p.spark) { ctx.fillStyle = p.color; ctx.globalAlpha = Math.min(1, p.life / 30); ctx.beginPath(); ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; }
         else if (p.ash) { ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI * 2); ctx.fill(); }
+        else if (p.balao) { const x = p.x + Math.sin(this.t * 0.01 + p.ph) * 12, y = p.y; ctx.fillStyle = p.color; ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x, y - 30); ctx.lineTo(x + 14, y - 10); ctx.lineTo(x + 8, y + 10); ctx.lineTo(x - 8, y + 10); ctx.lineTo(x - 14, y - 10); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.fillStyle = '#f2b70c'; ctx.beginPath(); ctx.arc(x, y + 16, 3 + Math.sin(this.t * 0.3) * 1, 0, Math.PI * 2); ctx.fill(); }
       }
-      // sombra da roda no chão
+      // sombra da rinha no chão
       ctx.save(); ctx.globalAlpha = 0.18; ctx.strokeStyle = INK; ctx.lineWidth = 3; ctx.beginPath(); ctx.ellipse(W / 2, G ? 470 : 470, 430, 26, 0, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
     }
     drawFront(ctx, G) {
       for (const p of this.parts) {
-        if (p.spark || p.ash) continue;
+        if (p.spark || p.ash || p.balao) continue;
         ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillStyle = p.color; ctx.fillRect(-5, -3, 10, 6); ctx.restore();
       }
       const beat = M.audio.music.beat().phase;
