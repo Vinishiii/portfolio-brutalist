@@ -33,7 +33,7 @@ M.STORY = {
       ]
     },
     {
-      opp: 'bia', stage: 'ladeira', title: 'PRIMEIRA RINHA — A LADEIRA',
+      opp: 'bia', retry: 'De novo, menino? A ladeira não cansa. Eu também não.', stage: 'ladeira', title: 'PRIMEIRA RINHA — A LADEIRA',
       pre: [
         { who: 'lourdes', text: 'Primeira rinha da noite! Bia Sombrinha, a dona da ladeira, contra o menino do Mestre Cinzas!' },
         { who: 'bia', text: 'Peia na minha ladeira? Aqui o passo é forró, meu bem. Pisa certo ou cai.' },
@@ -46,7 +46,7 @@ M.STORY = {
       patua: true
     },
     {
-      opp: 'mare', stage: 'rio', title: 'SEGUNDA RINHA — O VELHO CHICO',
+      opp: 'mare', retry: 'Voltou pra afundar outra vez? O rio tem paciência. Vamos ver se você tem.', stage: 'rio', title: 'SEGUNDA RINHA — O VELHO CHICO',
       pre: [
         { who: 'mare', text: 'Você veio de longe pra afundar aqui, moço? O rio não tem pressa. Eu também não.' },
         { who: 'zeca', text: 'Água não me assusta. Eu nasci na beira do açude.' },
@@ -60,7 +60,7 @@ M.STORY = {
       patua: true
     },
     {
-      opp: 'tiao', stage: 'sertao', title: 'TERCEIRA RINHA — O SERTÃO',
+      opp: 'tiao', retry: 'Levantou, cabra? Boi bom é o que levanta. Vem.', stage: 'sertao', title: 'TERCEIRA RINHA — O SERTÃO',
       pre: [
         { who: 'tiao', text: 'Lá no sertão a gente não arreda, não. A gente agarra e não larga.' },
         { who: 'zeca', text: 'Então corre atrás, vaqueiro.' },
@@ -75,7 +75,7 @@ M.STORY = {
       patua: true
     },
     {
-      opp: 'bene', stage: 'terreiro', title: 'QUARTA RINHA — O FORRÓ DO BENÉ',
+      opp: 'bene', retry: 'Errou o compasso da última vez. Escuta a zabumba agora, menino.', stage: 'terreiro', title: 'QUARTA RINHA — O FORRÓ DO BENÉ',
       pre: [
         { who: 'bene', text: 'Foi teu Mestre que me ensinou a tocar. E fui eu que ensinei ele a escutar. Hoje ele não escuta mais ninguém.' },
         { who: 'zeca', text: 'Então me ensina o que ele esqueceu.' },
@@ -88,7 +88,7 @@ M.STORY = {
       patua: true
     },
     {
-      opp: 'juvenal', stage: 'pantanal', title: 'QUINTA RINHA — A LAGOA',
+      opp: 'juvenal', retry: 'O fogo te queimou e você voltou. Isso já é mais que o Mestre fez.', stage: 'pantanal', title: 'QUINTA RINHA — A LAGOA',
       pre: [
         { who: 'juvenal', text: 'Eu sou o fogo que o Mestre quer apagar. Se ele vencer a rinha hoje, a Brasa morre. E a cidade dorme pra sempre.' },
         { who: 'zeca', text: '...O Mestre nunca faria isso.' },
@@ -101,7 +101,7 @@ M.STORY = {
       patua: true
     },
     {
-      opp: 'vinicius', stage: 'galpao', title: 'SEXTA RINHA — O GALPÃO',
+      opp: 'vinicius', retry: 'Rodou de novo? Beleza, eu já atualizei o log. Mostra o patch.', stage: 'galpao', title: 'SEXTA RINHA — O GALPÃO',
       pre: [
         { who: 'vinicius', text: 'Zeca! Eu mapeei a rinha inteira hoje: cada golpe, cada passo. Teu padrão tá todo aqui no meu log.' },
         { who: 'zeca', text: 'Então apaga o log, que eu vou mudar de padrão.' },
@@ -114,7 +114,7 @@ M.STORY = {
       patua: true
     },
     {
-      opp: 'cinzas', stage: 'cinzas', boss: true, title: 'RINHA DO FOGO — A PRAÇA DAS CINZAS',
+      opp: 'cinzas', retry: 'Levanta, Zeca. Rosa também levantava. Até o dia em que não levantou mais.', stage: 'cinzas', boss: true, title: 'RINHA DO FOGO — A PRAÇA DAS CINZAS',
       pre: [
         { who: 'cinzas', text: 'Você chegou mais longe do que eu queria, Zeca.' },
         { who: 'zeca', text: 'Por quê, Mestre? A Brasa é da cidade.' },
@@ -128,12 +128,33 @@ M.STORY = {
       ]
     }
   ],
+  interludes: {
+    3: { title: 'MEMÓRIA — A NOITE DE ROSA', pages: [
+      'Trinta anos faz que a Brasa\nsubiu mais alto que devia.\nRosa dançava na praça\ne o Mestre, de longe, sorria.\nQuando o fogo pegou na seda,\nsó restou cinza e agonia.',
+      'Desde então ele guarda a chama\ncomo quem guarda um castigo:\nacende todo São João\ne dorme com o inimigo.\nZeca não sabe de nada.\nTião contou. Eu te digo.' ] },
+    5: { title: 'O QUE O BOITATÁ VIU', pages: [
+      'O Boitatá viu o Mestre\nna beira da lagoa chorar:\n"Se a Brasa cobra uma vida,\neu pago com a de quem for lá.\nMas se o menino aguentar,\nquem sabe eu volte a escutar."',
+      'Juvenal guardou o segredo\nno brilho que leva no olho:\no Mestre não quer matar a festa —\nquer que alguém pague o escolho.\nE o único que pode pagar\né quem ele criou no colo.' ] },
+    6: { title: 'A ÚLTIMA SANFONA', pages: [
+      'Na praça, Bené tocou\num baião que ninguém conhecia.\nDona Lourdes na zabumba,\no povo inteiro em vigia.\nA Brasa, baixa, tremia —\ne o Mestre, enfim, aparecia.' ] }
+  },
+  epilogues: [
+    'ZECA VENTANIA virou guardião da Brasa — e professor de peia dos meninos do açude.',
+    'BIA SOMBRINHA abriu uma escola de forró na ladeira. A sombrinha ainda corta.',
+    'MARÉ BACURI voltou pro Velho Chico. Dizem que o rio ficou mais calmo.',
+    'TIÃO SERTÃO derrubou um boi de novo no São João seguinte. Com um abraço.',
+    'BENÉ SANFONA gravou o baião da rinha. Toca em toda feira de Caruaru.',
+    'JUVENAL BOITATÁ apagou, enfim, o fogo que carregava. Ficou só a luz.',
+    'VINÍCIUS ANDREY colocou a rinha num site. Você está nele.',
+    'MESTRE CINZAS voltou a bater palma. Baixinho. Mas voltou.'
+  ],
   choice: {
     title: 'A BRASA É SUA',
     text: 'A praça está em silêncio. O povo olha pra você. A Brasa, pequena, treme no centro da rinha. O Mestre espera.',
     options: [
       { id: 'acender', label: 'Manter a Brasa acesa', desc: 'A festa continua. Hoje, amanhã, sempre. A rinha nunca para.' },
-      { id: 'descansar', label: 'Deixar a Brasa dormir uma noite', desc: 'Pela Rosa. Pelo Mestre. Uma noite de silêncio — e amanhã o povo decide.' }
+      { id: 'descansar', label: 'Deixar a Brasa dormir uma noite', desc: 'Pela Rosa. Pelo Mestre. Uma noite de silêncio — e amanhã o povo decide.' },
+      { id: 'dividir', label: 'Dividir a Brasa com a cidade', desc: 'Cada casa leva um tição. Nem guardião, nem silêncio: todo mundo cuida.', secret: true }
     ]
   },
   endings: {
@@ -152,6 +173,15 @@ M.STORY = {
       ]
     }
   },
+  endingsExtra: {
+    dividir: {
+      title: 'FINAL VERDADEIRO: A BRASA É DE TODO MUNDO',
+      cordel: [
+        'Zeca partiu a Brasa em mil\ne deu um tição pra cada mão.\nVila Brasa inteira acesa,\nsem dono, sem escuridão.\nO Mestre pegou o dele\ne disse: "Agora é São João."',
+        'Rosa não voltou, é claro,\nmas a praça não dormiu.\nCada janela uma fogueira,\ncada fogueira um sorriso.\nE a rinha? Continua —\nporque ninguém mais precisa.'
+      ]
+    }
+  },
   credits: 'SERTÃO FIGHT BRASIL — A Rinha Nunca Para\nUm jogo de luta brasileiro em xilogravura.\n\nPersonagens, mundo, música e código: criados do zero.\nTudo procedural — nenhum asset externo.\n\nObrigado por jogar. Agora vai lá e ensina alguém a arredar.'
 };
 
@@ -166,3 +196,5 @@ M.SPEAKERS = {
   vinicius: { name: 'Vinícius Andrey', color: '#2aa9b8' },
   lourdes: { name: 'Dona Lourdes (na zabumba)', color: '#1f7a4d' }
 };
+
+Object.assign(M.STORY.endings, M.STORY.endingsExtra);

@@ -177,7 +177,7 @@ M.ui = (function () {
         <div class="stamp">FIM</div><h2>${esc(E.title.replace('FINAL: ', ''))}</h2>
         <div class="stats"><span>Tempo total ${M.fmtTime(stats.frames / 60)}</span><span>Garrafadas ${stats.patuas.length}</span><span>Quedas ${stats.deaths}</span><span>Dificuldade ${diffLabel(stats.difficulty)}</span></div>
         <p class="unlock">✦ MESTRE CINZAS liberado no Versus e no Treino<br>✦ RINHA LIVRE liberada</p>
-        <p class="tiny">Existe outro final. A Brasa ainda tem uma escolha pra você.</p>
+        <p class="tiny">${(() => { const e = M.store.data.progress.endings; return e.length >= 3 ? 'Você viu todos os finais. A Brasa é sua, e de todo mundo.' : e.length === 2 ? 'Os dois caminhos foram vistos. Da próxima vez, a praça abre um terceiro.' : 'Existe outro final. A Brasa ainda tem uma escolha pra você.'; })()}</p>
         <nav><button class="mi" data-go="credits">CRÉDITOS</button><button class="mi" data-go="menu">VOLTAR AO MENU</button></nav>
       </div></div>`, { actions: { credits: () => credits(), menu: () => onDone() } });
     }, { skip: false });
@@ -330,6 +330,12 @@ M.ui = (function () {
           <tr><td>Agarrão</td><td>H (ou J+K)</td><td>Num 6 / ]</td></tr>
           <tr><td>Dash</td><td colspan="2">toque duplo ← ou →</td></tr>
           <tr><td>Golpe corrido</td><td colspan="2">Dash + forte</td></tr>
+          <tr><td>Correr</td><td colspan="2">Dash e segurar pra frente</td></tr>
+          <tr><td>Dash aéreo</td><td colspan="2">toque duplo no ar (1 por pulo)</td></tr>
+          <tr><td>Super pulo</td><td colspan="2">baixo, depois cima</td></tr>
+          <tr><td>Pulo na parede</td><td colspan="2">cima encostado na borda</td></tr>
+          <tr><td>Rolar ao levantar</td><td colspan="2">← ou → no chão</td></tr>
+          <tr><td>Fôlego (especial EX)</td><td colspan="2">K + L juntos (gasta 25% de Energia)</td></tr>
           <tr><td>Pausa</td><td colspan="2">ESC</td></tr></table>
           <p class="tiny">Controle (gamepad) também funciona: analógico/d-pad, X leve, Y forte, B especial, A arreda, RB peia, LB provocar, LT agarrão, Start pausa.</p>
         </div>
@@ -341,6 +347,7 @@ M.ui = (function () {
           <p><b>DEFESA</b>: segure pra trás. Golpes baixos pedem agachar; golpes altos pedem ficar em pé. Agarrões ignoram defesa.</p>
           <p><b>PROVOCAR</b> dá Energia — se ninguém te bater antes. Risco e recompensa.</p>
           <p><b>AGARRÃO</b> (H ou J+K): ignora defesa. <b>ESCAPAR</b>: em um combo de 3+ golpes, aperte ARREDA gastando 30% de Energia.</p>
+          <p><b>FÔLEGO</b> (K+L): especial reforçado — mais dano, armadura na preparação, projétil duplo. Custa 25% de Energia: gastar agora ou guardar pra Peia?</p>
           <p><b>PEIA BRABA</b>: com a barra em 100%, a Peia causa 30% a mais. Soltar aos 70% ou esperar?</p>
           <p><b>SEQUÊNCIAS</b>: leve ▸ leve ▸ forte ▸ especial ▸ peia, se os golpes acertarem. Lançou o oponente pro alto? Aperte PULAR na hora (<b>PULO-CANCEL</b>) e continue no ar.</p>
         </div>
@@ -349,7 +356,9 @@ M.ui = (function () {
     </div></div>`, { onBack, actions: { back: onBack } });
   }
   function credits() {
-    show(`<div class="screen center"><div class="panel"><div class="stamp">CRÉDITOS</div><p class="credits">${esc(M.STORY.credits).replace(/\n/g, '<br>')}</p><nav><button class="mi back" data-go="back">VOLTAR</button></nav></div></div>`, { onBack: menu, actions: { back: menu } });
+    const done = M.store.data.progress.storyDone;
+    const epi = done ? `<h3>O QUE FOI FEITO DE CADA UM</h3><p class="credits epi">${M.STORY.epilogues.map(esc).join('<br>')}</p>` : '';
+    show(`<div class="screen center"><div class="panel wide"><div class="stamp">CRÉDITOS</div>${epi}<p class="credits">${esc(M.STORY.credits).replace(/\n/g, '<br>')}</p><nav><button class="mi back" data-go="back">VOLTAR</button></nav></div></div>`, { onBack: menu, actions: { back: menu } });
   }
 
   return { init, show, hide, title, menu, storyStart, cordel, dialogue, patua, choice, results, ending, charselect, pause, options, howto, credits, portrait };

@@ -115,37 +115,44 @@
     },
     continueStory() {
       const s = M.store.data.story; if (!s) return flow.newStory('brabo');
-      flow.story = { idx: s.idx, patuas: s.patuas || [], difficulty: s.difficulty || 'brabo', frames: s.frames || 0, deaths: s.deaths || 0 };
+      flow.story = { idx: s.idx, patuas: s.patuas || [], difficulty: s.difficulty || 'brabo', frames: s.frames || 0, deaths: s.deaths || 0, fightDeaths: s.fightDeaths || {} };
       flow.storyFight();
     },
-    saveStory() { const s = flow.story; M.store.data.story = { idx: s.idx, patuas: s.patuas, difficulty: s.difficulty, frames: s.frames, deaths: s.deaths }; M.store.save(); },
+    saveStory() { const s = flow.story; M.store.data.story = { idx: s.idx, patuas: s.patuas, difficulty: s.difficulty, frames: s.frames, deaths: s.deaths, fightDeaths: s.fightDeaths || {} }; M.store.save(); },
     storyFight() {
       const S = flow.story; const F = M.STORY.fights[S.idx];
       if (!F) return flow.storyChoice();
       M.match = null; ambient = makeAmbient(F.stage, ['zeca', F.opp]);
       M.state = 'story';
-      M.ui.dialogue(F.pre, F.title, () => {
+      S.fightDeaths = S.fightDeaths || {};
+      const pre = (S.fightDeaths[S.idx] > 0 && F.retry) ? [{ who: F.opp, text: F.retry }].concat(F.pre.slice(1)) : F.pre;
+      M.ui.dialogue(pre, F.title, () => {
         flow.startMatch({ mode: 'story', p1: { id: 'zeca', ctrl: 'human', patuas: S.patuas }, p2: { id: F.opp, ctrl: 'cpu' }, stage: F.stage, rounds: F.tutorial ? 1 : 2, timer: 99, difficulty: S.difficulty, tutorial: !!F.tutorial, boss: !!F.boss, onEnd: r => flow.storyEnd(r) });
       });
     },
     storyEnd(r) {
       const S = flow.story; const F = M.STORY.fights[S.idx]; S.frames += r.frames; M.state = 'results';
       if (r.winnerSide !== 1) {
-        S.deaths++; flow.saveStory();
+        S.deaths++; S.fightDeaths = S.fightDeaths || {}; S.fightDeaths[S.idx] = (S.fightDeaths[S.idx] || 0) + 1; flow.saveStory();
         M.ui.results({ result: r, defeat: true, buttons: [{ id: 'retry', label: 'LEVANTAR E TENTAR DE NOVO', fn: () => flow.storyFight() }, { id: 'menu', label: 'VOLTAR AO MENU', fn: () => M.ui.menu() }] });
         return;
       }
       const after = () => {
+        const inter = M.STORY.interludes[S.idx];
         S.idx++; flow.saveStory();
-        if (F.patua) {
+        const next = () => { if (F.patua) {
           const opts = M.shuffle(M.PATUAS.filter(p => !S.patuas.includes(p.id))).slice(0, 2);
           M.ui.patua(opts, p => { S.patuas.push(p.id); flow.saveStory(); flow.storyFight(); });
-        } else flow.storyFight();
+        } else flow.storyFight(); };
+        if (inter) M.ui.cordel(inter.pages, inter.title, next); else next();
       };
       M.ui.dialogue(F.post, F.title, after);
     },
     storyChoice() {
-      M.ui.choice(M.STORY.choice, id => flow.storyEnding(id));
+      const p = M.store.data.progress; const both = p.endings.includes('acender') && p.endings.includes('descansar');
+      const data = Object.assign({}, M.STORY.choice, { options: M.STORY.choice.options.filter(o => !o.secret || both) });
+      if (both) data.text += ' Desta vez, há um terceiro caminho.';
+      M.ui.choice(data, id => flow.storyEnding(id));
     },
     storyEnding(id) {
       const S = flow.story; const p = M.store.data.progress;

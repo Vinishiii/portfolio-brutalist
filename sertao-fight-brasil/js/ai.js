@@ -30,6 +30,7 @@ M.AI = (function () {
     const r = Math.random();
     const superReady = G.superReady(f);
     if (f.state === 'hitstun' && G.canEscape(f) && Math.random() < p.dodge * 1.5) return set(ai, 'escape', 4);
+    if (f.state === 'knockdown' && f.t > 6 && f.t < 34 && Math.random() < p.dodge * 2) return set(ai, 'roll', 2);
     const proj = G.projectiles.find(pr => pr.owner !== f && Math.sign(pr.vx) === Math.sign(f.x - pr.x) && Math.abs(pr.x - f.x) < 280);
     if (oppAttacking && dist < opp.move.reach + 70 && r < p.react) {
       if (f.dodgeCd <= 0 && Math.random() < p.dodge) return set(ai, 'dodge', 14);
@@ -101,7 +102,7 @@ M.AI = (function () {
         break;
       }
       case 'poke': case 'attack': {
-        if (f.actionable) { const id = chooseAttack(f, dist); pressMove(inp, f, id); ai.seq = ['L', 'H', 'S']; set(ai, 'combo', 30); ai.started = true; }
+        if (f.actionable) { const id = chooseAttack(f, dist); pressMove(inp, f, id); if ((id === 'S' || id === 'dS') && G.axeSide(f) >= 0.5 && Math.random() < 0.35) pr.heavy = true; ai.seq = ['L', 'H', 'S']; set(ai, 'combo', 30); ai.started = true; }
         else if (f.state === 'attack') { /* esperando */ } else h[fwd] = true;
         break;
       }
@@ -119,8 +120,10 @@ M.AI = (function () {
         break;
       }
       case 'escape': { if (f.state === 'hitstun') pr.ginga = true; ai.timer = 0; break; }
+      case 'roll': { if (f.state === 'knockdown') { const away = Math.random() < 0.6; pr[(opp.x > f.x) === away ? 'left' : 'right'] = true; } ai.timer = 0; break; }
       case 'projectile': {
         const mine = G.projectiles.filter(p => p.owner === f).length;
+        if (f.actionable && mine === 0 && G.axeSide(f) >= 0.6 && Math.random() < 0.3 && f.def.moves.S && f.def.moves.S.projectile) { pressMove(inp, f, 'S'); pr.heavy = true; set(ai, 'wait', 20); break; }
         const mv = f.def.moves;
         if (mv.S && mv.S.buff) { if (f.actionable && !(f.ritmo > 0) && dist > 200) { pressMove(inp, f, 'S'); set(ai, 'wait', 10); } else ai.timer = 0; break; }
         if (!(mv.S && mv.S.projectile)) { ai.timer = 0; break; }

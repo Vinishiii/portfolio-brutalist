@@ -27,6 +27,12 @@ Funciona em desktop (teclado ou gamepad) e no celular (controles de toque, melho
 | Agarrão | H (ou J+K) | Num 6 ou ] |
 | Dash | toque duplo ← / → | toque duplo ← / → |
 | Golpe corrido | Dash + K | Dash + forte |
+| Correr | Dash + segurar frente | idem |
+| Dash aéreo | toque duplo no ar | idem |
+| Super pulo | baixo, depois cima | idem |
+| Pulo na parede | cima na borda | idem |
+| Rolar ao levantar | ← ou → no chão | idem |
+| Fôlego (EX) | K + L | Num 2 + Num 3 |
 | Pausa | ESC | ESC |
 
 Variações: agachado + golpe (baixo), frente + forte (comando), dash + forte (golpe corrido), golpes no ar, agachado + especial. Lançadores aceitam pulo-cancel para combos aéreos.
@@ -40,6 +46,8 @@ Variações: agachado + golpe (baixo), frente + forte (comando), dash + forte (g
 - **Energia**: barra única disputada pelos dois. Com 70% libera a Peia; com 100% ela vira **Peia Braba** (+30% de dano).
 - **Arreda**: esquiva com invencibilidade. Perfeita = câmera lenta, muita Energia e um **Contra-ataque** garantido no próximo golpe.
 - **Agarrão** universal (H ou J+K) quebra defesa. **Escapar** de um combo de 3+ golpes custa 30% de Energia.
+- **Fôlego**: K+L gasta 25% de Energia por um especial reforçado (dano, armadura, projétil duplo).
+- **Mobilidade**: corrida, dash aéreo, super pulo, pulo na parede e rolamento ao levantar.
 - **No Compasso**: acertar na batida da zabumba dobra a Energia. Bené Sanfona toca para alargar sua própria janela.
 - **Versus** — dois jogadores no mesmo teclado.
 - **Treino** — boneco configurável (parado, defende, pula, CPU).

@@ -140,7 +140,7 @@ M.Match = class Match {
     this.axe -= Math.sign(this.axe) * 0.00022;
     if (this.timerOn) { this.timeF--; if (this.timeF <= 0) this.timeOver(); }
     if (this.tutorial) this.updateTutorial();
-    if (this.mode === 'training') { for (const f of this.fighters) if (f.neutral && f.hp < f.maxHp && this.frame % 2 === 0 && this.other(f).neutral) f.hp = Math.min(f.maxHp, f.hp + 6); }
+    if (this.mode === 'training') { for (const f of this.fighters) if (f.neutral && f.hp < f.maxHp && this.frame - (f.lastHurt || -999) > 180 && this.other(f).neutral) { f.hp = Math.min(f.maxHp, f.hp + 4); if (this.frame % 30 === 0) this.popup('+', f.x, f.y - 170, M.C.green, 14); } }
     for (const f of this.fighters) if (!f.arretado && f.hp > 0 && f.hp <= f.maxHp * 0.25) { f.arretado = true; this.popup('ARRETADO!', f.x, f.y - 215, M.C.red, 28); this.fx.push({ type: 'ring', x: f.x, y: f.y - 80, r: 130, t: 0, life: 26, color: M.C.red }); M.audio.play('aboio'); M.audio.cheer(0.6); }
     if (this.boss && !this.phase2 && this.p2.hp <= this.p2.maxHp * 0.5) this.startPhase2();
     if (this.phase2) { this.phase2T++; if (this.phase2T === 100) M.audio.music.setMode('boss2'); }
@@ -211,7 +211,7 @@ M.Match = class Match {
       if (seca) { this.popup('DEFESA SECA!', def.x, def.y - 200, M.C.cyan, 22); this.gainAxe(def, 0.06); this.fx.push({ type: 'ring', x: hx, y: hy, r: 50, t: 0, life: 14, color: M.C.cyan }); M.audio.play('axe'); def.backAt = -99; def.stats.secas = (def.stats.secas || 0) + 1; }
       if (!src && att.grounded && (def.x <= 44 || def.x >= M.W - 44)) att.vx = -mv.kb * 0.5 * facing;
       const chip = seca ? 0 : Math.round((mv.chip || 0) * def.mods.chip);
-      if (chip > 0) def.hp = Math.max(mv.super ? 0 : 1, def.hp - chip);
+      if (chip > 0) { def.hp = Math.max(mv.super ? 0 : 1, def.hp - chip); def.lastHurt = this.frame; this.popup('-' + chip, def.x, def.y - 150, '#8d8a84', 14); }
       def.stats.blocks++;
       this.fx.push({ type: 'star', x: hx, y: hy, r: 16, t: 0, life: 10, n: 6, color: '#2aa9b8' });
       this.spark(hx, hy, 5, '#2aa9b8');
@@ -234,8 +234,10 @@ M.Match = class Match {
     if (!mv.super) dmg *= Math.max(0.4, 1 - 0.1 * att.combo);
     if (this.axeSide(att) > 0.5) dmg *= 1.1;
     dmg = Math.round(dmg);
-    if (this.tutorial) dmg = Math.min(dmg, 25);
+    const exB = (!src && att.exMove) ? 1.35 : (src && src.ex ? 1.35 : 1); dmg = Math.round(dmg * exB);
     def.hp -= dmg; if (this.tutorial) def.hp = Math.max(def.hp, 1);
+    def.lastHurt = this.frame;
+    this.popup('-' + dmg, def.x + (att.x < def.x ? 26 : -26), def.y - 150 - Math.min(60, att.combo * 12), counter ? M.C.red : (heavyFlag(mv) ? M.C.yellow : M.C.paper), heavyFlag(mv) ? 22 : 17);
     att.stats.dmg += dmg; att.stats.hits++; att.stats.landed[mv.id] = (att.stats.landed[mv.id] || 0) + 1;
     def.flash = 5; att.moveHit = true;
     const heavy = mv.dmg >= 90 || mv.super;
@@ -244,11 +246,12 @@ M.Match = class Match {
       def.crouching = def.crouching && mv.type !== 'high';
       def.hurtKind = (hb.y + hb.h > def.y - 50) ? 'lo' : 'hi';
       const isLast = src ? (!src.hits || src.hitCount >= src.hits) : (!mv.hits || att.hitCount >= mv.hits);
+      const launchBase = mv.launch ? mv.launch + (exB > 1 ? 3 : 0) : 0;
       def.vx = (isLast ? mv.kb : Math.min(mv.kb, 1)) * facing / def.def.stats.weight;
       if (!isLast) def.t = Math.max(def.t, (mv.hitInterval || 6) + 6);
       if ((mv.launch && isLast) || !def.grounded) {
         if (!def.grounded) def.juggle = (def.juggle || 0) + 1; else def.juggle = 0;
-        const v = def.juggle >= 3 ? 2.5 : (isLast ? (mv.launch || 7) : 3);
+        const v = def.juggle >= 3 ? 2.5 : (isLast ? (launchBase || 7) : 3);
         def.grounded = false; def.vy = -v / Math.sqrt(def.def.stats.weight); def.launched = true; def.t = 60; def.crouching = false;
       }
       if (mv.knockdown) def.kdPending = true;
@@ -303,6 +306,11 @@ M.Match = class Match {
     f.stats.lastTaunt = this.frame;
     M.audio.cheer(0.5); this.crowdExcite = Math.min(1.5, this.crowdExcite + 0.4);
   }
+  spendEx(f) {
+    this.axe = M.clamp(this.axe - (f.side === 1 ? 0.25 : -0.25), -1, 1);
+    this.popup('FÔLEGO!', f.x, f.y - 215, M.C.magenta, 26); this.fx.push({ type: 'ring', x: f.x, y: f.y - 80, r: 90, t: 0, life: 16, color: M.C.magenta });
+    this.fx.push({ type: 'flash', t: 0, life: 6, color: '#c7267a', alpha: 0.22 }); M.audio.play('aboio'); f.superFlash = 20;
+  }
   canEscape(f) { const opp = this.other(f); return f.state === 'hitstun' && opp.combo >= 3 && this.axeSide(f) >= 0.3 && this.phase === 'fight'; }
   escape(f) {
     const opp = this.other(f);
@@ -312,7 +320,7 @@ M.Match = class Match {
     this.popup('ESCAPOU!', f.x, f.y - 205, M.C.cyan, 26); this.fx.push({ type: 'ring', x: f.x, y: f.y - 80, r: 100, t: 0, life: 20, color: M.C.cyan });
     this.fx.push({ type: 'flash', t: 0, life: 6, color: '#2aa9b8', alpha: 0.25 }); M.audio.play('perfect'); this.slow = 12; this.slowAcc = 0;
   }
-  burnTick(f) { this.popup('-10', f.x, f.y - 170, M.C.orange, 16); M.audio.play('burn'); if (f.hp <= 0) this.ko(f); }
+  burnTick(f) { f.lastHurt = this.frame; this.popup('-10', f.x, f.y - 170, M.C.orange, 16); M.audio.play('burn'); if (f.hp <= 0) this.ko(f); }
 
   tryThrow(att, def, mv) {
     if (att.throwing || att.threw) return;
@@ -326,8 +334,9 @@ M.Match = class Match {
     if (mv.throw.drain) this.gainAxe(att, mv.throw.drain, 'ROUBOU A ENERGIA!');
   }
   throwRelease(att, def, mv) {
-    const dmg = Math.round(mv.dmg * att.mods.dmg * (this.tutorial ? 0.15 : 1));
-    def.hp -= dmg; if (this.tutorial) def.hp = Math.max(1, def.hp);
+    const dmg = Math.round(mv.dmg * att.mods.dmg * (att.exMove ? 1.35 : 1));
+    def.hp -= dmg; if (this.tutorial) def.hp = Math.max(1, def.hp); def.lastHurt = this.frame;
+    this.popup('-' + dmg, def.x, def.y - 150, M.C.yellow, 22);
     att.stats.dmg += dmg; att.stats.hits++; att.stats.landed[mv.id] = (att.stats.landed[mv.id] || 0) + 1;
     att.combo = 1; att.comboDmg = dmg; att.comboShow = 70; def.flash = 5;
     this.shake(7); this.fx.push({ type: 'star', x: def.x, y: def.y - 60, r: 40, t: 0, life: 14, n: 10, color: '#fff8e8' }); this.confetti(def.x, def.y - 60, 12); M.audio.play('hitH');
@@ -350,7 +359,7 @@ M.Match = class Match {
   }
   spawnProjectile(f, mv) {
     const p = mv.projectile;
-    this.projectiles.push({ owner: f, mv, kind: p.kind, x: f.x + f.facing * 50, y: f.y - p.y - p.h / 2, vx: p.vx * f.facing, vy: p.vy || 0, w: p.w, h: p.h, dir: f.facing, life: p.life, age: 0, hits: p.hits || 1, hitCount: 0, lastHit: -99, interval: p.hitInterval || 0, dead: false, dodged: false });
+    this.projectiles.push({ owner: f, mv, kind: p.kind, x: f.x + f.facing * 50, y: f.y - p.y - p.h / 2, vx: p.vx * f.facing * (f.exMove ? 1.15 : 1), vy: p.vy || 0, w: p.w * (f.exMove ? 1.3 : 1), h: p.h * (f.exMove ? 1.3 : 1), dir: f.facing, life: p.life, age: 0, hits: (p.hits || 1) + (f.exMove && !mv.super ? 1 : 0), hitCount: 0, lastHit: -99, interval: p.hitInterval || 8, dead: false, dodged: false, ex: !!f.exMove });
     M.audio.play('projectile');
     if (p.kind === 'ember') this.embers(f.x + f.facing * 50, f.y - p.y, 6);
   }
@@ -436,14 +445,14 @@ M.Match = class Match {
   // ---------------- tutorial ----------------
   updateTutorial() {
     this.tutT++;
-    this.p2.hp = Math.min(this.p2.maxHp, this.p2.hp + 4);
-    if (this.frame % 2 === 0) this.p1.hp = Math.min(this.p1.maxHp, this.p1.hp + 2);
+    if (this.p2.hp < this.p2.maxHp * 0.3) this.p2.hp = Math.min(this.p2.maxHp, this.p2.hp + 3);
+    if (this.p1.hp < this.p1.maxHp * 0.3 && this.frame % 2 === 0) this.p1.hp = Math.min(this.p1.maxHp, this.p1.hp + 2);
     const step = M.TUTORIAL[this.tut.step]; if (!step) return;
     this.p2.ai.tutorial = step.mestre;
     if (step.holdEnergy) this.axe = Math.max(this.axe, 0.72);
     if (step.check(this)) {
       if (step.final) { this.tutorialEnd(); return; }
-      this.tut.step++; this.tutT = 0; M.audio.play('patua'); this.fx.push({ type: 'ring', x: M.W / 2, y: 470, r: 80, t: 0, life: 20, color: M.C.yellow });
+      this.tut.step++; this.tutT = 0; M.audio.play('patua'); this.p1.hp = this.p1.maxHp; this.p2.hp = this.p2.maxHp; this.fx.push({ type: 'ring', x: M.W / 2, y: 470, r: 80, t: 0, life: 20, color: M.C.yellow });
       if (M.TUTORIAL[this.tut.step] && M.TUTORIAL[this.tut.step].final) this.p2.ai.tutorial = 'passive';
     }
   }
@@ -505,6 +514,8 @@ M.Match = class Match {
       ctx.fillStyle = pct > 0.5 ? C.green : pct > 0.25 ? C.yellow : C.orange; ctx.fillRect(right ? x0 + bw - w1 : x0, y, w1, bh);
       ctx.fillStyle = 'rgba(255,248,232,0.25)'; ctx.fillRect(right ? x0 + bw - w1 : x0, y, w1, 6);
       ctx.strokeStyle = C.ink; ctx.lineWidth = 2; for (let i = 1; i < 10; i++) { const px = x0 + bw * i / 10; ctx.beginPath(); ctx.moveTo(px, y); ctx.lineTo(px, y + bh); ctx.stroke(); }
+      M.text(ctx, Math.ceil(pct * 100) + '%', right ? x0 + 8 : x0 + bw - 8, y + bh / 2 + 1, { size: 13, align: right ? 'left' : 'right', color: C.paper, lw: 2.5 });
+      if (f.hp < f.maxHp && this.frame - (f.lastHurt || -999) < 30 && this.frame % 6 < 3) { ctx.fillStyle = 'rgba(255,248,232,0.35)'; ctx.fillRect(right ? x0 + bw - w2 : x0, y, w2, bh); }
       M.text(ctx, f.def.name.toUpperCase(), right ? x0 + bw : x0, y + bh + 16, { size: 17, align: right ? 'right' : 'left', color: C.paper, lw: 3 });
       if (f.ctrl === 'cpu') M.text(ctx, 'CPU', right ? x0 : x0 + bw, y + bh + 16, { size: 12, align: right ? 'left' : 'right', color: '#8d8a84', lw: 2 });
       for (let i = 0; i < (this.winsNeeded <= 3 ? this.winsNeeded : 0); i++) { const sx = right ? x0 + bw - 14 - i * 26 : x0 + 14 + i * 26; M.star(ctx, sx, y + bh + 40, 9, 4, 5, -Math.PI / 2); ctx.fillStyle = i < this.wins[f.side - 1] ? C.yellow : '#3a2a1e'; ctx.fill(); ctx.lineWidth = 2.5; ctx.strokeStyle = C.ink; ctx.stroke(); }
@@ -595,6 +606,7 @@ M.Match = class Match {
     if (this.phase === 'fight' && this.frame < 240 && this.mode !== 'training' && !this.tutorial && this.p1.ctrl === 'human') { }
   }
 };
+function heavyFlag(mv) { return mv.dmg >= 90 || mv.super; }
 function wrapText(ctx, text, x, y, maxW, size, color) {
   ctx.font = `${size}px ${M.FONT_TEXT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = color;
   const words = text.split(' '); const lines = []; let line = '';

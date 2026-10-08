@@ -39,6 +39,7 @@ M.render = (function () {
     ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]); ctx.lineTo(pts[1][0], pts[1][1]); ctx.lineTo(pts[2][0], pts[2][1]);
     ctx.lineWidth = w + 6; ctx.strokeStyle = ink; ctx.stroke();
     ctx.lineWidth = w; ctx.strokeStyle = color; ctx.stroke();
+    ctx.save(); ctx.globalAlpha = 0.16; ctx.translate(2.5, 2.5); ctx.lineWidth = w * 0.4; ctx.strokeStyle = INK; ctx.stroke(); ctx.restore();
   }
   function dot(ctx, p, r, color, ink) { ctx.beginPath(); ctx.arc(p[0], p[1], r, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = ink; ctx.stroke(); }
 
@@ -65,6 +66,7 @@ M.render = (function () {
     ctx.beginPath(); ctx.moveTo(rig.hip[0], rig.hip[1]); ctx.lineTo(rig.neck[0], rig.neck[1]);
     ctx.lineWidth = 30 * bw * s + 6; ctx.strokeStyle = ink; ctx.stroke();
     ctx.lineWidth = 30 * bw * s; ctx.strokeStyle = col(C.torso); ctx.stroke();
+    if (!sil && !flash) { ctx.save(); ctx.globalAlpha = 0.14; ctx.translate(4, 3); ctx.lineWidth = 14 * bw * s; ctx.strokeStyle = INK; ctx.stroke(); ctx.restore(); }
     const D = def.details || [];
     if (!sil && !flash && D.includes('vest')) {
       ctx.beginPath(); ctx.moveTo(rig.hip[0], rig.hip[1] - 6); ctx.lineTo(rig.neck[0], rig.neck[1] + 2);
@@ -276,6 +278,8 @@ M.render = (function () {
     const def = f.def;
     ctx.save();
     ctx.translate(f.x, f.y); ctx.scale(f.facing, 1);
+    const sq = f.squash || 0; if (sq > 0.02) ctx.scale(1 + sq * 0.16, 1 - sq * 0.16);
+    else if (!f.grounded && f.vy < -7) ctx.scale(0.95, 1.06);
     const rig = computeRig(f.pose, def);
     const o = Object.assign({
       flash: f.flash > 0, angry: f.state === 'attack', hurt: f.state === 'hitstun' || f.state === 'knockdown' || f.state === 'ko' || f.state === 'thrown',
@@ -315,6 +319,7 @@ M.render = (function () {
   function drawProjectile(ctx, p) {
     const t = p.age;
     ctx.save(); ctx.translate(p.x, p.y); ctx.scale(p.dir, 1);
+    if (p.ex) { ctx.shadowColor = '#c7267a'; ctx.shadowBlur = 18; ctx.scale(1.25, 1.25); }
     ctx.lineWidth = 4; ctx.strokeStyle = INK; ctx.lineJoin = 'round';
     switch (p.kind) {
       case 'wave': {

@@ -21,7 +21,7 @@ M.Fighter = class Fighter {
     this.held = { fwd: false, back: false, down: false, up: false };
     this.launched = false; this.kdPending = false; this.hurtKind = 'hi'; this.extraRec = 0;
     this.superFlash = 0; this.armorNow = false; this.throwing = null; this.threw = false; this.throwT = 0;
-    this.forwardDodge = false; this.poseFrom = M.poses.S.idle; this.moveHit = false; this.spawned = false; this.counterWin = 0; this.ritmo = 0; this.superBoost = 1; this.lag = 0; this.backAt = -99; this.arretado = false;
+    this.forwardDodge = false; this.poseFrom = M.poses.S.idle; this.moveHit = false; this.spawned = false; this.counterWin = 0; this.ritmo = 0; this.superBoost = 1; this.lag = 0; this.backAt = -99; this.arretado = false; this.exMove = false; this.ex = false; this.airDashed = false; this.airDashT = 0; this.squash = 0; this.downHeld = -99; this.lastHurt = -999;
     this.hitIds = new Set(); this.hitCount = 0; this.lastHitFrame = -99; this.dodgedBy = null;
     this.stats = this.stats || { hits: 0, blocks: 0, perfect: 0, supers: 0, taunts: 0, jumps: 0, landed: {}, dmg: 0 };
     this.updatePose();
@@ -71,6 +71,8 @@ M.Fighter = class Fighter {
     h.back = this.facing === 1 ? inp.held.left : inp.held.right;
     h.down = inp.held.down; h.up = inp.held.up;
     if (h.back && !this.wasBack) this.backAt = G.frame; this.wasBack = h.back;
+    if (h.down) this.downHeld = G.frame;
+    if (this.squash > 0) this.squash *= 0.78;
     const dashF = this.facing === 1 ? inp.dashRight : inp.dashLeft;
     const dashB = this.facing === 1 ? inp.dashLeft : inp.dashRight;
     if (this.invuln > 0) this.invuln--;
@@ -92,8 +94,8 @@ M.Fighter = class Fighter {
         this.crouching = false;
         if (this.tryAct(G, dashF, dashB, false)) break;
         if (h.down) { this.state = 'crouch'; this.crouching = true; this.vx = 0; }
-        else if (h.fwd) { this.state = 'walk'; this.vx = this.def.stats.speed * this.mods.speed * lagK * this.facing; }
-        else if (h.back) { this.state = 'walk'; this.vx = -this.def.stats.speed * 0.82 * this.mods.speed * lagK * this.facing; }
+        else if (h.fwd) { this.state = 'walk'; this.vx = this.def.stats.speed * 1.12 * this.mods.speed * lagK * this.facing; }
+        else if (h.back) { this.state = 'walk'; this.vx = -this.def.stats.speed * 0.9 * this.mods.speed * lagK * this.facing; }
         else { this.state = 'idle'; this.vx = 0; }
         break;
       }
@@ -104,6 +106,14 @@ M.Fighter = class Fighter {
           if (this.buf.heavy > 0) { this.buf.heavy = 0; this.startMove('aH', G); break; }
           if (this.buf.light > 0) { this.buf.light = 0; this.startMove('aL', G); break; }
         }
+        if ((dashF || dashB) && !this.airDashed && this.t > 3) {
+          this.airDashed = true; this.airDashT = 10; this.vx = (dashF ? 1 : -1) * this.def.stats.dashV * 0.9 * this.mods.speed * this.facing; this.vy = Math.min(this.vy, 0);
+          G.fx.push({ type: 'dust', x: this.x, y: this.y - 60, t: 0, life: 14, color: '#fff8e8' }); M.audio.play('dash'); break;
+        }
+        if (this.buf.up > 0 && this.jumps >= this.def.stats.maxJumps && (this.x <= 46 || this.x >= M.W - 46) && this.vy > -5 && this.t > 4) {
+          this.buf.up = 0; this.vy = this.def.stats.jumpV * 0.92; this.vx = (this.x <= 46 ? 1 : -1) * this.def.stats.airSpeed * 1.7; this.airDashed = false;
+          G.fx.push({ type: 'dust', x: this.x, y: this.y - 40, t: 0, life: 16, color: '#fff8e8' }); G.popup('PULO NA PAREDE!', this.x, this.y - 120, '#2aa9b8', 14); M.audio.play('jump'); break;
+        }
         if (this.buf.up > 0 && this.jumps < this.def.stats.maxJumps && this.t > 6) {
           this.buf.up = 0; this.jumps++; this.vy = this.def.stats.jumpV * 0.9;
           this.vx = (h.fwd ? 1 : h.back ? -1 : 0) * this.def.stats.airSpeed * this.facing;
@@ -113,6 +123,8 @@ M.Fighter = class Fighter {
       }
       case 'dash': {
         this.t++; this.vx *= 0.93;
+        if (this.t >= 9 && this.t <= 14 && h.fwd) { this.t = 9; this.vx = this.def.stats.dashV * 0.72 * this.mods.speed * this.facing; this.running = true; if (G.frame % 10 === 0) G.dust(this); }
+        else this.running = false;
         if (this.t >= 2 && this.buf.heavy > 0 && this.def.moves.dH) { this.buf.heavy = 0; this.startMove('dH', G); G.popup('CORRIDO!', this.x, this.y - 200, '#f2b70c', 16); break; }
         if (this.t >= 5 && this.tryAct(G, false, false, true)) break;
         if (this.t >= 15) { this.state = 'idle'; this.vx = 0; }
@@ -139,8 +151,13 @@ M.Fighter = class Fighter {
         break;
       }
       case 'blockstun': { this.vx *= 0.8; this.t--; if (this.t <= 0) this.state = this.crouching ? 'crouch' : 'idle'; break; }
-      case 'knockdown': { this.vx *= 0.8; this.t--; if (this.t <= 0) { this.state = 'getup'; this.t = 18; this.invuln = 26; } break; }
-      case 'getup': { this.vx = 0; this.t--; if (this.t <= 0) this.state = 'idle'; break; }
+      case 'knockdown': {
+        this.vx *= 0.8; this.t--;
+        if (this.t > 4 && this.t < 36 && (inp.pressed.left || inp.pressed.right)) { const dir = inp.pressed.right ? 1 : -1; this.state = 'getup'; this.t = 16; this.invuln = 24; this.vx = dir * 7; this.rolling = true; G.dust(this); M.audio.play('dash'); G.popup('ROLOU!', this.x, this.y - 90, '#fff8e8', 14); break; }
+        if (this.t <= 0) { this.state = 'getup'; this.t = 18; this.invuln = 26; this.rolling = false; }
+        break;
+      }
+      case 'getup': { this.vx *= this.rolling ? 0.9 : 0; this.t--; if (this.t <= 0) { this.state = 'idle'; this.rolling = false; } break; }
       case 'thrown': { this.t++; break; }
     }
     this.physics(G);
@@ -151,6 +168,7 @@ M.Fighter = class Fighter {
     const h = this.held, mv = this.def.moves;
     if (this.buf.mandinga > 0 && G.superReady(this)) { this.buf.mandinga = 0; return this.startMove('M', G); }
     if (this.buf.throw > 0 || (this.buf.light >= 6 && this.buf.heavy >= 6)) { this.buf.throw = 0; this.buf.light = 0; this.buf.heavy = 0; return this.startMove('TH', G); }
+    if (this.buf.heavy >= 6 && this.buf.special >= 6 && G.axeSide(this) >= 0.25) { this.buf.heavy = 0; this.buf.special = 0; this.ex = true; const ok = this.startMove(h.down && mv.dS ? 'dS' : 'S', G); if (ok) G.spendEx(this); this.ex = false; return ok; }
     if (this.buf.special > 0) { this.buf.special = 0; return this.startMove(h.down && mv.dS ? 'dS' : 'S', G); }
     if (this.buf.heavy > 0) { this.buf.heavy = 0; return this.startMove(h.down ? 'cH' : (h.fwd && mv.fH ? 'fH' : 'H'), G); }
     if (this.buf.light > 0) { this.buf.light = 0; return this.startMove(h.down ? 'cL' : 'L', G); }
@@ -159,14 +177,16 @@ M.Fighter = class Fighter {
     if (fromDash) return false;
     if (this.buf.taunt > 0) { this.buf.taunt = 0; this.state = 'taunt'; this.t = 0; this.vx = 0; this.stats.taunts++; M.audio.play('taunt'); return true; }
     if (dashF) { this.state = 'dash'; this.t = 0; this.vx = this.def.stats.dashV * this.mods.speed * (this.lag > 0 ? 0.65 : 1) * this.facing; G.dust(this); M.audio.play('dash'); return true; }
-    if (dashB) { this.state = 'backdash'; this.t = 0; this.vx = -this.def.stats.dashV * 0.8 * this.mods.speed * this.facing; this.invuln = 7; G.dust(this); M.audio.play('dash'); return true; }
+    if (dashB) { this.state = 'backdash'; this.t = 0; this.vx = -this.def.stats.dashV * 0.95 * this.mods.speed * this.facing; this.invuln = 7; G.dust(this); M.audio.play('dash'); return true; }
     return false;
   }
   jump(G) {
     this.state = 'jump'; this.t = 0; this.grounded = false; this.jumps = 1; this.airActs = 0; this.crouching = false;
-    this.vy = this.def.stats.jumpV;
-    this.vx = (this.held.fwd ? 1 : this.held.back ? -1 : 0) * this.def.stats.airSpeed * this.mods.speed * this.facing;
-    this.stats.jumps++; G.dust(this); M.audio.play('jump');
+    const sj = G.frame - this.downHeld <= 8 && !this.held.down;
+    this.vy = this.def.stats.jumpV * (sj ? 1.22 : 1);
+    this.vx = (this.held.fwd ? 1 : this.held.back ? -1 : 0) * this.def.stats.airSpeed * (sj ? 1.3 : 1) * this.mods.speed * this.facing;
+    this.stats.jumps++; G.dust(this); M.audio.play('jump'); this.squash = 0; this.superJump = sj;
+    if (sj) G.fx.push({ type: 'lines', x: this.x, y: this.y - 20, r: 30, t: 0, life: 10, rot: 0, color: '#fff8e8' });
   }
   startDodge(G, forward) {
     this.state = 'dodge'; this.t = 0; this.forwardDodge = !!forward; this.invuln = 13; this.crouching = false;
@@ -178,7 +198,7 @@ M.Fighter = class Fighter {
     const mv = this.def.moves[id]; if (!mv) return false;
     if (mv.air && this.grounded) return false;
     if (!mv.air && !this.grounded) return false;
-    this.state = 'attack'; this.move = mv; this.mf = 0; this.t = 0; this.hitIds = new Set(); this.hitCount = 0; this.lastHitFrame = -99;
+    this.state = 'attack'; this.move = mv; this.mf = 0; this.t = 0; this.hitIds = new Set(); this.hitCount = 0; this.lastHitFrame = -99; this.exMove = this.ex;
     this.moveHit = false; this.spawned = false; this.extraRec = 0; this.dodgedBy = null; this.throwing = null; this.threw = false; this.throwT = 0;
     if (this.grounded) this.vx = 0;
     this.crouching = !!mv.crouch; this.poseFrom = this.pose;
@@ -192,7 +212,7 @@ M.Fighter = class Fighter {
     if (!this.throwing) this.mf++;
     const f = this.mf;
     if (mv.invuln && f >= mv.invuln[0] && f <= mv.invuln[1]) this.invuln = Math.max(this.invuln, 1);
-    this.armorNow = !!(mv.armor && f >= mv.armor[0] && f <= mv.armor[1]);
+    this.armorNow = !!(mv.armor && f >= mv.armor[0] && f <= mv.armor[1]) || (this.exMove && f <= mv.startup);
     if (mv.move) for (const m of mv.move) if (f >= m.f && f < m.t) { this.x += (m.vx || 0) * this.facing; if (m.vy !== undefined && !this.grounded) this.vy = m.vy; }
     if (mv.glide && !this.grounded) { this.vy = Math.min(this.vy, 1.4); this.x += this.def.stats.airSpeed * 0.9 * this.facing * (this.held.fwd ? 1 : this.held.back ? -0.6 : 0.45); }
     if (this.grounded && !mv.move) this.vx = 0;
@@ -202,7 +222,7 @@ M.Fighter = class Fighter {
       if (mv.trap) G.spawnTrap(this, mv);
       if (mv.fx === 'wave') G.fx.push({ type: 'wave', x: this.x, y: this.y - 80, t: 0, life: 30, color: '#f2b70c' });
       if (mv.fx === 'arc') G.fx.push({ type: 'arc', x: this.x + this.facing * 30, y: this.y - 80, r: 50, dir: this.facing, t: 0, life: 14, color: this.def.colors.accent });
-      if (mv.buff) { this.ritmo = mv.buff; G.popup('NO TOQUE!', this.x, this.y - 240, '#f2b70c', 24); G.fx.push({ type: 'ring', x: this.x, y: this.y - 80, r: 110, t: 0, life: 24, color: '#f2b70c' }); }
+      if (mv.buff) { this.ritmo = mv.buff * (this.exMove ? 2 : 1); G.popup('NO TOQUE!', this.x, this.y - 240, '#f2b70c', 24); G.fx.push({ type: 'ring', x: this.x, y: this.y - 80, r: 110, t: 0, life: 24, color: '#f2b70c' }); }
       if (mv.axe) G.gainAxe(this, mv.axe, mv.buff ? 'ENERGIA!' : 'ABOIO!');
     }
     if (mv.throw) {
@@ -238,7 +258,8 @@ M.Fighter = class Fighter {
   physics(G) {
     this.x += this.vx;
     if (!this.grounded) {
-      this.vy += 0.72; this.y += this.vy;
+      if (this.airDashT > 0) { this.airDashT--; this.vy = 0; } else this.vy += 0.72;
+      this.y += this.vy;
       if (this.y >= M.GROUND) { this.y = M.GROUND; this.grounded = true; this.vy = 0; this.onLand(G); }
     }
     const minX = 42, maxX = M.W - 42;
@@ -255,7 +276,7 @@ M.Fighter = class Fighter {
       case 'dodge': break;
       default: this.vx = 0;
     }
-    this.launched = false; this.jumps = 0; this.airActs = 0; this.juggle = 0;
+    this.launched = false; this.jumps = 0; this.airActs = 0; this.juggle = 0; this.airDashed = false; this.airDashT = 0; this.squash = 1;
   }
   knockdown(G, hard) {
     this.state = 'knockdown'; this.t = hard ? 42 : 36; this.vx *= 0.4; this.crouching = false; this.kdPending = false; this.move = null;
@@ -282,7 +303,7 @@ M.Fighter = class Fighter {
       case 'blockstun': pose = this.crouching ? S.blockC : S.block; break;
       case 'knockdown': pose = S.down; break;
       case 'ko': pose = this.grounded ? S.ko : S.hurtAir; break;
-      case 'getup': pose = P.blend(S.getup, S.idle, M.easeInOut(1 - this.t / 18)); break;
+      case 'getup': pose = this.rolling ? Object.assign({}, S.down, { rot: -90 + (16 - this.t) * 22 * (this.vx * this.facing >= 0 ? 1 : -1), hy: 40 }) : P.blend(S.getup, S.idle, M.easeInOut(1 - this.t / 18)); break;
       case 'thrown': pose = S.thrown; break;
       case 'attack': {
         const mv = this.move, f = this.mf;
