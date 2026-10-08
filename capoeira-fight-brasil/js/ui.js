@@ -28,6 +28,11 @@ M.ui = (function () {
     current = o; items = Array.from(root.querySelectorAll('.mi')); idx = o.idx || 0; focus();
     items.forEach((el, i) => { el.addEventListener('mouseenter', () => { idx = i; focus(); }); el.addEventListener('click', () => M.audio.play('ui')); });
     root.querySelectorAll('[data-go]').forEach(el => el.addEventListener('click', () => { const fn = o.actions && o.actions[el.dataset.go]; if (fn) fn(el); }));
+    if (o.onBack && o.showBack !== false) {
+      const b = document.createElement('button'); b.className = 'btn backbtn'; b.innerHTML = '&#9666; ' + (o.backLabel || 'VOLTAR');
+      b.addEventListener('click', () => { M.audio.play('uiBack'); o.onBack(); });
+      root.firstElementChild ? root.firstElementChild.appendChild(b) : root.appendChild(b);
+    }
     return root;
   }
   function hide() { stopTyping(); root.innerHTML = ''; root.classList.remove('active'); current = null; items = []; }
@@ -200,7 +205,7 @@ M.ui = (function () {
         <button class="btn primary" data-go="go" id="csGo">LUTAR!</button>
       </div>
     </div>`, {
-      onBack: () => { if (sel.step === 2) { sel.step = 1; refresh(); } else menu(); },
+      showBack: false, onBack: () => { if (sel.step === 2) { sel.step = 1; refresh(); } else menu(); },
       actions: { back: () => menu(), stPrev: () => { sel.stage = (sel.stage + stages.length - 1) % stages.length; refresh(); }, stNext: () => { sel.stage = (sel.stage + 1) % stages.length; refresh(); }, dfPrev: () => cycleDiff(-1), dfNext: () => cycleDiff(1), go: () => go() },
       onKey: e => {
         const c = e.code;
@@ -271,7 +276,7 @@ M.ui = (function () {
       </nav>
       <p class="tiny">P1: WASD • J leve • K forte • L especial • H agarrão • ESPAÇO ginga • U mandinga • O provoca</p>
     </div></div>`, {
-      onBack: opts.resume,
+      onBack: opts.resume, backLabel: 'CONTINUAR',
       actions: {
         resume: opts.resume, restart: opts.restart, quit: opts.quit, options: () => options(() => pause(opts)),
         dummy: () => { const i = dummies.findIndex(d => d[0] === M.match.dummyMode); M.match.dummyMode = dummies[(i + 1) % dummies.length][0]; document.getElementById('dummyLbl').textContent = dummies[(i + 1) % dummies.length][1]; }
@@ -283,7 +288,7 @@ M.ui = (function () {
   function options(onBack) {
     const s = M.store.data.settings;
     const tog = (k, label) => `<button class="mi tog" data-go="${k}">${label} <b>${s[k] ? 'LIGADO' : 'DESLIGADO'}</b></button>`;
-    show(`<div class="screen center overlay"><div class="panel">
+    show(`<div class="screen center overlay"><div class="panel compact">
       <div class="stamp">OPÇÕES</div>
       <label class="slider">VOLUME <input type="range" min="0" max="1" step="0.05" value="${s.volume}" id="vol"></label>
       <nav>
