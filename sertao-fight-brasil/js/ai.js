@@ -5,9 +5,9 @@
 // ============================================================
 M.AI = (function () {
   const PROFILES = {
-    novato: { react: 0.1, think: 20, aggro: 0.4, block: 0.3, dodge: 0.04, combo: 0.25, mistake: 0.15, antiair: 0.15, superUse: 0.35 },
+    novato: { react: 0.06, think: 22, aggro: 0.38, block: 0.2, dodge: 0.03, combo: 0.15, mistake: 0.2, antiair: 0.1, superUse: 0.25 },
     brabo: { react: 0.42, think: 12, aggro: 0.55, block: 0.6, dodge: 0.25, combo: 0.6, mistake: 0.08, antiair: 0.55, superUse: 0.7 },
-    lendario: { react: 0.72, think: 7, aggro: 0.72, block: 0.8, dodge: 0.45, combo: 0.9, mistake: 0.02, antiair: 0.8, superUse: 0.9 }
+    lendario: { react: 0.82, think: 5, aggro: 0.78, block: 0.85, dodge: 0.5, combo: 0.95, mistake: 0.01, antiair: 0.85, superUse: 0.95 }
   };
   function make(difficulty, def, extra) {
     const p = Object.assign({}, PROFILES[difficulty] || PROFILES.brabo, extra || {});

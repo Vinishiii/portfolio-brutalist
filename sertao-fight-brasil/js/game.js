@@ -4,7 +4,7 @@
 // arremessos, chefe, tutorial, câmera e HUD.
 // ============================================================
 M.TUTORIAL = [
-  { text: 'Use A / D (ou ← →) para andar. Chegue perto do Mestre.', check: G => Math.abs(G.p1.x - G.p2.x) < 170, mestre: 'passive' },
+  { text: 'SPARRING: o Mestre luta de verdade. Use A / D (ou ← →) para andar e chegue perto dele.', check: G => Math.abs(G.p1.x - G.p2.x) < 170, mestre: 'passive' },
   { text: 'W = pular. Pule duas vezes. (Segure pra frente pra pular por cima dele.)', check: G => G.p1.stats.jumps >= 2, mestre: 'passive' },
   { text: 'J = golpe leve. Acerte o Mestre 3 vezes. Dica: J, J, K vira uma sequência!', check: G => G.p1.stats.hits >= 3, mestre: 'passive' },
   { text: 'K = golpe forte. Agachado (S + K) é a RASTEIRA, que derruba. Acerte uma.', check: G => (G.p1.stats.landed.cH || 0) >= 1, mestre: 'passive' },
@@ -14,7 +14,7 @@ M.TUTORIAL = [
   { text: 'ESPAÇO = ARREDA (esquiva). Esquive NO MOMENTO do golpe: ESQUIVA PERFEITA.', check: G => G.tut.perfect >= 1, mestre: 'attack' },
   { text: 'A barra de ENERGIA é o público. Golpes variados, esquivas e acertos NO COMPASSO do berimbau enchem seu lado. Chegue a 70%.', check: G => G.axe >= 0.7, mestre: 'dummy' },
   { text: 'U = PEIA! Solte sua técnica máxima.', check: G => G.p1.stats.supers >= 1, mestre: 'passive', holdEnergy: true },
-  { text: '"Chega por hoje, menino. A rinha escuta quem escuta a rinha." — Mestre Cinzas', check: G => G.tutT > 220, mestre: 'passive', final: true }
+  { text: '"Chega por hoje, menino. A rinha escuta quem escuta a rinha." — Mestre Cinzas', check: G => G.tutT > 30, mestre: 'passive', final: true }
 ];
 
 M.Match = class Match {
@@ -27,7 +27,7 @@ M.Match = class Match {
       if (cfg.mods) Object.assign(f.mods, cfg.mods);
       if (cfg.patuas) { f.patuas = cfg.patuas.slice(); for (const id of f.patuas) { const pt = M.PATUAS.find(p => p.id === id); if (pt) pt.apply(f.mods); } }
       f.applyMods();
-      if (f.ctrl === 'cpu') f.ai = M.AI.make(o.difficulty || 'brabo', f.def, cfg.aiExtra);
+      if (f.ctrl === 'cpu') { f.ai = M.AI.make(o.difficulty || 'brabo', f.def, cfg.aiExtra); const d = o.difficulty || 'brabo'; if (d === 'novato') { f.mods.dmg *= 0.75; f.mods.hp *= 0.9; } else if (d === 'lendario') { f.mods.dmg *= 1.1; f.mods.hp *= 1.05; } }
     }
     this.fighters = [this.p1, this.p2];
     this.stage = new M.stages.Stage(o.stage || 'porto');
@@ -61,7 +61,7 @@ M.Match = class Match {
     for (const f of this.fighters) if (f.ai) { f.ai.timer = 0; f.ai.intent = 'wait'; }
     M.audio.music.setMode(this.phase2 ? 'boss2' : this.boss ? 'boss' : 'fight');
     M.audio.crowd(0.5);
-    if (this.tutorial) { this.p2.ai = M.AI.make('novato', this.p2.def); this.p2.ai.tutorial = 'passive'; }
+    if (this.tutorial) { this.p2.ai = M.AI.make(this.o.difficulty || 'brabo', this.p2.def); this.p2.ai.p.aggro *= 0.8; this.p2.ai.p.superUse *= 0.5; }
   }
 
   // ---------------- entrada ----------------
@@ -235,7 +235,7 @@ M.Match = class Match {
     if (this.axeSide(att) > 0.5) dmg *= 1.1;
     dmg = Math.round(dmg);
     const exB = (!src && att.exMove) ? 1.35 : (src && src.ex ? 1.35 : 1); dmg = Math.round(dmg * exB);
-    def.hp -= dmg; if (this.tutorial) def.hp = Math.max(def.hp, 1);
+    def.hp -= dmg;
     def.lastHurt = this.frame;
     this.popup('-' + dmg, def.x + (att.x < def.x ? 26 : -26), def.y - 150 - Math.min(60, att.combo * 12), counter ? M.C.red : (heavyFlag(mv) ? M.C.yellow : M.C.paper), heavyFlag(mv) ? 22 : 17);
     att.stats.dmg += dmg; att.stats.hits++; att.stats.landed[mv.id] = (att.stats.landed[mv.id] || 0) + 1;
@@ -335,7 +335,7 @@ M.Match = class Match {
   }
   throwRelease(att, def, mv) {
     const dmg = Math.round(mv.dmg * att.mods.dmg * (att.exMove ? 1.35 : 1));
-    def.hp -= dmg; if (this.tutorial) def.hp = Math.max(1, def.hp); def.lastHurt = this.frame;
+    def.hp -= dmg; def.lastHurt = this.frame;
     this.popup('-' + dmg, def.x, def.y - 150, M.C.yellow, 22);
     att.stats.dmg += dmg; att.stats.hits++; att.stats.landed[mv.id] = (att.stats.landed[mv.id] || 0) + 1;
     att.combo = 1; att.comboDmg = dmg; att.comboShow = 70; def.flash = 5;
@@ -413,7 +413,7 @@ M.Match = class Match {
   }
   ko(loser, timeout) {
     if (this.phase !== 'fight') return;
-    if (this.tutorial) { loser.hp = Math.max(1, loser.hp); return; }
+    if (this.tutorial) { loser.hp = 0; this.slow = 40; this.shake(10); M.audio.play('ko'); this.fx.push({ type: 'flash', t: 0, life: 10, color: '#fff8e8', alpha: 0.8 }); this.tutorialEnd(loser === this.p1); return; }
     const winner = this.other(loser);
     if (!timeout) loser.hp = 0;
     this.phase = 'ko'; this.phaseT = 0;
@@ -448,7 +448,6 @@ M.Match = class Match {
     if (this.p2.hp < this.p2.maxHp * 0.3) this.p2.hp = Math.min(this.p2.maxHp, this.p2.hp + 3);
     if (this.p1.hp < this.p1.maxHp * 0.3 && this.frame % 2 === 0) this.p1.hp = Math.min(this.p1.maxHp, this.p1.hp + 2);
     const step = M.TUTORIAL[this.tut.step]; if (!step) return;
-    this.p2.ai.tutorial = step.mestre;
     if (step.holdEnergy) this.axe = Math.max(this.axe, 0.72);
     if (step.check(this)) {
       if (step.final) { this.tutorialEnd(); return; }
@@ -456,10 +455,12 @@ M.Match = class Match {
       if (M.TUTORIAL[this.tut.step] && M.TUTORIAL[this.tut.step].final) this.p2.ai.tutorial = 'passive';
     }
   }
-  tutorialEnd() {
+  tutorialEnd(lost) {
+    if (this.phase === 'end') return;
     this.phase = 'end'; this.phaseT = 0; this.roundWinner = this.p1; this.wins[0] = this.winsNeeded;
-    this.p1.state = 'win'; this.p1.t = 0; this.p2.state = 'idle';
-    this.bigText = { text: 'TREINO COMPLETO', t: 0, life: 150, size: 50, color: M.C.yellow }; M.audio.play('win'); M.audio.cheer(1);
+    if (lost) { this.p2.state = 'win'; this.p2.t = 0; this.p1.state = 'knockdown'; this.p1.t = 999; }
+    else { this.p1.state = 'win'; this.p1.t = 0; if (this.p2.hp <= 0) { this.p2.state = 'ko'; this.p2.t = 0; } else this.p2.state = 'idle'; }
+    this.bigText = { text: lost ? 'JÁ DÁ PRO GASTO' : 'TREINO COMPLETO', t: 0, life: 150, size: 50, color: M.C.yellow }; M.audio.play('win'); M.audio.cheer(1);
   }
 
   // ---------------- utilitários de efeito ----------------
@@ -517,7 +518,7 @@ M.Match = class Match {
       M.text(ctx, Math.ceil(pct * 100) + '%', right ? x0 + 8 : x0 + bw - 8, y + bh / 2 + 1, { size: 13, align: right ? 'left' : 'right', color: C.paper, lw: 2.5 });
       if (f.hp < f.maxHp && this.frame - (f.lastHurt || -999) < 30 && this.frame % 6 < 3) { ctx.fillStyle = 'rgba(255,248,232,0.35)'; ctx.fillRect(right ? x0 + bw - w2 : x0, y, w2, bh); }
       M.text(ctx, f.def.name.toUpperCase(), right ? x0 + bw : x0, y + bh + 16, { size: 17, align: right ? 'right' : 'left', color: C.paper, lw: 3 });
-      if (f.ctrl === 'cpu') M.text(ctx, 'CPU', right ? x0 : x0 + bw, y + bh + 16, { size: 12, align: right ? 'left' : 'right', color: '#8d8a84', lw: 2 });
+      if (f.ctrl === 'cpu') M.text(ctx, 'CPU • ' + ({ novato: 'NOVATO', brabo: 'BRABO', lendario: 'LENDÁRIO' }[this.o.difficulty] || 'BRABO'), right ? x0 : x0 + bw, y + bh + 16, { size: 12, align: right ? 'left' : 'right', color: '#8d8a84', lw: 2 });
       for (let i = 0; i < (this.winsNeeded <= 3 ? this.winsNeeded : 0); i++) { const sx = right ? x0 + bw - 14 - i * 26 : x0 + 14 + i * 26; M.star(ctx, sx, y + bh + 40, 9, 4, 5, -Math.PI / 2); ctx.fillStyle = i < this.wins[f.side - 1] ? C.yellow : '#3a2a1e'; ctx.fill(); ctx.lineWidth = 2.5; ctx.strokeStyle = C.ink; ctx.stroke(); }
       if (f.burn > 0 && this.frame % 20 < 14) M.text(ctx, 'QUEIMANDO', right ? x0 : x0 + bw, y + bh + 40, { size: 12, align: right ? 'left' : 'right', color: C.orange, lw: 2.5 });
     };

@@ -98,9 +98,9 @@ M.ui = (function () {
       <p>Oito rinhas numa noite. Entre cada vitória você escolhe um <b>garrafada</b>. Caiu? Levanta e tenta de novo.</p>
       <p class="label">Escolha a dificuldade</p>
       <div class="row">
-        <button class="mi diff ${cur === 'novato' ? 'sel' : ''}" data-go="novato">NOVATO<small>a rinha vai com calma</small></button>
-        <button class="mi diff ${cur === 'brabo' ? 'sel' : ''}" data-go="brabo">BRABO<small>luta de verdade</small></button>
-        <button class="mi diff ${cur === 'lendario' ? 'sel' : ''}" data-go="lendario">LENDÁRIO<small>a rinha não perdoa</small></button>
+        <button class="mi diff ${cur === 'novato' ? 'sel' : ''}" data-go="novato">NOVATO<small>CPU lenta, bate fraco e erra mais</small></button>
+        <button class="mi diff ${cur === 'brabo' ? 'sel' : ''}" data-go="brabo">BRABO<small>luta de verdade, combos e defesa</small></button>
+        <button class="mi diff ${cur === 'lendario' ? 'sel' : ''}" data-go="lendario">LENDÁRIO<small>reage a tudo, bate mais forte</small></button>
       </div>
       <button class="mi back" data-go="back">VOLTAR</button>
     </div></div>`, {
@@ -271,6 +271,7 @@ M.ui = (function () {
       <nav>
         <button class="mi" data-go="resume">CONTINUAR</button>
         ${tr ? `<button class="mi" data-go="dummy">BONECO: <b id="dummyLbl">${dummies.find(d => d[0] === M.match.dummyMode)[1]}</b></button>` : ''}
+        ${M.match && M.match.tutorial ? `<button class="mi" data-go="skipTut">PULAR O TREINO</button>` : ''}
         <button class="mi" data-go="restart">REINICIAR LUTA</button>
         <button class="mi" data-go="options">OPÇÕES</button>
         <button class="mi" data-go="quit">SAIR PRO MENU</button>
@@ -279,7 +280,7 @@ M.ui = (function () {
     </div></div>`, {
       onBack: opts.resume, backLabel: 'CONTINUAR',
       actions: {
-        resume: opts.resume, restart: opts.restart, quit: opts.quit, options: () => options(() => pause(opts)),
+        resume: opts.resume, restart: opts.restart, quit: opts.quit, options: () => options(() => pause(opts)), skipTut: () => { M.ui.hide(); M.state = 'fight'; M.input.clear(); M.match.tutorialEnd(false); },
         dummy: () => { const i = dummies.findIndex(d => d[0] === M.match.dummyMode); M.match.dummyMode = dummies[(i + 1) % dummies.length][0]; document.getElementById('dummyLbl').textContent = dummies[(i + 1) % dummies.length][1]; }
       }
     });
