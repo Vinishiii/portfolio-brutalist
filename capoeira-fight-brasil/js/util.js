@@ -1,6 +1,6 @@
 'use strict';
 // ============================================================
-// MANDINGA — utilitários globais
+// CAPOEIRA FIGHT BRASIL — utilitários globais
 // ============================================================
 const M = window.M = window.M || {};
 M.W = 960; M.H = 540; M.GROUND = 452;
@@ -34,7 +34,7 @@ M.C = {
 
 // Persistência
 M.store = {
-  key: 'mandinga.save.v1',
+  key: 'cfb.save.v1',
   data: null,
   load() {
     try { this.data = JSON.parse(localStorage.getItem(this.key)) || {}; } catch (e) { this.data = {}; }

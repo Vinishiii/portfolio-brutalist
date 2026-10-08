@@ -49,7 +49,7 @@ M.ui = (function () {
   // ---------- TÍTULO ----------
   function title() {
     show(`<div class="screen title">
-      <div class="logo"><span class="logo-top">A RODA NUNCA PARA</span><h1>MANDINGA</h1><span class="logo-sub">UM JOGO DE LUTA EM XILOGRAVURA</span></div>
+      <div class="logo"><span class="logo-top">A RODA NUNCA PARA</span><h1>CAPOEIRA<br><em>FIGHT BRASIL</em></h1><span class="logo-sub">UM JOGO DE LUTA EM XILOGRAVURA</span></div>
       <p class="blink">PRESSIONE QUALQUER TECLA • TOQUE NA TELA</p>
       <p class="tiny">v${M.VERSION} • teclado, toque ou controle</p>
     </div>`, { onKey: () => { M.audio.init(); menu(); return true; } });
@@ -62,9 +62,9 @@ M.ui = (function () {
     const d = M.store.data; const cont = d.story && d.story.idx > 0 && d.story.idx < M.STORY.fights.length;
     const free = d.progress.storyDone;
     show(`<div class="screen menu">
-      <div class="menu-left"><div class="logo small"><h1>MANDINGA</h1><span class="logo-sub">A RODA NUNCA PARA</span></div>
+      <div class="menu-left"><div class="logo small"><h1>CAPOEIRA <em>FIGHT BRASIL</em></h1><span class="logo-sub">A RODA NUNCA PARA</span></div>
         <nav>
-          ${cont ? `<button class="mi" data-go="cont">CONTINUAR HISTÓRIA <small>luta ${d.story.idx + 1}/6</small></button>` : ''}
+          ${cont ? `<button class="mi" data-go="cont">CONTINUAR HISTÓRIA <small>luta ${d.story.idx + 1}/${M.STORY.fights.length}</small></button>` : ''}
           <button class="mi" data-go="story">${cont ? 'NOVA ' : ''}HISTÓRIA <small>a Roda do Fogo, com Zeca Ventania</small></button>
           <button class="mi" data-go="versus">VERSUS <small>2 jogadores no mesmo teclado</small></button>
           <button class="mi" data-go="training">TREINO <small>pratique golpes e combos</small></button>
@@ -74,7 +74,7 @@ M.ui = (function () {
           <button class="mi" data-go="credits">CRÉDITOS</button>
         </nav></div>
       <div class="menu-right"><div class="stamp">${free ? 'GUARDIÃO DA BRASA' : 'PORTO BRABO, BA'}</div>
-        <p class="pitch">Quem tem <b>Axé</b> manda na roda.<br>O público é a barra de poder — e ele escolhe quem merece a Mandinga.</p>
+        <p class="pitch">Quem tem <b>Energia</b> manda na roda.<br>O público é a barra de poder — e ele escolhe quem merece a Mandinga.</p>
         ${d.progress.bestTime ? `<p class="tiny">Melhor História: ${M.fmtTime(d.progress.bestTime)} • Finais vistos: ${d.progress.endings.length}/2</p>` : ''}
       </div>
     </div>`, {
@@ -89,7 +89,7 @@ M.ui = (function () {
     const cur = M.store.data.settings.difficulty;
     show(`<div class="screen center"><div class="panel">
       <h2>A RODA DO FOGO</h2>
-      <p>Seis rodas numa noite. Entre cada vitória você escolhe um <b>patuá</b>. Caiu? Levanta e tenta de novo.</p>
+      <p>Sete rodas numa noite. Entre cada vitória você escolhe um <b>patuá</b>. Caiu? Levanta e tenta de novo.</p>
       <p class="label">Escolha a dificuldade</p>
       <div class="row">
         <button class="mi diff ${cur === 'novato' ? 'sel' : ''}" data-go="novato">NOVATO<small>a roda vai com calma</small></button>
@@ -211,10 +211,11 @@ M.ui = (function () {
         if (c === 'Escape') { if (sel.step === 2) { sel.step = 1; refresh(); } else menu(); return true; }
         const key = who === 'p2' ? sel.p2 : sel.p1;
         let n = key;
-        if (['KeyA', 'ArrowLeft'].includes(c)) n = (key + 5) % 6;
-        else if (['KeyD', 'ArrowRight'].includes(c)) n = (key + 1) % 6;
-        else if (['KeyW', 'ArrowUp'].includes(c)) n = (key + 3) % 6;
-        else if (['KeyS', 'ArrowDown'].includes(c)) n = (key + 3) % 6;
+        const N = roster.length, COLS = 4;
+        if (['KeyA', 'ArrowLeft'].includes(c)) n = (key + N - 1) % N;
+        else if (['KeyD', 'ArrowRight'].includes(c)) n = (key + 1) % N;
+        else if (['KeyW', 'ArrowUp'].includes(c)) n = (key + N - COLS + N) % N;
+        else if (['KeyS', 'ArrowDown'].includes(c)) n = (key + COLS) % N;
         else if (['KeyJ', 'Enter', 'Space', 'Numpad1', 'Comma'].includes(c)) { confirm(); return true; }
         else if (['KeyK', 'Numpad2', 'Period'].includes(c)) { if (sel.step === 2) { sel.step = 1; refresh(); } else menu(); return true; }
         if (n !== key) { if (who === 'p2') sel.p2 = n; else sel.p1 = n; M.audio.play('uiMove'); refresh(); }
@@ -268,7 +269,7 @@ M.ui = (function () {
         <button class="mi" data-go="options">OPÇÕES</button>
         <button class="mi" data-go="quit">SAIR PRO MENU</button>
       </nav>
-      <p class="tiny">P1: WASD • J leve • K forte • L especial • ESPAÇO ginga • U mandinga • O provoca</p>
+      <p class="tiny">P1: WASD • J leve • K forte • L especial • H agarrão • ESPAÇO ginga • U mandinga • O provoca</p>
     </div></div>`, {
       onBack: opts.resume,
       actions: {
@@ -321,17 +322,20 @@ M.ui = (function () {
           <tr><td>Ginga (esquiva)</td><td>ESPAÇO</td><td>Num 0 / Shift dir.</td></tr>
           <tr><td>Mandinga (super)</td><td>U</td><td>Num 5 / '</td></tr>
           <tr><td>Provocar</td><td>O</td><td>Num 4 / ;</td></tr>
+          <tr><td>Agarrão</td><td>H (ou J+K)</td><td>Num 6 / ]</td></tr>
           <tr><td>Dash</td><td colspan="2">toque duplo ← ou →</td></tr>
           <tr><td>Pausa</td><td colspan="2">ESC</td></tr></table>
-          <p class="tiny">Controle (gamepad) também funciona: analógico/d-pad, X leve, Y forte, B especial, A ginga, RB mandinga, LB provocar, Start pausa.</p>
+          <p class="tiny">Controle (gamepad) também funciona: analógico/d-pad, X leve, Y forte, B especial, A ginga, RB mandinga, LB provocar, LT agarrão, Start pausa.</p>
         </div>
         <div><h3>A RODA</h3>
-          <p><b>AXÉ</b> é uma barra só, no meio: o público. Cada golpe, esquiva e provocação puxa a barra pro seu lado. Com 70% ela libera sua <b>MANDINGA</b>.</p>
-          <p><b>VARIAÇÃO</b>: repetir o mesmo golpe cansa a roda e rende pouco Axé. Misture.</p>
-          <p><b>NO COMPASSO</b>: acerte junto com a batida do berimbau (o círculo pulsa) para Axé em dobro.</p>
-          <p><b>GINGA</b>: esquiva com invencibilidade. Esquive no instante do golpe = <b>ESQUIVA PERFEITA</b>, tempo lento e muito Axé. Segurando pra frente, a ginga atravessa o oponente.</p>
+          <p><b>ENERGIA</b> é uma barra só, no meio: o público. Cada golpe, esquiva e provocação puxa a barra pro seu lado. Com 70% ela libera sua <b>MANDINGA</b>.</p>
+          <p><b>VARIAÇÃO</b>: repetir o mesmo golpe cansa a roda e rende pouca Energia. Misture.</p>
+          <p><b>NO COMPASSO</b>: acerte junto com a batida do berimbau (o círculo pulsa) para Energia em dobro.</p>
+          <p><b>GINGA</b>: esquiva com invencibilidade. Esquive no instante do golpe = <b>ESQUIVA PERFEITA</b>, tempo lento, muita Energia e um <b>CONTRA-ATAQUE</b> garantido no próximo golpe. Segurando pra frente, a ginga atravessa o oponente.</p>
           <p><b>DEFESA</b>: segure pra trás. Golpes baixos pedem agachar; golpes altos pedem ficar em pé. Agarrões ignoram defesa.</p>
-          <p><b>PROVOCAR</b> dá Axé — se ninguém te bater antes. Risco e recompensa.</p>
+          <p><b>PROVOCAR</b> dá Energia — se ninguém te bater antes. Risco e recompensa.</p>
+          <p><b>AGARRÃO</b> (H ou J+K): ignora defesa. <b>ESCAPAR</b>: em um combo de 3+ golpes, aperte GINGA gastando 30% de Energia.</p>
+          <p><b>MANDINGA MÁXIMA</b>: com a barra em 100%, a Mandinga causa 30% a mais. Soltar aos 70% ou esperar?</p>
           <p><b>SEQUÊNCIAS</b>: leve ▸ leve ▸ forte ▸ especial ▸ mandinga, se os golpes acertarem.</p>
         </div>
       </div>

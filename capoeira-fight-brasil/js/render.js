@@ -65,6 +65,18 @@ M.render = (function () {
     ctx.beginPath(); ctx.moveTo(rig.hip[0], rig.hip[1]); ctx.lineTo(rig.neck[0], rig.neck[1]);
     ctx.lineWidth = 30 * bw * s + 6; ctx.strokeStyle = ink; ctx.stroke();
     ctx.lineWidth = 30 * bw * s; ctx.strokeStyle = col(C.torso); ctx.stroke();
+    const D = def.details || [];
+    if (!sil && !flash && D.includes('vest')) {
+      ctx.beginPath(); ctx.moveTo(rig.hip[0], rig.hip[1] - 6); ctx.lineTo(rig.neck[0], rig.neck[1] + 2);
+      ctx.lineWidth = 18 * bw * s; ctx.strokeStyle = '#4a2a16'; ctx.stroke();
+      ctx.lineWidth = 2; ctx.strokeStyle = INK; ctx.beginPath(); ctx.moveTo(rig.hip[0] + 1, rig.hip[1] - 6); ctx.lineTo(rig.neck[0] + 1, rig.neck[1] + 2); ctx.stroke();
+    }
+    if (!sil && !flash && D.includes('tattoo')) {
+      ctx.save(); ctx.strokeStyle = '#f2b70c'; ctx.lineWidth = 3; ctx.lineCap = 'round';
+      const dx = rig.neck[0] - rig.hip[0], dy = rig.neck[1] - rig.hip[1];
+      ctx.beginPath(); for (let i = 0; i <= 6; i++) { const t = 0.15 + i * 0.12; ctx.lineTo(rig.hip[0] + dx * t + Math.sin(i * 1.8) * 9, rig.hip[1] + dy * t); } ctx.stroke();
+      ctx.restore();
+    }
     if (!sil && !flash) {
       // hachura de xilogravura
       ctx.save(); ctx.globalAlpha = 0.22; ctx.strokeStyle = INK; ctx.lineWidth = 2;
@@ -82,7 +94,37 @@ M.render = (function () {
     // perna e braço da frente
     limbStroke(ctx, rig.nl, 13 * s * (bw > 1.1 ? 1.15 : 1), col(C.legs), ink); foot(ctx, rig.nl, col(C.shoes), ink, s);
     limbStroke(ctx, rig.na, 10 * s, col(C.arms), ink); dot(ctx, rig.na[2], 6.5 * s, col(C.skin), ink);
+    if (!sil && !flash) drawDetails(ctx, rig, def, D);
     if (!sil) drawProp(ctx, rig, def, o, col, ink);
+    ctx.restore();
+  }
+  // Detalhes de figurino por personagem
+  function drawDetails(ctx, rig, def, D) {
+    const C = def.colors, s = rig.s;
+    const mid = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+    ctx.save(); ctx.lineCap = 'round';
+    if (D.includes('necklace')) {
+      ctx.fillStyle = C.accent; ctx.strokeStyle = INK; ctx.lineWidth = 1.5;
+      for (let i = -2; i <= 2; i++) { ctx.beginPath(); ctx.arc(rig.neck[0] + i * 4, rig.neck[1] + 9 * s + Math.abs(i) * -1.5 + 3, 2.6, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
+    }
+    if (D.includes('sleeves')) {
+      const cols = ['#2aa9b8', '#f2b70c', '#1f7a4d'];
+      for (const arm of [rig.fa, rig.na]) for (let i = 0; i < 3; i++) { const p = mid(arm[0], arm[1], 0.25 + i * 0.25); ctx.beginPath(); ctx.arc(p[0], p[1], 7.5 * s, 0, Math.PI * 2); ctx.fillStyle = cols[i]; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = INK; ctx.stroke(); }
+    }
+    if (D.includes('paint')) {
+      ctx.strokeStyle = '#c8371d'; ctx.lineWidth = 3;
+      for (const arm of [rig.fa, rig.na]) for (let i = 0; i < 2; i++) { const p = mid(arm[0], arm[1], 0.35 + i * 0.25); ctx.beginPath(); ctx.moveTo(p[0] - 6, p[1]); ctx.lineTo(p[0] + 6, p[1]); ctx.stroke(); }
+    }
+    if (D.includes('tattoo')) {
+      ctx.strokeStyle = '#e8712b'; ctx.lineWidth = 2.5;
+      for (const arm of [rig.fa, rig.na]) { ctx.beginPath(); for (let i = 0; i <= 4; i++) { const p = mid(arm[0], arm[1], 0.15 + i * 0.18); ctx.lineTo(p[0] + Math.sin(i * 2) * 4, p[1]); } ctx.stroke(); }
+    }
+    if (D.includes('stripe')) {
+      ctx.strokeStyle = C.accent; ctx.lineWidth = 3;
+      for (const leg of [rig.fl, rig.nl]) { const a = mid(leg[0], leg[1], 0.1), b = mid(leg[0], leg[1], 0.9); ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); }
+    }
+    if (D.includes('buckle')) { ctx.fillStyle = '#f2b70c'; ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.fillRect(rig.hip[0] - 5, rig.hip[1] - 9, 10, 10); ctx.strokeRect(rig.hip[0] - 5, rig.hip[1] - 9, 10, 10); }
+    if (D.includes('boots')) { for (const leg of [rig.fl, rig.nl]) { const p = mid(leg[1], leg[2], 0.75); ctx.beginPath(); ctx.arc(p[0], p[1], 9 * s, 0, Math.PI * 2); ctx.fillStyle = '#3a2416'; ctx.fill(); ctx.lineWidth = 2.5; ctx.strokeStyle = INK; ctx.stroke(); } }
     ctx.restore();
   }
   function foot(ctx, leg, color, ink, s) {
@@ -106,6 +148,11 @@ M.render = (function () {
     if (o.hurt) { ctx.beginPath(); ctx.arc(8, 6, 3, 0, Math.PI * 2); ctx.stroke(); }
     else if (o.shout) { ctx.beginPath(); ctx.arc(9, 6, 4, 0, Math.PI * 2); ctx.fillStyle = INK; ctx.fill(); }
     else { ctx.beginPath(); ctx.moveTo(5, 7); ctx.lineTo(11, 6); ctx.stroke(); }
+    const D = def.details || [];
+    if (D.includes('glowEyes')) { ctx.fillStyle = '#f2b70c'; ctx.shadowColor = '#f2b70c'; ctx.shadowBlur = 8; ctx.beginPath(); ctx.arc(7, -3, 3.2, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0; ctx.fillStyle = INK; ctx.beginPath(); ctx.arc(7.5, -3, 1.4, 0, Math.PI * 2); ctx.fill(); }
+    if (D.includes('paint')) { ctx.strokeStyle = '#c8371d'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(3, 2); ctx.lineTo(12, 1); ctx.moveTo(3, 5); ctx.lineTo(12, 4); ctx.stroke(); }
+    if (D.includes('scar')) { ctx.strokeStyle = '#5a3a2a'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(9, 0); ctx.lineTo(13, 6); ctx.stroke(); }
+    if (D.includes('earrings')) { ctx.fillStyle = C.accent; ctx.strokeStyle = INK; ctx.lineWidth = 1.5; for (const sx of [-R + 2, R - 4]) { ctx.beginPath(); ctx.arc(sx, 8, 3.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); } }
     if (def.mustache) { ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(2, 4); ctx.quadraticCurveTo(8, 1, 14, 4); ctx.stroke(); }
     if (def.beard) { ctx.fillStyle = col(C.hair); ctx.beginPath(); ctx.moveTo(-8, 8); ctx.quadraticCurveTo(4, 30, 12, 8); ctx.closePath(); ctx.fill(); ctx.lineWidth = 2.5; ctx.strokeStyle = INK; ctx.stroke(); }
     // cabelo / chapéu
@@ -136,11 +183,21 @@ M.render = (function () {
         ctx.fillStyle = col('#f2b70c'); ctx.beginPath(); ctx.moveTo(0, -R + 1); ctx.lineTo(4, -R - 12); ctx.lineTo(7, -R + 1); ctx.closePath(); ctx.fill();
         ctx.strokeStyle = C.accent; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-8, 2); ctx.lineTo(-2, 4); ctx.stroke();
         break;
+      case 'cap':
+        ctx.fillStyle = col(C.hair); ctx.beginPath(); ctx.arc(0, 0, R + 1.5, Math.PI * 1.05, Math.PI * 2.05); ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = col(C.accent); ctx.beginPath(); ctx.arc(0, -2, R + 1, Math.PI * 1.08, Math.PI * 1.95); ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(R - 4, -6); ctx.lineTo(R + 14, -3); ctx.lineTo(R - 2, 1); ctx.closePath(); ctx.fill(); ctx.stroke();
+        break;
       case 'straw':
         ctx.fillStyle = col('#d9c27a'); ctx.beginPath(); ctx.ellipse(0, -R + 5, R * 2.0, 6, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(-R + 3, -R + 5); ctx.lineTo(-R + 5, -R - 9); ctx.lineTo(R - 5, -R - 9); ctx.lineTo(R - 3, -R + 5); ctx.closePath(); ctx.fill(); ctx.stroke();
         ctx.strokeStyle = '#8d8a84'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-R + 4, -R - 2); ctx.lineTo(R - 4, -R - 2); ctx.stroke();
         break;
+    }
+    if (D.includes('headband')) {
+      ctx.strokeStyle = INK; ctx.lineWidth = 8; ctx.beginPath(); ctx.moveTo(-R + 1, -7); ctx.lineTo(R - 1, -7); ctx.stroke();
+      ctx.strokeStyle = C.accent; ctx.lineWidth = 5; ctx.stroke();
+      ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-R + 1, -7); ctx.quadraticCurveTo(-R - 12, -2, -R - 16, 8); ctx.stroke();
     }
     ctx.restore();
   }
@@ -162,6 +219,18 @@ M.render = (function () {
         ctx.fillStyle = col('#c7267a'); ctx.beginPath(); ctx.moveTo(-14, -5); ctx.lineTo(10, 0); ctx.lineTo(-14, 5); ctx.closePath(); ctx.fill(); ctx.lineWidth = 2.5; ctx.strokeStyle = ink; ctx.stroke();
       }
       ctx.restore();
+    } else if (def.prop === 'berimbau') {
+      const hand = rig.na[2], a = M.rad(rig.na[3]);
+      const d = [Math.sin(a), Math.cos(a)], n = [d[1], -d[0]];
+      const base = [hand[0] - d[0] * 28, hand[1] - d[1] * 28], tip = [hand[0] + d[0] * 72, hand[1] + d[1] * 72];
+      const cx = (base[0] + tip[0]) / 2 + n[0] * 22, cy = (base[1] + tip[1]) / 2 + n[1] * 22;
+      ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(base[0], base[1]); ctx.quadraticCurveTo(cx, cy, tip[0], tip[1]);
+      ctx.lineWidth = 9; ctx.strokeStyle = ink; ctx.stroke(); ctx.lineWidth = 5; ctx.strokeStyle = col('#c9a060'); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(base[0], base[1]); ctx.lineTo(tip[0], tip[1]); ctx.lineWidth = 2; ctx.strokeStyle = '#fff8e8'; ctx.stroke();
+      const g = [base[0] + d[0] * 14 + n[0] * 8, base[1] + d[1] * 14 + n[1] * 8];
+      ctx.beginPath(); ctx.arc(g[0], g[1], 11, 0, Math.PI * 2); ctx.fillStyle = col('#c47a4a'); ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = ink; ctx.stroke();
+      ctx.beginPath(); ctx.arc(g[0] + n[0] * 5, g[1] + n[1] * 5, 4, 0, Math.PI * 2); ctx.fillStyle = ink; ctx.fill();
     } else if (def.prop === 'oar') {
       const hand = rig.na[2], a = M.rad(rig.na[3]);
       const d = [Math.sin(a), Math.cos(a)];

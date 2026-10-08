@@ -15,13 +15,13 @@
       bio: 'Cria do cais, aprendeu a gingar antes de andar. Discípulo do Mestre Cinzas. Entra na Roda do Fogo pela primeira vez — e tudo que ele quer é que a cidade continue dançando.',
       quote: 'A roda escuta quem escuta a roda.',
       colors: { skin: '#b5744a', torso: '#f2c230', arms: '#b5744a', legs: '#f6efdc', shoes: '#141210', accent: '#1f7a4d', hair: '#141210' },
-      hair: 'short', prop: null, idle: 'ginga', body: { height: 1.0, build: 0.95 },
+      hair: 'short', prop: null, idle: 'ginga', body: { height: 1.0, build: 0.95 }, details: ['headband', 'stripe', 'necklace'],
       stats: { hp: 1000, speed: 3.3, jumpV: -13.2, weight: 1.0, dashV: 10, airSpeed: 3.4, maxJumps: 1 },
       superName: 'Vendaval da Ladeira', superDesc: 'Giro devastador que avança e levanta o oponente.',
       ai: { zone: 0.05, air: 0.3, grab: 0, rush: 0.6, poke: 0.4 },
       moves: {
-        L: mv({ id: 'L', name: 'Galopante', startup: 4, active: 3, recovery: 8, dmg: 50, hitstun: 13, blockstun: 8, kb: 2.5, hitbox: { x: 20, y: 95, w: 60, h: 34 }, pose: 'jab', cancel: ['L', 'H', 'S'], sfx: 'whoosh' }),
-        cL: mv({ id: 'cL', name: 'Pisão baixo', startup: 5, active: 3, recovery: 10, dmg: 40, type: 'low', crouch: true, hitstun: 13, blockstun: 8, kb: 2, hitbox: { x: 16, y: 0, w: 70, h: 32 }, pose: 'cKick', cancel: ['H', 'S'], sfx: 'whoosh' }),
+        L: mv({ id: 'L', name: 'Galopante', startup: 4, active: 3, recovery: 8, dmg: 50, hitstun: 18, blockstun: 8, kb: 2.5, hitbox: { x: 20, y: 95, w: 60, h: 34 }, pose: 'jab', cancel: ['L', 'H', 'S'], sfx: 'whoosh' }),
+        cL: mv({ id: 'cL', name: 'Pisão baixo', startup: 5, active: 3, recovery: 10, dmg: 40, type: 'low', crouch: true, hitstun: 17, blockstun: 8, kb: 2, hitbox: { x: 16, y: 0, w: 70, h: 32 }, pose: 'cKick', cancel: ['H', 'S'], sfx: 'whoosh' }),
         aL: mv({ id: 'aL', name: 'Chapa voadora', startup: 5, active: 5, recovery: 8, dmg: 50, type: 'high', air: true, hitstun: 14, kb: 3, hitbox: { x: 10, y: 20, w: 66, h: 50 }, pose: 'airKick', sfx: 'whoosh' }),
         H: mv({ id: 'H', name: 'Meia-lua de compasso', startup: 10, active: 5, recovery: 16, dmg: 110, hitstun: 20, blockstun: 12, kb: 6, hitbox: { x: 10, y: 70, w: 110, h: 80 }, pose: 'spinKick', spin: [0, 0], cancel: ['S'], sfx: 'whooshH', fx: 'arc' }),
         cH: mv({ id: 'cH', name: 'Rasteira', startup: 8, active: 4, recovery: 18, dmg: 90, type: 'low', crouch: true, knockdown: true, hitstun: 20, blockstun: 12, kb: 4, hitbox: { x: 10, y: 0, w: 100, h: 30 }, pose: 'sweep', sfx: 'whooshH' }),
@@ -39,13 +39,13 @@
       bio: 'Passista desde criança, transformou o passo do frevo em arte marcial. A sombrinha abre, fecha e corta. Ninguém pisa na ladeira dela sem pedir licença.',
       quote: 'Pisa certo ou cai, meu bem.',
       colors: { skin: '#8d5a3a', torso: '#c7267a', arms: '#8d5a3a', legs: '#2aa9b8', shoes: '#f2b70c', accent: '#f2b70c', hair: '#1a0f0a' },
-      hair: 'curly', prop: 'umbrella', idle: 'bounce', body: { height: 0.94, build: 0.85 },
+      hair: 'curly', prop: 'umbrella', idle: 'bounce', body: { height: 0.94, build: 0.85 }, details: ['sleeves', 'earrings'],
       stats: { hp: 900, speed: 3.6, jumpV: -14.2, weight: 0.85, dashV: 11, airSpeed: 4.2, maxJumps: 2 },
       superName: 'Bloco da Madrugada', superDesc: 'Avança no passo e desfere uma chuva de sombrinhadas.',
       ai: { zone: 0.05, air: 0.6, grab: 0, rush: 0.7, poke: 0.5 },
       moves: {
-        L: mv({ id: 'L', name: 'Toque de ponta', startup: 4, active: 3, recovery: 9, dmg: 45, hitstun: 13, blockstun: 8, kb: 2.5, hitbox: { x: 25, y: 90, w: 80, h: 30 }, pose: 'lunge', cancel: ['L', 'H', 'S'], sfx: 'whoosh' }),
-        cL: mv({ id: 'cL', name: 'Pontinha', startup: 5, active: 3, recovery: 10, dmg: 40, type: 'low', crouch: true, hitstun: 12, blockstun: 8, kb: 2, hitbox: { x: 16, y: 0, w: 66, h: 30 }, pose: 'cKick', cancel: ['H', 'S'], sfx: 'whoosh' }),
+        L: mv({ id: 'L', name: 'Toque de ponta', startup: 4, active: 3, recovery: 9, dmg: 45, hitstun: 18, blockstun: 8, kb: 2.5, hitbox: { x: 25, y: 90, w: 80, h: 30 }, pose: 'lunge', cancel: ['L', 'H', 'S'], sfx: 'whoosh' }),
+        cL: mv({ id: 'cL', name: 'Pontinha', startup: 5, active: 3, recovery: 10, dmg: 40, type: 'low', crouch: true, hitstun: 17, blockstun: 8, kb: 2, hitbox: { x: 16, y: 0, w: 66, h: 30 }, pose: 'cKick', cancel: ['H', 'S'], sfx: 'whoosh' }),
         aL: mv({ id: 'aL', name: 'Beliscão', startup: 4, active: 5, recovery: 7, dmg: 45, type: 'high', air: true, hitstun: 13, kb: 3, hitbox: { x: 10, y: 20, w: 70, h: 50 }, pose: 'airKick', sfx: 'whoosh' }),
         H: mv({ id: 'H', name: 'Tesoura de frevo', startup: 8, active: 5, recovery: 15, dmg: 100, hitstun: 19, blockstun: 11, kb: 5, hitbox: { x: 10, y: 60, w: 100, h: 90 }, pose: 'spinKick', move: [{ f: 2, t: 9, vx: 4 }], cancel: ['S'], sfx: 'whooshH', fx: 'arc' }),
         cH: mv({ id: 'cH', name: 'Sombrinha aberta', startup: 6, active: 7, recovery: 16, dmg: 90, launch: 12, crouch: true, hitstun: 20, blockstun: 11, kb: 3, invuln: [2, 9], hitbox: { x: -20, y: 70, w: 90, h: 120 }, pose: 'upper', umbrellaOpen: true, sfx: 'whooshH' }),
@@ -63,13 +63,13 @@
       bio: 'Filha de pescadores. O remo é extensão do braço e o rio obedece quando ela chama. Lenta pra se mover, impossível de alcançar.',
       quote: 'O rio não tem pressa. Eu também não.',
       colors: { skin: '#9b6a44', torso: '#1f7a4d', arms: '#9b6a44', legs: '#1c4e9c', shoes: '#141210', accent: '#c8371d', hair: '#120c08' },
-      hair: 'braid', prop: 'oar', idle: 'stance', idleOver: { na: [75, 15], fa: [25, 70], torso: 10 }, body: { height: 1.02, build: 0.95 },
+      hair: 'braid', prop: 'oar', idle: 'stance', idleOver: { na: [75, 15], fa: [25, 70], torso: 10 }, details: ['paint', 'necklace'], body: { height: 1.02, build: 0.95 },
       stats: { hp: 950, speed: 2.7, jumpV: -12.6, weight: 1.0, dashV: 8.5, airSpeed: 2.8, maxJumps: 1 },
       superName: 'Pororoca', superDesc: 'Invoca uma onda gigante que atravessa a roda inteira.',
       ai: { zone: 0.65, air: 0.1, grab: 0, rush: 0.2, poke: 0.6 },
       moves: {
-        L: mv({ id: 'L', name: 'Remada curta', startup: 5, active: 3, recovery: 10, dmg: 50, hitstun: 13, blockstun: 9, kb: 3, hitbox: { x: 30, y: 90, w: 95, h: 30 }, pose: 'lunge', cancel: ['L', 'H', 'S'], sfx: 'whoosh' }),
-        cL: mv({ id: 'cL', name: 'Remo baixo', startup: 6, active: 3, recovery: 11, dmg: 45, type: 'low', crouch: true, hitstun: 12, blockstun: 8, kb: 2, hitbox: { x: 20, y: 0, w: 90, h: 30 }, pose: 'castLow', cancel: ['H', 'S'], sfx: 'whoosh' }),
+        L: mv({ id: 'L', name: 'Remada curta', startup: 5, active: 3, recovery: 10, dmg: 50, hitstun: 18, blockstun: 9, kb: 3, hitbox: { x: 30, y: 90, w: 95, h: 30 }, pose: 'lunge', cancel: ['L', 'H', 'S'], sfx: 'whoosh' }),
+        cL: mv({ id: 'cL', name: 'Remo baixo', startup: 6, active: 3, recovery: 11, dmg: 45, type: 'low', crouch: true, hitstun: 17, blockstun: 8, kb: 2, hitbox: { x: 20, y: 0, w: 90, h: 30 }, pose: 'castLow', cancel: ['H', 'S'], sfx: 'whoosh' }),
         aL: mv({ id: 'aL', name: 'Remada aérea', startup: 5, active: 5, recovery: 8, dmg: 50, type: 'high', air: true, hitstun: 13, kb: 3, hitbox: { x: 10, y: 20, w: 90, h: 50 }, pose: 'lunge', sfx: 'whoosh' }),
         H: mv({ id: 'H', name: 'Remada', startup: 11, active: 4, recovery: 18, dmg: 115, hitstun: 20, blockstun: 13, kb: 8, hitbox: { x: 20, y: 60, w: 120, h: 90 }, pose: 'swing', cancel: ['S'], sfx: 'whooshH' }),
         cH: mv({ id: 'cH', name: 'Remo rasteiro', startup: 9, active: 4, recovery: 20, dmg: 90, type: 'low', crouch: true, knockdown: true, hitstun: 20, blockstun: 12, kb: 4, hitbox: { x: 10, y: 0, w: 125, h: 30 }, pose: 'sweep', sfx: 'whooshH' }),
@@ -87,13 +87,13 @@
       bio: 'Vaqueiro de três gerações. Derruba boi no braço e gente no abraço. Não ginga, não corre e não desiste. Quando pega, não solta.',
       quote: 'Lá no sertão a gente não ginga. A gente agarra.',
       colors: { skin: '#8a5a3c', torso: '#6b3f22', arms: '#d9b382', legs: '#3a2a1e', shoes: '#141210', accent: '#c8371d', hair: '#2a1a10' },
-      hair: 'hat', prop: null, idle: 'stance', idleOver: { na: [45, 115], fa: [35, 105], torso: 10 }, body: { height: 1.08, build: 1.28 }, mustache: true,
+      hair: 'hat', prop: null, idle: 'stance', idleOver: { na: [45, 115], fa: [35, 105], torso: 10 }, details: ['vest', 'buckle', 'boots'], body: { height: 1.08, build: 1.28 }, mustache: true,
       stats: { hp: 1150, speed: 2.5, jumpV: -11.6, weight: 1.35, dashV: 8, airSpeed: 2.4, maxJumps: 1 },
       superName: 'Vaquejada', superDesc: 'Arranca em disparada com armadura e derruba quem estiver na frente.',
       ai: { zone: 0, air: 0.15, grab: 0.5, rush: 0.7, poke: 0.3 },
       moves: {
-        L: mv({ id: 'L', name: 'Soco de ferreiro', startup: 6, active: 3, recovery: 10, dmg: 60, hitstun: 14, blockstun: 9, kb: 3.5, hitbox: { x: 20, y: 95, w: 70, h: 34 }, pose: 'jab', cancel: ['L', 'H', 'S'], sfx: 'whoosh' }),
-        cL: mv({ id: 'cL', name: 'Bota baixa', startup: 6, active: 3, recovery: 11, dmg: 50, type: 'low', crouch: true, hitstun: 13, blockstun: 8, kb: 2.5, hitbox: { x: 16, y: 0, w: 72, h: 32 }, pose: 'cKick', cancel: ['H', 'S'], sfx: 'whoosh' }),
+        L: mv({ id: 'L', name: 'Soco de ferreiro', startup: 6, active: 3, recovery: 10, dmg: 60, hitstun: 18, blockstun: 9, kb: 3.5, hitbox: { x: 20, y: 95, w: 70, h: 34 }, pose: 'jab', cancel: ['L', 'H', 'S'], sfx: 'whoosh' }),
+        cL: mv({ id: 'cL', name: 'Bota baixa', startup: 6, active: 3, recovery: 11, dmg: 50, type: 'low', crouch: true, hitstun: 17, blockstun: 8, kb: 2.5, hitbox: { x: 16, y: 0, w: 72, h: 32 }, pose: 'cKick', cancel: ['H', 'S'], sfx: 'whoosh' }),
         aL: mv({ id: 'aL', name: 'Cotovelada', startup: 6, active: 5, recovery: 9, dmg: 60, type: 'high', air: true, hitstun: 14, kb: 3, hitbox: { x: 10, y: 20, w: 70, h: 50 }, pose: 'airKick', sfx: 'whoosh' }),
         H: mv({ id: 'H', name: 'Chifrada', startup: 11, active: 4, recovery: 18, dmg: 130, hitstun: 21, blockstun: 13, kb: 7, hitbox: { x: 20, y: 80, w: 80, h: 60 }, pose: 'headbutt', move: [{ f: 4, t: 14, vx: 5 }], cancel: ['S'], sfx: 'whooshH' }),
         cH: mv({ id: 'cH', name: 'Pisão de bota', startup: 9, active: 4, recovery: 22, dmg: 100, type: 'low', crouch: true, knockdown: true, hitstun: 20, blockstun: 12, kb: 4, hitbox: { x: 10, y: 0, w: 100, h: 34 }, pose: 'sweep', sfx: 'whooshH' }),
@@ -111,13 +111,13 @@
       bio: 'Dizem que nasceu numa queimada e o fogo ficou. Carrega a serpente de luz nas costas e é o único que sabe o que o Mestre pretende fazer com a Brasa.',
       quote: 'Eu sou o fogo que ele quer apagar.',
       colors: { skin: '#5a3a28', torso: '#c8371d', arms: '#5a3a28', legs: '#e8712b', shoes: '#141210', accent: '#f2b70c', hair: '#f2b70c' },
-      hair: 'flame', prop: 'fire', idle: 'sway', body: { height: 1.04, build: 1.0 },
+      hair: 'flame', prop: 'fire', idle: 'sway', body: { height: 1.04, build: 1.0 }, details: ['tattoo', 'glowEyes'],
       stats: { hp: 1000, speed: 2.9, jumpV: -12.8, weight: 1.0, dashV: 9, airSpeed: 3.0, maxJumps: 1 },
       superName: 'Boitatá Desperto', superDesc: 'A serpente de fogo atravessa a roda queimando tudo.',
       ai: { zone: 0.45, air: 0.15, grab: 0, rush: 0.35, poke: 0.5 },
       moves: {
-        L: mv({ id: 'L', name: 'Chama curta', startup: 5, active: 3, recovery: 10, dmg: 55, hitstun: 13, blockstun: 9, kb: 3, hitbox: { x: 20, y: 95, w: 70, h: 34 }, pose: 'jab', cancel: ['L', 'H', 'S'], sfx: 'whoosh' }),
-        cL: mv({ id: 'cL', name: 'Brasa baixa', startup: 6, active: 3, recovery: 11, dmg: 45, type: 'low', crouch: true, hitstun: 12, blockstun: 8, kb: 2, hitbox: { x: 16, y: 0, w: 72, h: 32 }, pose: 'cKick', cancel: ['H', 'S'], sfx: 'whoosh' }),
+        L: mv({ id: 'L', name: 'Chama curta', startup: 5, active: 3, recovery: 10, dmg: 55, hitstun: 18, blockstun: 9, kb: 3, hitbox: { x: 20, y: 95, w: 70, h: 34 }, pose: 'jab', cancel: ['L', 'H', 'S'], sfx: 'whoosh' }),
+        cL: mv({ id: 'cL', name: 'Brasa baixa', startup: 6, active: 3, recovery: 11, dmg: 45, type: 'low', crouch: true, hitstun: 17, blockstun: 8, kb: 2, hitbox: { x: 16, y: 0, w: 72, h: 32 }, pose: 'cKick', cancel: ['H', 'S'], sfx: 'whoosh' }),
         aL: mv({ id: 'aL', name: 'Labareda aérea', startup: 5, active: 5, recovery: 8, dmg: 55, type: 'high', air: true, hitstun: 13, kb: 3, hitbox: { x: 10, y: 20, w: 70, h: 50 }, pose: 'airKick', sfx: 'whoosh' }),
         H: mv({ id: 'H', name: 'Rabo de fogo', startup: 9, active: 5, recovery: 16, dmg: 110, hitstun: 20, blockstun: 12, kb: 6, hitbox: { x: 10, y: 60, w: 110, h: 80 }, pose: 'spinKick', cancel: ['S'], sfx: 'whooshH', fx: 'arc' }),
         cH: mv({ id: 'cH', name: 'Labareda', startup: 7, active: 6, recovery: 18, dmg: 100, launch: 12, crouch: true, hitstun: 20, blockstun: 11, kb: 3, invuln: [2, 8], hitbox: { x: -10, y: 60, w: 80, h: 120 }, pose: 'upper', sfx: 'fire', fx: 'fire' }),
@@ -130,18 +130,42 @@
       }
     },
 
+    bene: {
+      id: 'bene', name: 'Bené Berimbau', alias: 'O Toque da Roda', origin: 'Cachoeira, BA', style: 'Capoeira regional & berimbau',
+      bio: 'Tocador e lutador. Foi o Mestre Cinzas quem lhe ensinou a tocar, e foi ele quem ensinou o Mestre a escutar. O berimbau marca o compasso da roda — e quebra guarda. Todo golpe tem hora certa, e Bené sempre sabe qual é.',
+      quote: 'Golpe fora do compasso é só barulho.',
+      colors: { skin: '#6b4a30', torso: '#fff8e8', arms: '#6b4a30', legs: '#1c4e9c', shoes: '#fff8e8', accent: '#f2b70c', hair: '#141210' },
+      hair: 'cap', prop: 'berimbau', idle: 'ginga', idleOver: { na: [60, 30], fa: [30, 70] }, body: { height: 1.02, build: 0.92 }, details: ['necklace', 'stripe'],
+      stats: { hp: 980, speed: 3.1, jumpV: -13, weight: 0.95, dashV: 9.5, airSpeed: 3.2, maxJumps: 1 },
+      superName: 'São Bento Grande', superDesc: 'Acelera o toque: uma sequência em que todo golpe cai no compasso.',
+      ai: { zone: 0.2, air: 0.25, grab: 0, rush: 0.45, poke: 0.8 },
+      moves: {
+        L: mv({ id: 'L', name: 'Ponta de verga', startup: 5, active: 3, recovery: 10, dmg: 48, hitstun: 18, blockstun: 9, kb: 3, hitbox: { x: 30, y: 85, w: 100, h: 34 }, pose: 'lunge', cancel: ['L', 'H', 'S'], sfx: 'whoosh' }),
+        cL: mv({ id: 'cL', name: 'Toque baixo', startup: 6, active: 3, recovery: 11, dmg: 42, type: 'low', crouch: true, hitstun: 17, blockstun: 8, kb: 2, hitbox: { x: 20, y: 0, w: 95, h: 30 }, pose: 'castLow', cancel: ['H', 'S'], sfx: 'whoosh' }),
+        aL: mv({ id: 'aL', name: 'Chapa de frente', startup: 5, active: 5, recovery: 8, dmg: 50, type: 'high', air: true, hitstun: 14, kb: 3, hitbox: { x: 10, y: 20, w: 70, h: 50 }, pose: 'airKick', sfx: 'whoosh' }),
+        H: mv({ id: 'H', name: 'Vergada', startup: 10, active: 4, recovery: 17, dmg: 105, hitstun: 20, blockstun: 12, kb: 7, hitbox: { x: 20, y: 60, w: 130, h: 90 }, pose: 'swing', cancel: ['S'], sfx: 'whooshH' }),
+        cH: mv({ id: 'cH', name: 'Rasteira de verga', startup: 8, active: 4, recovery: 19, dmg: 90, type: 'low', crouch: true, knockdown: true, hitstun: 20, blockstun: 12, kb: 4, hitbox: { x: 10, y: 0, w: 125, h: 30 }, pose: 'sweep', sfx: 'whooshH' }),
+        aH: mv({ id: 'aH', name: 'Cabaçada', startup: 8, active: 5, recovery: 10, dmg: 100, type: 'high', air: true, hitstun: 18, kb: 4, hitbox: { x: 0, y: -10, w: 100, h: 90 }, pose: 'overhead', sfx: 'whooshH' }),
+        fH: mv({ id: 'fH', name: 'Golpe de cabaça', startup: 13, active: 3, recovery: 19, dmg: 100, type: 'high', hitstun: 28, blockstun: 12, kb: 2, hitbox: { x: 20, y: 70, w: 110, h: 90 }, pose: 'overhead', sfx: 'whooshH' }),
+        S: mv({ id: 'S', name: 'Toque de Angola', startup: 8, active: 1, recovery: 24, dmg: 0, pose: 'play', buff: 300, axe: 0.05, sfx: 'taunt' }),
+        dS: mv({ id: 'dS', name: 'Meia-lua pulada', startup: 6, active: 7, recovery: 20, dmg: 100, launch: 12, hitstun: 22, blockstun: 12, kb: 3, chip: 10, invuln: [0, 8], hitbox: { x: -10, y: 60, w: 90, h: 120 }, pose: 'riseKick', sfx: 'whooshH' }),
+        aS: mv({ id: 'aS', name: 'Tesoura de verga', startup: 6, active: 10, recovery: 10, dmg: 90, type: 'high', air: true, knockdown: true, hitstun: 20, kb: 5, chip: 8, hitbox: { x: 10, y: 0, w: 90, h: 60 }, pose: 'dive', move: [{ f: 0, t: 16, vx: 5, vy: 6 }], sfx: 'whooshH' }),
+        M: mv({ id: 'M', name: 'São Bento Grande', super: true, startup: 14, active: 36, recovery: 20, dmg: 62, hits: 6, hitInterval: 6, launch: 13, hitstun: 22, blockstun: 15, kb: 1.5, chip: 15, onBeatAlways: true, invuln: [0, 16], hitbox: { x: 0, y: 30, w: 140, h: 130 }, pose: 'superRush', move: [{ f: 4, t: 14, vx: 12 }, { f: 14, t: 50, vx: 2.5 }], sfx: 'super', fx: 'arc' })
+      }
+    },
+
     cinzas: {
       id: 'cinzas', name: 'Mestre Cinzas', alias: 'O Último da Roda Velha', origin: 'Porto Brabo, BA', style: 'Capoeira antiga',
       bio: 'Mestre de Zeca e guardião da Roda do Fogo há trinta anos. Perdeu a esposa, Rosa, num incêndio durante uma roda. Desde então acredita que toda festa cobra um preço — e decidiu encerrar a conta.',
       quote: 'Toda festa cobra um preço.',
       colors: { skin: '#7a4f36', torso: '#e9e2d2', arms: '#7a4f36', legs: '#cfc6b2', shoes: '#141210', accent: '#8d8a84', hair: '#d8d2c4' },
-      hair: 'straw', prop: 'ash', idle: 'ginga', idleOver: { torso: 16, head: -8 }, beard: true, body: { height: 1.0, build: 0.9 },
+      hair: 'straw', prop: 'ash', idle: 'ginga', idleOver: { torso: 16, head: -8 }, details: ['scar', 'necklace'], beard: true, body: { height: 1.0, build: 0.9 },
       stats: { hp: 1050, speed: 3.1, jumpV: -13, weight: 1.0, dashV: 10, airSpeed: 3.2, maxJumps: 1 },
       superName: 'Apagar a Brasa', superDesc: 'Escurece a roda e desfere a sequência que encerrou trinta anos de festa.',
       ai: { zone: 0.3, air: 0.3, grab: 0.3, rush: 0.5, poke: 0.5 },
       moves: {
-        L: mv({ id: 'L', name: 'Tapa de cinza', startup: 4, active: 3, recovery: 8, dmg: 55, hitstun: 13, blockstun: 8, kb: 2.5, hitbox: { x: 20, y: 95, w: 64, h: 34 }, pose: 'jab', cancel: ['L', 'H', 'S'], sfx: 'whoosh' }),
-        cL: mv({ id: 'cL', name: 'Pisão', startup: 5, active: 3, recovery: 10, dmg: 45, type: 'low', crouch: true, hitstun: 13, blockstun: 8, kb: 2, hitbox: { x: 16, y: 0, w: 70, h: 32 }, pose: 'cKick', cancel: ['H', 'S'], sfx: 'whoosh' }),
+        L: mv({ id: 'L', name: 'Tapa de cinza', startup: 4, active: 3, recovery: 8, dmg: 55, hitstun: 18, blockstun: 8, kb: 2.5, hitbox: { x: 20, y: 95, w: 64, h: 34 }, pose: 'jab', cancel: ['L', 'H', 'S'], sfx: 'whoosh' }),
+        cL: mv({ id: 'cL', name: 'Pisão', startup: 5, active: 3, recovery: 10, dmg: 45, type: 'low', crouch: true, hitstun: 17, blockstun: 8, kb: 2, hitbox: { x: 16, y: 0, w: 70, h: 32 }, pose: 'cKick', cancel: ['H', 'S'], sfx: 'whoosh' }),
         aL: mv({ id: 'aL', name: 'Chapa', startup: 5, active: 5, recovery: 8, dmg: 55, type: 'high', air: true, hitstun: 14, kb: 3, hitbox: { x: 10, y: 20, w: 66, h: 50 }, pose: 'airKick', sfx: 'whoosh' }),
         H: mv({ id: 'H', name: 'Meia-lua de cinzas', startup: 9, active: 5, recovery: 15, dmg: 115, hitstun: 20, blockstun: 12, kb: 6, hitbox: { x: 10, y: 70, w: 110, h: 80 }, pose: 'spinKick', cancel: ['S'], sfx: 'whooshH', fx: 'arc' }),
         cH: mv({ id: 'cH', name: 'Rasteira velha', startup: 7, active: 4, recovery: 17, dmg: 95, type: 'low', crouch: true, knockdown: true, hitstun: 20, blockstun: 12, kb: 4, hitbox: { x: 10, y: 0, w: 105, h: 30 }, pose: 'sweep', sfx: 'whooshH' }),
@@ -155,9 +179,11 @@
     }
   };
 
-  M.ROSTER = ['zeca', 'bia', 'mare', 'tiao', 'juvenal', 'cinzas'];
+  M.ROSTER = ['zeca', 'bia', 'mare', 'tiao', 'bene', 'juvenal', 'cinzas'];
   for (const id in M.FIGHTERS) {
     const f = M.FIGHTERS[id];
+    // agarrão universal (J + K juntos ou tecla H)
+    if (!f.moves.TH) f.moves.TH = mv({ id: 'TH', name: 'Agarrão', startup: 4, active: 4, recovery: 22, dmg: 120, throw: { range: 78, hold: 18, vx: 7, vy: 9 }, hitstun: 20, pose: 'grab', sfx: 'grab' });
     for (const k in f.moves) { const m = f.moves[k]; m.total = m.startup + m.active + m.recovery; m.reach = m.hitbox ? m.hitbox.x + m.hitbox.w : (m.throw ? m.throw.range : 0); }
   }
 })();

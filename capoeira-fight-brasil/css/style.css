@@ -1,5 +1,5 @@
 /* ============================================================
-   MANDINGA — estilo xilogravura de cordel
+   CAPOEIRA FIGHT BRASIL — estilo xilogravura de cordel
    ============================================================ */
 :root {
   --paper: #f3e6c8; --ink: #141210; --red: #c8371d; --yellow: #f2b70c; --green: #1f7a4d;
@@ -62,8 +62,10 @@ nav { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
 /* ---------- título ---------- */
 .title { align-items: center; justify-content: center; background: linear-gradient(rgba(20,18,16,.2), rgba(20,18,16,.75)); }
 .logo { text-align: center; }
-.logo h1 { font-family: var(--display); font-size: 118px; line-height: .95; margin: 0; color: var(--paper); -webkit-text-stroke: 3px var(--ink); text-shadow: 6px 6px 0 var(--ink), 12px 12px 0 var(--red); letter-spacing: 2px; transform: rotate(-2deg); }
-.logo.small h1 { font-size: 64px; text-shadow: 4px 4px 0 var(--ink), 8px 8px 0 var(--red); }
+.logo h1 { font-family: var(--display); font-size: 96px; line-height: .9; margin: 0; color: var(--paper); -webkit-text-stroke: 3px var(--ink); text-shadow: 6px 6px 0 var(--ink), 12px 12px 0 var(--red); letter-spacing: 2px; transform: rotate(-2deg); }
+.logo.small h1 { font-size: 46px; text-shadow: 4px 4px 0 var(--ink), 8px 8px 0 var(--red); }
+.logo h1 em { font-style: normal; color: var(--yellow); font-size: .62em; letter-spacing: 6px; display: block; }
+.logo.small h1 em { display: inline; font-size: .8em; letter-spacing: 2px; }
 .logo-top, .logo-sub { display: block; font-family: var(--display); letter-spacing: 4px; font-size: 14px; color: var(--yellow); text-shadow: 2px 2px 0 var(--ink); }
 .logo-top { margin-bottom: 6px; }
 .logo-sub { margin-top: 10px; }
@@ -119,10 +121,10 @@ nav { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
 .cs-info .style { font-family: var(--display); font-size: 11px; letter-spacing: 1px; }
 .cs-info .super { background: rgba(20,18,16,.08); padding: 4px 6px; }
 .cs-label { font-family: var(--display); font-size: 11px; letter-spacing: 2px; color: var(--grey); }
-.cs-grid { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.cs-grid { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 .cs-card { background: var(--paper); border: 3px solid var(--ink); position: relative; cursor: pointer; display: flex; flex-direction: column; align-items: center; overflow: hidden; height: 158px; transition: transform .1s; }
 .cs-card .cs-port { flex: 1; display: flex; align-items: flex-end; justify-content: center; width: 100%; background: linear-gradient(var(--yellow), #e09a1a); overflow: hidden; }
-.cs-card .cs-port canvas { height: 120px; width: auto; }
+.cs-card .cs-port canvas { height: 112px; width: auto; }
 .cs-card .cs-name { font-family: var(--display); font-size: 12px; color: var(--ink); padding: 4px; width: 100%; text-align: center; background: var(--paper); border-top: 3px solid var(--ink); }
 .cs-card.locked { filter: grayscale(1) brightness(.6); }
 .cs-card.c1 { outline: 5px solid var(--cyan); outline-offset: -5px; transform: scale(1.04); z-index: 2; }
@@ -153,6 +155,7 @@ nav { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
 .pad .up { left: 69px; top: 0; } .pad .down { left: 69px; bottom: 0; } .pad .left { left: 0; top: 69px; } .pad .right { right: 0; top: 69px; }
 .pad .tbtn { font-size: 20px; }
 .btns { position: absolute; right: 24px; bottom: 24px; width: 230px; height: 200px; }
+.btns .th { right: 225px; bottom: 0; background: rgba(232,113,43,.55); font-size: 11px; }
 .btns .l { right: 150px; top: 0; } .btns .h { right: 75px; top: 0; } .btns .s { right: 0; top: 0; }
 .btns .g { right: 150px; bottom: 0; background: rgba(42,169,184,.55); } .btns .m { right: 75px; bottom: 0; background: rgba(199,38,122,.6); font-size: 10px; } .btns .t { right: 0; bottom: 0; font-size: 10px; }
 .btns .m.on { background: var(--magenta); }

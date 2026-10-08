@@ -8,14 +8,14 @@ M.PATUAS = [
   { id: 'brasa', name: 'Patuá da Brasa', icon: '●', desc: '+12% de dano em todos os golpes. Pega fogo, cabaré.', apply: m => { m.dmg *= 1.12; } },
   { id: 'compasso', name: 'Patuá do Compasso', icon: '♪', desc: 'Janela do NO COMPASSO dobrada, e golpes no ritmo dão +15% de dano.', apply: m => { m.beat *= 2; m.beatDmg = 1.15; } },
   { id: 'esquiva', name: 'Patuá da Esquiva', icon: '◆', desc: 'A Ginga recarrega 40% mais rápido. Mandinga é não estar onde o golpe chega.', apply: m => { m.dodgeCd *= 0.6; } },
-  { id: 'folia', name: 'Patuá da Folia', icon: '★', desc: 'Ganho de Axé +30%. A roda gosta de você mais rápido.', apply: m => { m.axe *= 1.3; } },
+  { id: 'folia', name: 'Patuá da Folia', icon: '★', desc: 'Ganho de Energia +30%. A roda gosta de você mais rápido.', apply: m => { m.axe *= 1.3; } },
   { id: 'couro', name: 'Patuá de Couro', icon: '✚', desc: 'Defesa não sofre dano (chip) e você recupera 5% de vida entre as rodas.', apply: m => { m.chip = 0; m.regen = 0.05; } }
 ];
 
 M.STORY = {
   intro: [
     'Em Porto Brabo, cidade\nque o mar não quis engolir,\ntoda Quarta de Cinzas\na festa insiste em seguir:\nacende-se a Brasa na praça\npra ninguém poder dormir.',
-    'Mas a Brasa só se alimenta\ndo axé de quem bate palma,\ne quem quiser ser guardião\ntem que entrar na roda com calma,\nganhar o povo no gingado\ne nunca perder a alma.',
+    'Mas a Brasa só se alimenta\nda energia de quem bate palma,\ne quem quiser ser guardião\ntem que entrar na roda com calma,\nganhar o povo no gingado\ne nunca perder a alma.',
     'Zeca Ventania, menino\nque o Mestre Cinzas criou,\nhoje entra pela primeira vez\nna roda que o fogo guardou.\nBate o berimbau. É agora.\nA roda nunca parou.'
   ],
   fights: [
@@ -70,12 +70,25 @@ M.STORY = {
         { who: 'tiao', text: 'Arretado. Tu derrubou um boi hoje.' },
         { who: 'tiao', text: 'Vou te dizer uma coisa: teu Mestre apostou contra tu. Eu vi, com esses olhos. Ele não quer ninguém chegando na Brasa.' },
         { who: 'zeca', text: 'Mentira.' },
-        { who: 'tiao', text: 'Pergunta pro Boitatá. Ele sabe mais do que eu.' }
+        { who: 'tiao', text: 'Pergunta pro Bené, lá no terreiro. Ele conhece o Cinzas desde moleque.' }
       ],
       patua: true
     },
     {
-      opp: 'juvenal', stage: 'pantanal', title: 'QUARTA RODA — O PANTANAL',
+      opp: 'bene', stage: 'terreiro', title: 'QUARTA RODA — O TERREIRO',
+      pre: [
+        { who: 'bene', text: 'Foi teu Mestre que me ensinou a tocar. E fui eu que ensinei ele a escutar. Hoje ele não escuta mais ninguém.' },
+        { who: 'zeca', text: 'Então me ensina o que ele esqueceu.' },
+        { who: 'bene', text: 'Escuta o berimbau. Bate junto com ele. O resto, a roda faz.' }
+      ],
+      post: [
+        { who: 'bene', text: 'Tá no compasso, menino. Agora vai lá no Pantanal.' },
+        { who: 'bene', text: 'O Boitatá guarda a chama há mais tempo que todo mundo. Ele sabe o que o Cinzas quer fazer com a Brasa — e por quê.' }
+      ],
+      patua: true
+    },
+    {
+      opp: 'juvenal', stage: 'pantanal', title: 'QUINTA RODA — O PANTANAL',
       pre: [
         { who: 'juvenal', text: 'Eu sou o fogo que o Mestre quer apagar. Se ele vencer a roda hoje, a Brasa morre. E a cidade dorme pra sempre.' },
         { who: 'zeca', text: '...O Mestre nunca faria isso.' },
@@ -126,7 +139,7 @@ M.STORY = {
       ]
     }
   },
-  credits: 'MANDINGA — A Roda Nunca Para\nUm jogo de luta brasileiro em xilogravura.\n\nPersonagens, mundo, música e código: criados do zero.\nTudo procedural — nenhum asset externo.\n\nObrigado por jogar. Agora vai lá e ensina alguém a gingar.'
+  credits: 'CAPOEIRA FIGHT BRASIL — A Roda Nunca Para\nUm jogo de luta brasileiro em xilogravura.\n\nPersonagens, mundo, música e código: criados do zero.\nTudo procedural — nenhum asset externo.\n\nObrigado por jogar. Agora vai lá e ensina alguém a gingar.'
 };
 
 M.SPEAKERS = {
@@ -136,5 +149,6 @@ M.SPEAKERS = {
   mare: { name: 'Maré Bacuri', color: '#2aa9b8' },
   tiao: { name: 'Tião Sertão', color: '#c8371d' },
   juvenal: { name: 'Juvenal Boitatá', color: '#e8712b' },
+  bene: { name: 'Bené Berimbau', color: '#c47a4a' },
   lourdes: { name: 'Dona Lourdes (no pandeiro)', color: '#1f7a4d' }
 };

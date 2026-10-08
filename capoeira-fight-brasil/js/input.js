@@ -3,10 +3,10 @@
 // INPUT — teclado, toque e gamepad, com detecção de dash (toque duplo)
 // ============================================================
 M.input = (function () {
-  const ACTIONS = ['up', 'down', 'left', 'right', 'light', 'heavy', 'special', 'ginga', 'mandinga', 'taunt'];
+  const ACTIONS = ['up', 'down', 'left', 'right', 'light', 'heavy', 'special', 'ginga', 'mandinga', 'taunt', 'throw'];
   const KEYMAP = {
-    p1: { up: ['KeyW'], down: ['KeyS'], left: ['KeyA'], right: ['KeyD'], light: ['KeyJ'], heavy: ['KeyK'], special: ['KeyL'], ginga: ['Space', 'KeyI'], mandinga: ['KeyU'], taunt: ['KeyO'] },
-    p2: { up: ['ArrowUp'], down: ['ArrowDown'], left: ['ArrowLeft'], right: ['ArrowRight'], light: ['Numpad1', 'Comma'], heavy: ['Numpad2', 'Period'], special: ['Numpad3', 'Slash'], ginga: ['Numpad0', 'ShiftRight'], mandinga: ['Numpad5', 'Quote'], taunt: ['Numpad4', 'Semicolon'] }
+    p1: { up: ['KeyW'], down: ['KeyS'], left: ['KeyA'], right: ['KeyD'], light: ['KeyJ'], heavy: ['KeyK'], special: ['KeyL'], ginga: ['Space', 'KeyI'], mandinga: ['KeyU'], taunt: ['KeyO'], throw: ['KeyH'] },
+    p2: { up: ['ArrowUp'], down: ['ArrowDown'], left: ['ArrowLeft'], right: ['ArrowRight'], light: ['Numpad1', 'Comma'], heavy: ['Numpad2', 'Period'], special: ['Numpad3', 'Slash'], ginga: ['Numpad0', 'ShiftRight'], mandinga: ['Numpad5', 'Quote'], taunt: ['Numpad4', 'Semicolon'], throw: ['Numpad6', 'BracketRight'] }
   };
   const PAUSE_KEYS = ['Escape', 'KeyP'];
   const keys = Object.create(null);
@@ -58,7 +58,7 @@ M.input = (function () {
       const ax = pad.axes[0] || 0, ay = pad.axes[1] || 0;
       const cur = {
         left: ax < -0.5 || b(14), right: ax > 0.5 || b(15), up: ay < -0.5 || b(12), down: ay > 0.5 || b(13),
-        light: b(2), heavy: b(3), special: b(1), ginga: b(0), mandinga: b(5) || b(7), taunt: b(4) || b(6), pause: b(9)
+        light: b(2), heavy: b(3), special: b(1), ginga: b(0), mandinga: b(5) || b(7), taunt: b(4), throw: b(6), pause: b(9)
       };
       const prev = pads[p] || {};
       for (const a in cur) {

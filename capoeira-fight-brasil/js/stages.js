@@ -203,6 +203,38 @@ M.stages = (function () {
         ctx.restore();
       }
     },
+    terreiro: {
+      name: 'Terreiro do Bené', sub: 'Onde o berimbau manda', palette: ['#4a2a1a', '#5a3322', '#3a2416'], music: 'fight', firePos: [480, 400], dustColor: '#d98a5a', motes: true,
+      build(ctx, rnd) {
+        sky(ctx, '#f7d774', '#e8a35b', '#c47a4a');
+        // parede de tábuas
+        ctx.fillStyle = '#8b5a2b'; ctx.fillRect(0, 170, W, 245);
+        ctx.strokeStyle = '#5a3a22'; ctx.lineWidth = 3; for (let x = 0; x < W; x += 46) { ctx.beginPath(); ctx.moveTo(x, 170); ctx.lineTo(x + 2, 415); ctx.stroke(); }
+        ctx.strokeStyle = INK; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(0, 170); ctx.lineTo(W, 170); ctx.stroke();
+        ctx.fillStyle = '#6b3f22'; ctx.fillRect(0, 150, W, 22); ctx.strokeRect(0, 150, W, 22);
+        // janela e letreiro
+        ctx.fillStyle = '#f2c27a'; ctx.fillRect(700, 210, 110, 90); ctx.strokeRect(700, 210, 110, 90); ctx.beginPath(); ctx.moveTo(755, 210); ctx.lineTo(755, 300); ctx.moveTo(700, 255); ctx.lineTo(810, 255); ctx.stroke();
+        ctx.fillStyle = '#fff8e8'; ctx.fillRect(330, 196, 300, 54); ctx.strokeRect(330, 196, 300, 54);
+        M.text(ctx, 'TERREIRO DO BENÉ', 480, 223, { size: 26, color: '#c8371d', lw: 3 });
+        // berimbaus pendurados
+        for (let i = 0; i < 6; i++) {
+          const x = 70 + i * 100 + (i > 2 ? 230 : 0); if (x > 900) continue;
+          ctx.strokeStyle = INK; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(x, 270); ctx.quadraticCurveTo(x + 26, 340, x, 405); ctx.stroke();
+          ctx.strokeStyle = '#c9a060'; ctx.lineWidth = 4; ctx.stroke();
+          ctx.strokeStyle = '#fff8e8'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x, 270); ctx.lineTo(x, 405); ctx.stroke();
+          ctx.fillStyle = '#c47a4a'; ctx.beginPath(); ctx.arc(x + 8, 388, 11, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = INK; ctx.lineWidth = 2.5; ctx.stroke();
+        }
+        // atabaques
+        for (const [x, h] of [[640, 80], [690, 62]]) { ctx.fillStyle = '#5a3a22'; ctx.beginPath(); ctx.moveTo(x - 18, 410); ctx.lineTo(x - 24, 410 - h); ctx.lineTo(x + 24, 410 - h); ctx.lineTo(x + 18, 410); ctx.closePath(); ctx.fill(); ctx.strokeStyle = INK; ctx.lineWidth = 3; ctx.stroke(); ctx.fillStyle = '#e9d8b0'; ctx.beginPath(); ctx.ellipse(x, 410 - h, 24, 7, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
+        ground(ctx, '#a0522d', INK, c => { c.strokeStyle = '#7a3a1e'; c.lineWidth = 2; for (let i = 0; i < 24; i++) { c.beginPath(); c.moveTo(rnd() * W, G + rnd() * 80); c.lineTo(rnd() * W, G + rnd() * 80); c.stroke(); } });
+      },
+      dyn(ctx, st) {
+        ctx.save(); ctx.globalAlpha = 0.5; ctx.fillStyle = '#fff2c4';
+        for (let i = 0; i < 14; i++) { const x = (i * 71 + st * 0.3 * (1 + i % 3)) % W, y = 120 + (i * 53) % 260 + Math.sin(st * 0.02 + i) * 12; ctx.beginPath(); ctx.arc(x, y, 1.8, 0, Math.PI * 2); ctx.fill(); }
+        ctx.restore();
+        bandeirinhas(ctx, st, 60, 1);
+      }
+    },
     cinzas: {
       name: 'Praça das Cinzas', sub: 'Onde a Brasa vai morrer', palette: ['#2a2724', '#33302c', '#1f1d1a'], music: 'boss', firePos: [480, 400], ash: true, fireLevel: 0.4, dustColor: '#8d8a84',
       build(ctx, rnd) {
@@ -286,5 +318,5 @@ M.stages = (function () {
     }
   }
 
-  return { DEFS, Stage, bandeirinhas, drawFire, order: ['porto', 'ladeira', 'rio', 'sertao', 'pantanal', 'cinzas'] };
+  return { DEFS, Stage, bandeirinhas, drawFire, order: ['porto', 'ladeira', 'rio', 'sertao', 'terreiro', 'pantanal', 'cinzas'] };
 })();

@@ -1,6 +1,6 @@
 'use strict';
 // ============================================================
-// MATCH — uma luta completa: rodadas, Axé, colisões, projéteis,
+// MATCH — uma luta completa: rodadas, Energia, colisões, projéteis,
 // arremessos, chefe, tutorial, câmera e HUD.
 // ============================================================
 M.TUTORIAL = [
@@ -10,9 +10,10 @@ M.TUTORIAL = [
   { text: 'K = golpe forte. Agachado (S + K) é a RASTEIRA, que derruba. Acerte uma.', check: G => (G.p1.stats.landed.cH || 0) >= 1, mestre: 'passive' },
   { text: 'L = especial. S + L é o MACACO (anti-aéreo). Acerte 2 especiais.', check: G => ((G.p1.stats.landed.S || 0) + (G.p1.stats.landed.dS || 0) + (G.p1.stats.landed.aS || 0)) >= 2, mestre: 'passive' },
   { text: 'Segure PRA TRÁS para DEFENDER. Agache para bloquear golpes baixos. Defenda 3 golpes.', check: G => G.tut.blocks >= 3, mestre: 'attack' },
+  { text: 'H (ou J + K juntos) = AGARRÃO. Quebra a defesa de quem só bloqueia. Agarre o Mestre.', check: G => (G.p1.stats.landed.TH || 0) >= 1, mestre: 'guard' },
   { text: 'ESPAÇO = GINGA (esquiva). Esquive NO MOMENTO do golpe: ESQUIVA PERFEITA.', check: G => G.tut.perfect >= 1, mestre: 'attack' },
-  { text: 'A barra de AXÉ é o público. Golpes variados, esquivas e acertos NO COMPASSO do berimbau enchem seu lado. Chegue a 70%.', check: G => G.axe >= 0.7, mestre: 'dummy' },
-  { text: 'U = MANDINGA! Solte sua técnica máxima.', check: G => G.p1.stats.supers >= 1, mestre: 'passive' },
+  { text: 'A barra de ENERGIA é o público. Golpes variados, esquivas e acertos NO COMPASSO do berimbau enchem seu lado. Chegue a 70%.', check: G => G.axe >= 0.7, mestre: 'dummy' },
+  { text: 'U = MANDINGA! Solte sua técnica máxima.', check: G => G.p1.stats.supers >= 1, mestre: 'passive', holdEnergy: true },
   { text: '"Chega por hoje, menino. A roda escuta quem escuta a roda." — Mestre Cinzas', check: G => G.tutT > 220, mestre: 'passive', final: true }
 ];
 
@@ -70,7 +71,7 @@ M.Match = class Match {
     if (f.ctrl === 'cpu') return M.AI.inputFor(f, opp, this, f.ai);
     const inp = M.AI.blank();
     if (this.dummyMode === 'block') {
-      const threat = (opp.state === 'attack' && opp.move) || this.projectiles.some(p => p.owner === opp && Math.abs(p.x - f.x) < 200);
+      const threat = (opp.state === 'attack' && opp.move && opp.move.hitbox) || this.projectiles.some(p => p.owner === opp && Math.abs(p.x - f.x) < 200);
       if (threat) { inp.held[f.facing === 1 ? 'left' : 'right'] = true; const mv = opp.move; inp.held.down = !!(mv && mv.type === 'low') || (!mv && this.frame % 60 < 30) || (mv && mv.type === 'mid' && this.frame % 60 < 30); if (mv && mv.type === 'high') inp.held.down = false; }
     }
     else if (this.dummyMode === 'cpu') { if (!f.ai) f.ai = M.AI.make(this.o.difficulty || 'brabo', f.def); return M.AI.inputFor(f, opp, this, f.ai); }
@@ -215,12 +216,15 @@ M.Match = class Match {
       if (def.hp <= 0) this.ko(def);
       return;
     }
-    const counter = (def.state === 'attack' && def.mf <= def.move.startup) || def.state === 'taunt';
+    const fromWindow = att.counterWin > 0;
+    const counter = (def.state === 'attack' && def.mf <= def.move.startup) || def.state === 'taunt' || fromWindow;
+    att.counterWin = 0;
     const armor = def.armorNow && !mv.super && !src;
     let dmg = mv.dmg * att.mods.dmg;
-    const beat = M.audio.music.beat(); const onBeat = beat.dist < 0.075 * att.mods.beat;
-    if (onBeat) dmg *= att.mods.beatDmg;
+    const beat = M.audio.music.beat(); const onBeat = !!mv.onBeatAlways || beat.dist < 0.075 * att.mods.beat * (att.ritmo > 0 ? 2.5 : 1);
+    if (onBeat) dmg *= att.mods.beatDmg * (att.ritmo > 0 ? 1.15 : 1);
     if (counter) dmg *= 1.25;
+    if (mv.super) dmg *= att.superBoost || 1;
     if (!mv.super) dmg *= Math.max(0.4, 1 - 0.1 * att.combo);
     if (this.axeSide(att) > 0.5) dmg *= 1.1;
     dmg = Math.round(dmg);
@@ -258,7 +262,7 @@ M.Match = class Match {
     const same = att.recent.filter(id => id === mv.id).length; gain *= 1 / (1 + same * 0.8);
     if (same >= 2 && !mv.super) this.popup('REPETIDO...', att.x, att.y - 200, '#8d8a84', 16);
     if (onBeat) { gain *= 1.8; this.popup('NO COMPASSO!', hx, hy - 50, M.C.yellow, 24); this.fx.push({ type: 'ring', x: hx, y: hy, r: 70, t: 0, life: 18, color: M.C.yellow }); M.audio.play('axe'); this.beatHits++; }
-    if (counter) { gain += 0.04; this.popup('CONTRA-GOLPE!', hx, hy - 80, M.C.red, 22); M.audio.play('counter'); }
+    if (counter) { gain += 0.04; this.popup(fromWindow ? 'CONTRA-ATAQUE!' : 'CONTRA-GOLPE!', hx, hy - 80, M.C.red, 22); M.audio.play('counter'); }
     if (att.def.id === 'cinzas' && this.boss && this.phase2) gain += 0.06;
     this.gainAxe(att, gain);
     att.recent.push(mv.id); if (att.recent.length > 4) att.recent.shift();
@@ -268,7 +272,7 @@ M.Match = class Match {
     if (def.hp <= 0) this.ko(def);
   }
   perfectDodge(def, att) {
-    def.stats.perfect++; def.dodgeCd = 0; def.invuln = Math.max(def.invuln, 16);
+    def.stats.perfect++; def.dodgeCd = 0; def.invuln = Math.max(def.invuln, 16); def.counterWin = 75;
     this.slow = 26; this.slowAcc = 0;
     if (att.state === 'attack' && att.move) att.extraRec += 10;
     this.popup('ESQUIVA PERFEITA!', def.x, def.y - 205, M.C.yellow, 28);
@@ -282,15 +286,24 @@ M.Match = class Match {
     this.axe = M.clamp(this.axe + sign * amt * f.mods.axe * (this.tutorial ? 1.8 : 1), -1, 1);
     if (label) this.popup(label, f.x, f.y - 210, M.C.yellow, 22);
     const i = f.side - 1;
-    if (this.superReady(f) && !this.readyShown[i]) { this.readyShown[i] = true; this.popup('MANDINGA PRONTA!', f.x, f.y - 230, M.C.magenta, 26); M.audio.play('patua'); M.audio.cheer(0.6); }
+    if (this.superReady(f) && !this.readyShown[i]) { this.readyShown[i] = true; this.popup(Math.abs(this.axe) >= 0.97 ? 'MANDINGA MÁXIMA!' : 'MANDINGA PRONTA!', f.x, f.y - 230, M.C.magenta, 26); M.audio.play('patua'); M.audio.cheer(0.6); }
     if (!this.superReady(f)) this.readyShown[i] = false;
   }
   tauntDone(f) {
     const opp = this.other(f);
     if (opp.state === 'taunt' || (opp.stats.lastTaunt && this.frame - opp.stats.lastTaunt < 70)) { this.gainAxe(f, 0.12, 'A RODA RIU!'); this.gainAxe(opp, 0.12); this.confetti(M.W / 2, 200, 40); M.audio.cheer(1); }
-    else this.gainAxe(f, 0.14, 'AXÉ!');
+    else this.gainAxe(f, 0.14, 'ENERGIA!');
     f.stats.lastTaunt = this.frame;
     M.audio.cheer(0.5); this.crowdExcite = Math.min(1.5, this.crowdExcite + 0.4);
+  }
+  canEscape(f) { const opp = this.other(f); return f.state === 'hitstun' && opp.combo >= 3 && this.axeSide(f) >= 0.3 && this.phase === 'fight'; }
+  escape(f) {
+    const opp = this.other(f);
+    this.axe = M.clamp(this.axe - (f.side === 1 ? 0.3 : -0.3), -1, 1);
+    f.kdPending = false; f.launched = false; f.juggle = 0; f.state = 'idle'; f.t = 0; f.startDodge(this, false); f.invuln = 18; f.dodgeCd = Math.round(45 * f.mods.dodgeCd); if (!f.grounded) f.vy = Math.min(f.vy, -3);
+    if (opp.combo >= 2) opp.comboShow = 70; opp.combo = 0; opp.comboDmg = 0;
+    this.popup('ESCAPOU!', f.x, f.y - 205, M.C.cyan, 26); this.fx.push({ type: 'ring', x: f.x, y: f.y - 80, r: 100, t: 0, life: 20, color: M.C.cyan });
+    this.fx.push({ type: 'flash', t: 0, life: 6, color: '#2aa9b8', alpha: 0.25 }); M.audio.play('perfect'); this.slow = 12; this.slowAcc = 0;
   }
   burnTick(f) { this.popup('-10', f.x, f.y - 170, M.C.orange, 16); M.audio.play('burn'); if (f.hp <= 0) this.ko(f); }
 
@@ -303,7 +316,7 @@ M.Match = class Match {
     def.state = 'thrown'; def.move = null; def.throwing = null; def.t = 0; def.crouching = false;
     M.audio.play('grab'); this.fx.push({ type: 'star', x: def.x, y: def.y - 100, r: 22, t: 0, life: 10, n: 6, color: M.C.yellow });
     att.hitstop = def.hitstop = 4;
-    if (mv.throw.drain) this.gainAxe(att, mv.throw.drain, 'ROUBOU O AXÉ!');
+    if (mv.throw.drain) this.gainAxe(att, mv.throw.drain, 'ROUBOU A ENERGIA!');
   }
   throwRelease(att, def, mv) {
     const dmg = Math.round(mv.dmg * att.mods.dmg * (this.tutorial ? 0.15 : 1));
@@ -317,7 +330,8 @@ M.Match = class Match {
     if (def.hp <= 0) this.ko(def);
   }
   superStart(f, mv) {
-    this.freeze = 26; this.banner = { text: mv.name, who: f, t: 0, life: 75 };
+    f.superBoost = Math.abs(this.axe) >= 0.97 ? 1.3 : 1;
+    this.freeze = 26; this.banner = { text: mv.name + (f.superBoost > 1 ? ' MÁXIMA' : ''), who: f, t: 0, life: 75 };
     f.superFlash = 60; f.invuln = Math.max(f.invuln, 26);
     this.fx.push({ type: 'flash', t: 0, life: 10, color: '#fff8e8', alpha: 0.7 });
     M.audio.play('super'); M.audio.cheer(0.8);
@@ -418,6 +432,7 @@ M.Match = class Match {
     if (this.frame % 2 === 0) this.p1.hp = Math.min(this.p1.maxHp, this.p1.hp + 2);
     const step = M.TUTORIAL[this.tut.step]; if (!step) return;
     this.p2.ai.tutorial = step.mestre;
+    if (step.holdEnergy) this.axe = Math.max(this.axe, 0.72);
     if (step.check(this)) {
       if (step.final) { this.tutorialEnd(); return; }
       this.tut.step++; this.tutT = 0; M.audio.play('patua'); this.fx.push({ type: 'ring', x: M.W / 2, y: 470, r: 80, t: 0, life: 20, color: M.C.yellow });
@@ -504,10 +519,15 @@ M.Match = class Match {
     ctx.strokeStyle = C.paper; ctx.lineWidth = 2; for (const k of [-0.7, 0.7]) { const px = W / 2 + k * half; ctx.beginPath(); ctx.moveTo(px, ay - 4); ctx.lineTo(px, ay + ah + 4); ctx.stroke(); }
     ctx.beginPath(); ctx.arc(W / 2, ay + ah / 2, 12 + pulse * 6, 0, Math.PI * 2); ctx.fillStyle = C.paper; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = C.ink; ctx.stroke();
     ctx.beginPath(); ctx.arc(W / 2, ay + ah / 2, 5, 0, Math.PI * 2); ctx.fillStyle = C.red; ctx.fill();
-    M.text(ctx, 'AXÉ', W / 2, ay - 16, { size: 15, color: C.paper, lw: 3 });
+    M.text(ctx, 'ENERGIA', W / 2, ay - 16, { size: 15, color: C.paper, lw: 3 });
     const favName = this.axe > 0.15 ? this.p1.def.name : this.axe < -0.15 ? this.p2.def.name : null;
     if (favName) M.text(ctx, 'A RODA TÁ COM ' + favName.toUpperCase(), this.axe > 0 ? ax0 + 6 : ax0 + aw - 6, ay - 16, { size: 12, align: this.axe > 0 ? 'left' : 'right', color: C.yellow, lw: 2.5 });
-    for (const f of this.fighters) if (this.superReady(f) && this.frame % 30 < 20) { const keyHint = f.ctrl === 'human' ? (f.side === 1 ? ' (U)' : ' (Num5)') : ''; M.text(ctx, 'MANDINGA PRONTA' + keyHint, f.side === 1 ? ax0 - 10 : ax0 + aw + 10, ay + 9, { size: 15, align: f.side === 1 ? 'right' : 'left', color: C.magenta, lw: 3 }); }
+    for (const f of this.fighters) {
+      const x = f.side === 1 ? ax0 - 10 : ax0 + aw + 10, al = f.side === 1 ? 'right' : 'left';
+      if (this.superReady(f) && this.frame % 30 < 20) { const keyHint = f.ctrl === 'human' ? (f.side === 1 ? ' (U)' : ' (Num5)') : ''; const max = Math.abs(this.axe) >= 0.97; M.text(ctx, (max ? 'MANDINGA MÁXIMA' : 'MANDINGA PRONTA') + keyHint, x, ay + 9, { size: 15, align: al, color: max ? C.yellow : C.magenta, lw: 3 }); }
+      else if (f.ctrl === 'human' && this.canEscape(f)) M.text(ctx, 'ESPAÇO: ESCAPAR (-30%)', x, ay + 9, { size: 13, align: al, color: C.cyan, lw: 2.5 });
+      else if (f.counterWin > 0) M.text(ctx, 'CONTRA-ATAQUE!', x, ay + 9, { size: 13, align: al, color: C.red, lw: 2.5 });
+    }
     // combo
     for (const f of this.fighters) if (f.comboShow > 0 && (f.combo >= 2 || (f.combo === 0 && f.comboShow > 0 && f.comboDmgShown))) { }
     for (const f of this.fighters) {
@@ -558,7 +578,7 @@ M.Match = class Match {
       const step = M.TUTORIAL[this.tut.step];
       if (step) {
         ctx.fillStyle = C.paper; ctx.fillRect(130, 400, W - 260, 64); ctx.lineWidth = 4; ctx.strokeStyle = C.ink; ctx.strokeRect(130, 400, W - 260, 64);
-        M.text(ctx, `TREINO ${Math.min(this.tut.step + 1, 9)}/9`, 142, 414, { size: 13, align: 'left', color: C.red, stroke: false });
+        M.text(ctx, `TREINO ${Math.min(this.tut.step + 1, M.TUTORIAL.length - 1)}/${M.TUTORIAL.length - 1}`, 142, 414, { size: 13, align: 'left', color: C.red, stroke: false });
         wrapText(ctx, step.text, W / 2, 440, W - 300, 17, C.ink);
       }
     }

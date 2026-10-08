@@ -15,7 +15,7 @@ M.AI = (function () {
     return { p, intent: 'wait', timer: 0, arg: null, seq: [], crouchBlock: false, started: false, tutorial: null, tutT: 0 };
   }
   function blank() {
-    return { held: { up: false, down: false, left: false, right: false, light: false, heavy: false, special: false, ginga: false, mandinga: false, taunt: false }, pressed: { up: false, down: false, left: false, right: false, light: false, heavy: false, special: false, ginga: false, mandinga: false, taunt: false }, dashLeft: false, dashRight: false };
+    return { held: { up: false, down: false, left: false, right: false, light: false, heavy: false, special: false, ginga: false, mandinga: false, taunt: false, throw: false }, pressed: { up: false, down: false, left: false, right: false, light: false, heavy: false, special: false, ginga: false, mandinga: false, taunt: false, throw: false }, dashLeft: false, dashRight: false };
   }
   function set(ai, intent, timer, arg) { ai.intent = intent; ai.timer = timer; ai.arg = arg; ai.started = false; return intent; }
   function weighted(w) { let s = 0; for (const e of w) s += e[1]; let r = Math.random() * s; for (const e of w) { r -= e[1]; if (r <= 0) return e[0]; } return w[w.length - 1][0]; }
@@ -29,6 +29,7 @@ M.AI = (function () {
     const oppStunned = (opp.state === 'hitstun' || opp.state === 'blockstun') && opp.t > 4;
     const r = Math.random();
     const superReady = G.superReady(f);
+    if (f.state === 'hitstun' && G.canEscape(f) && Math.random() < p.dodge * 1.5) return set(ai, 'escape', 4);
     const proj = G.projectiles.find(pr => pr.owner !== f && Math.sign(pr.vx) === Math.sign(f.x - pr.x) && Math.abs(pr.x - f.x) < 280);
     if (oppAttacking && dist < opp.move.reach + 70 && r < p.react) {
       if (f.dodgeCd <= 0 && Math.random() < p.dodge) return set(ai, 'dodge', 14);
@@ -42,7 +43,7 @@ M.AI = (function () {
     const w = [];
     if (dist > 340) { w.push(['approach', 0.5 + pers.rush * 0.6]); w.push(['dashIn', pers.rush * 0.5]); w.push(['projectile', pers.zone * 2.2]); w.push(['jumpIn', pers.air]); w.push(['wait', 0.3]); }
     else if (dist > 175) { w.push(['approach', 0.4 + pers.rush * 0.5]); w.push(['projectile', pers.zone]); w.push(['jumpIn', pers.air * 1.3]); w.push(['poke', pers.poke * 0.8]); w.push(['wait', 0.35]); w.push(['retreat', pers.zone * 0.8]); w.push(['dashIn', pers.rush * 0.6]); w.push(['trap', pers.zone * 0.6]); }
-    else { w.push(['attack', 0.7 + pers.rush * 0.7 + p.aggro * 0.5]); w.push(['grab', pers.grab * 1.8]); w.push(['block', 0.35 * (1 - p.aggro)]); w.push(['retreat', 0.2 + pers.zone * 0.6]); w.push(['poke', pers.poke * 0.5]); w.push(['jumpIn', pers.air * 0.5]); }
+    else { w.push(['attack', 0.7 + pers.rush * 0.7 + p.aggro * 0.5]); w.push(['grab', pers.grab * 1.8 + (opp.held.back ? 0.5 : 0.15)]); w.push(['block', 0.35 * (1 - p.aggro)]); w.push(['retreat', 0.2 + pers.zone * 0.6]); w.push(['poke', pers.poke * 0.5]); w.push(['jumpIn', pers.air * 0.5]); }
     if (Math.random() < p.mistake) w.push(['wait', 2.5]);
     return set(ai, weighted(w), 18);
   }
@@ -111,14 +112,15 @@ M.AI = (function () {
         break;
       }
       case 'grab': {
-        const mv = f.def.moves; const id = mv.S && mv.S.throw ? 'S' : (mv.dS && mv.dS.throw ? 'dS' : null);
-        if (!id) { ai.timer = 0; break; }
-        if (dist < mv[id].throw.range - 6 && f.actionable) { pressMove(inp, f, id); ai.timer = 0; } else h[fwd] = true;
+        const mv = f.def.moves; const id = mv.S && mv.S.throw ? 'S' : (mv.dS && mv.dS.throw ? 'dS' : 'TH');
+        if (dist < mv[id].throw.range - 6 && f.actionable) { if (id === 'TH') { pr.throw = true; h.throw = true; } else pressMove(inp, f, id); ai.timer = 0; } else h[fwd] = true;
         break;
       }
+      case 'escape': { if (f.state === 'hitstun') pr.ginga = true; ai.timer = 0; break; }
       case 'projectile': {
         const mine = G.projectiles.filter(p => p.owner === f).length;
         const mv = f.def.moves;
+        if (mv.S && mv.S.buff) { if (f.actionable && !(f.ritmo > 0) && dist > 200) { pressMove(inp, f, 'S'); set(ai, 'wait', 10); } else ai.timer = 0; break; }
         if (!(mv.S && mv.S.projectile)) { ai.timer = 0; break; }
         if (f.actionable && mine === 0) { const low = mv.dS && mv.dS.projectile && Math.random() < 0.35; pressMove(inp, f, low ? 'dS' : 'S'); set(ai, 'wait', 20); }
         break;
@@ -153,6 +155,11 @@ M.AI = (function () {
     if (mode === 'attack') {
       if (dist > 120) { h[fwd] = true; return inp; }
       if (f.actionable && ai.tutT % 70 === 0) { const id = M.choice(['L', 'H', 'cL', 'cH', 'fH']); pressMove(inp, f, id); }
+      return inp;
+    }
+    if (mode === 'guard') {
+      if (dist > 140) { h[fwd] = true; return inp; }
+      h[opp.x > f.x ? 'left' : 'right'] = true; if (ai.tutT % 80 < 40) h.down = true;
       return inp;
     }
     if (mode === 'dummy') {

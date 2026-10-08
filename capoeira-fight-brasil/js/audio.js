@@ -159,6 +159,7 @@ M.audio = (function () {
     tick() {
       if (!A.ctx) return;
       while (this.nextTime < A.ctx.currentTime + 0.14) {
+        if (this.step % 4 === 0) { this.beatWall = performance.now() + (this.nextTime - A.ctx.currentTime) * 1000; this.beatMs = 60000 / this.bpm; }
         if (!this.muted) this.playStep(this.step, this.nextTime);
         this.nextTime += 60 / this.bpm / 4;
         this.step = (this.step + 1) % 32;
@@ -186,12 +187,13 @@ M.audio = (function () {
       if (bpm !== this.bpm) { this.bpm = bpm; this.gridStart = this.nextTime - (this.step % 4) * (60 / bpm / 4); }
     },
     beat() {
-      const interval = 60 / this.bpm;
-      if (!A.ctx) return { phase: 0, interval, dist: 1 };
-      const t = A.ctx.currentTime - this.gridStart;
-      const phase = ((t / interval) % 1 + 1) % 1;
-      const dist = Math.min(phase, 1 - phase) * interval;
-      return { phase, interval, dist };
+      // Grade de batidas em relógio de parede: funciona mesmo sem áudio (ou mudo)
+      const now = performance.now();
+      const ms = this.beatMs || 60000 / this.bpm;
+      if (!this.beatWall) this.beatWall = now;
+      const phase = (((now - this.beatWall) / ms) % 1 + 1) % 1;
+      const dist = Math.min(phase, 1 - phase) * ms / 1000;
+      return { phase, interval: ms / 1000, dist };
     },
     duck(sec = 1.2, to = 0) {
       if (!A.ctx) return;
