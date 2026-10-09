@@ -33,6 +33,7 @@ M.AI = (function () {
     if (f.state === 'knockdown' && f.t > 6 && f.t < 34 && Math.random() < p.dodge * 2) return set(ai, 'roll', 2);
     const proj = G.projectiles.find(pr => pr.owner !== f && Math.sign(pr.vx) === Math.sign(f.x - pr.x) && Math.abs(pr.x - f.x) < 280);
     if (oppAttacking && dist < opp.move.reach + 70 && r < p.react) {
+      if (f.def.moves.bH && f.def.moves.bH.counter && f.actionable && Math.random() < 0.5) return set(ai, 'counter', 6);
       if (f.dodgeCd <= 0 && Math.random() < p.dodge) return set(ai, 'dodge', 14);
       return set(ai, 'block', 26, opp.move.type);
     }
@@ -57,6 +58,14 @@ M.AI = (function () {
     if (mv.S && mv.S.hitbox && (inR(mv.S) || (mv.S.move && dist < 230))) w.push(['S', 1.1]);
     if (mv.dS && mv.dS.hitbox && inR(mv.dS) && !mv.dS.axe) w.push(['dS', 0.5]);
     if (mv.dS && mv.dS.axe && dist < 150) w.push(['dS', 0.6]);
+    if (mv.bH && mv.bH.hitbox && inR(mv.bH)) w.push(['bH', 0.7]);
+    if (mv.bH && mv.bH.projectile && dist > 150) w.push(['bH', 0.8]);
+    if (mv.bH && mv.bH.teleport && dist > 120) w.push(['bH', 0.3]);
+    if (mv.fS && mv.fS.hitbox && (inR(mv.fS) || mv.fS.teleport)) w.push(['fS', mv.fS.teleport ? 0.5 : 0.8]);
+    if (mv.fS && mv.fS.projectile && dist > 180) w.push(['fS', 0.6]);
+    if (mv.fS && mv.fS.throw && dist < 260) w.push(['fS', 0.9]);
+    if (mv.fS && mv.fS.trail && dist > 160) w.push(['fS', 0.5]);
+    if (mv.fS && mv.fS.heal && f.hp < f.maxHp * 0.5 && dist > 260) w.push(['fS', 1.2]);
     if (!w.length) return dist < 220 ? 'fH' : 'L';
     return weighted(w);
   }
@@ -64,7 +73,8 @@ M.AI = (function () {
     const h = inp.held, pr = inp.pressed;
     const fwdDir = f.facing === 1 ? 'right' : 'left';
     if (id[0] === 'c') h.down = true;
-    if (id === 'fH') h[fwdDir] = true;
+    if (id === 'fH' || id === 'fS') h[fwdDir] = true;
+    if (id === 'bH') h[fwdDir === 'right' ? 'left' : 'right'] = true;
     if (id === 'dS') h.down = true;
     const btn = id.endsWith('L') ? 'light' : id.endsWith('H') ? 'heavy' : id === 'M' ? 'mandinga' : 'special';
     pr[btn] = true; h[btn] = true;
@@ -120,6 +130,7 @@ M.AI = (function () {
         break;
       }
       case 'escape': { if (f.state === 'hitstun') pr.ginga = true; ai.timer = 0; break; }
+      case 'counter': { if (f.actionable) pressMove(inp, f, 'bH'); ai.timer = 0; break; }
       case 'roll': { if (f.state === 'knockdown') { const away = Math.random() < 0.6; pr[(opp.x > f.x) === away ? 'left' : 'right'] = true; } ai.timer = 0; break; }
       case 'projectile': {
         const mine = G.projectiles.filter(p => p.owner === f).length;

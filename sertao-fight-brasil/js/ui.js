@@ -233,7 +233,8 @@ M.ui = (function () {
     function cycleDiff(d) { const L = ['novato', 'brabo', 'lendario']; const s = M.store.data.settings; s.difficulty = L[(L.indexOf(s.difficulty) + d + 3) % 3]; M.store.save(); refresh(); }
     function info(el, i, label) {
       const id = roster[i], f = M.FIGHTERS[id]; const locked = id === 'cinzas' && !unlocked;
-      el.innerHTML = locked ? `<div class="cs-label">${label}</div><h3>???</h3><p>Vença a História para liberar.</p>` : `<div class="cs-label">${label}</div><h3>${esc(f.name)}</h3><p class="alias">${esc(f.alias)} • ${esc(f.origin)}</p><p class="style">${esc(f.style)}</p><p>${esc(f.bio)}</p><p class="super"><b>PEIA:</b> ${esc(f.superName)} — ${esc(f.superDesc)}</p>`;
+      const cmds = [['S', 'L'], ['dS', '↓+L'], ['fS', '→+L'], ['aS', 'ar+L'], ['fH', '→+K'], ['bH', '←+K'], ['dH', 'dash+K']].filter(([k]) => f.moves[k]).map(([k, i]) => `<span><b>${i}</b> ${esc(f.moves[k].name)}</span>`).join('');
+      el.innerHTML = locked ? `<div class="cs-label">${label}</div><h3>???</h3><p>Vença a História para liberar.</p>` : `<div class="cs-label">${label}</div><h3>${esc(f.name)}</h3><p class="alias">${esc(f.alias)} • ${esc(f.origin)}</p><p class="style">${esc(f.style)}</p><p class="cmds">${cmds}</p><p class="super"><b>PEIA:</b> ${esc(f.superName)} — ${esc(f.superDesc)}</p>`;
     }
     function refresh() {
       grid.querySelectorAll('.cs-card').forEach((el, i) => { el.classList.toggle('c1', i === sel.p1); el.classList.toggle('c2', o.players === 2 && i === sel.p2 && sel.step === 2 || (o.players === 2 && sel.step === 3 && i === sel.p2)); });
@@ -335,6 +336,7 @@ M.ui = (function () {
           <tr><td>Agarrão</td><td>H (ou J+K)</td><td>Num 6 / ]</td></tr>
           <tr><td>Dash</td><td colspan="2">toque duplo ← ou →</td></tr>
           <tr><td>Golpe corrido</td><td colspan="2">Dash + forte</td></tr>
+          <tr><td>Técnica 2 / Golpe 2</td><td colspan="2">frente + especial • trás + forte (exclusivos de cada lutador)</td></tr>
           <tr><td>Correr</td><td colspan="2">Dash e segurar pra frente</td></tr>
           <tr><td>Dash aéreo</td><td colspan="2">toque duplo no ar (1 por pulo)</td></tr>
           <tr><td>Super pulo</td><td colspan="2">baixo, depois cima</td></tr>

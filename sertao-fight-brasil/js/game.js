@@ -204,6 +204,16 @@ M.Match = class Match {
     if (!src) { att.hitIds.add(def); att.hitCount++; att.lastHitFrame = att.mf; }
     const hx = M.clamp(def.x + (att.x < def.x ? -16 : 16), hb.x, hb.x + hb.w), hy = M.clamp(def.y - 95, hb.y, hb.y + hb.h);
     const facing = src ? src.dir : att.facing;
+    if (def.counterNow && def.state === 'attack' && def.move && def.move.counterMove && !src && !mv.throw && !mv.super) {
+      // postura de contra-golpe: absorve o golpe, cambaleia o atacante e responde
+      const cm = def.def.moves[def.move.counterMove];
+      att.state = 'hitstun'; att.t = 26; att.move = null; att.throwing = null; att.vx = -2 * facing; att.flash = 4;
+      def.counterNow = false; def.hitstop = 6; att.hitstop = 10;
+      this.popup('CONTRA!', def.x, def.y - 210, M.C.red, 28); this.fx.push({ type: 'ring', x: def.x, y: def.y - 80, r: 110, t: 0, life: 18, color: M.C.red }); this.fx.push({ type: 'lines', x: hx, y: hy, r: 50, t: 0, life: 12, rot: 0 });
+      M.audio.play('counter'); M.audio.play('armor'); this.gainAxe(def, 0.1); this.shake(6); def.stats.counters = (def.stats.counters || 0) + 1;
+      if (cm) def.startMove(cm.id, this);
+      return;
+    }
     if (def.canBlock(mv)) {
       const seca = this.frame - (def.backAt || -99) <= 7;
       def.state = 'blockstun'; def.t = seca ? Math.max(4, mv.blockstun - 6) : mv.blockstun; def.crouching = def.held.down; def.move = null;
@@ -268,6 +278,7 @@ M.Match = class Match {
     M.audio.play(mv.super ? 'hitS' : heavy ? 'hitH' : 'hitL');
     if (mv.burn) { def.burn = 150; this.popup('QUEIMANDO!', def.x, def.y - 200, M.C.orange, 20); }
     if (mv.lag) { def.lag = mv.lag; this.popup('LAG!', def.x, def.y - 200, M.C.cyan, 22); }
+    if (mv.drainAxe) this.gainAxe(att, mv.drainAxe, 'ROUBOU A ENERGIA!');
     let gain = 0.035 + dmg / 1000 * 0.3;
     const same = att.recent.filter(id => id === mv.id).length; gain *= 1 / (1 + same * 0.8);
     if (same >= 2 && !mv.super) this.popup('REPETIDO...', att.x, att.y - 200, '#8d8a84', 16);
@@ -365,7 +376,11 @@ M.Match = class Match {
   }
   updateProjectiles() {
     for (const pr of this.projectiles) {
-      pr.age++; pr.x += pr.vx; pr.y += pr.vy; pr.life--;
+      pr.age++;
+      if (pr.kind === 'boomerang') { if (pr.age === Math.floor(pr.life / 2)) { pr.vx = -pr.vx; pr.dir = -pr.dir; } if (pr.age > pr.life / 2 + 6 && Math.abs(pr.x - pr.owner.x) < 30) { pr.dead = true; continue; } }
+      if (pr.kind === 'net') pr.vy += (pr.mv.projectile.gravity || 0);
+      if (pr.kind === 'snake' && pr.age === (pr.mv.projectile.rise || 999)) { pr.vy = -4.2; pr.vx *= 0.8; }
+      pr.x += pr.vx; pr.y += pr.vy; pr.life--;
       if (pr.vy > 0 && pr.y + pr.h / 2 >= M.GROUND) { pr.dead = true; if (pr.kind === 'rain') this.drops(pr.x, M.GROUND, 8); else this.embers(pr.x, M.GROUND - 10, 6); }
       if (pr.life <= 0 || pr.x < -120 || pr.x > M.W + 120) pr.dead = true;
       if (pr.dead) continue;
@@ -393,6 +408,28 @@ M.Match = class Match {
       }
     }
     this.projectiles = this.projectiles.filter(p => !p.dead);
+  }
+  spawnTrail(f, mv) {
+    for (let i = 1; i <= mv.trail.count; i++) {
+      const x = M.clamp(f.x - f.facing * i * mv.trail.spacing, 50, M.W - 50);
+      this.traps.push({ owner: f, mv, x, life: mv.trap.life, age: 10 + i * 4, armed: false, w: mv.trap.w, h: mv.trap.h });
+      this.embers(x, M.GROUND - 20, 8);
+    }
+  }
+  teleport(f, mv) {
+    const opp = this.other(f); const oldX = f.x;
+    this.ghosts.push({ pose: f.pose, x: f.x, y: f.y, facing: f.facing, alpha: 0.6, color: f.def.colors.accent, def: f.def });
+    if (mv.teleport.behind) { const side = f.x < opp.x ? 1 : -1; f.x = M.clamp(opp.x + side * mv.teleport.dist, 44, M.W - 44); f.facing = f.x < opp.x ? 1 : -1; }
+    else if (mv.teleport.back) f.x = M.clamp(f.x - f.facing * mv.teleport.back, 44, M.W - 44);
+    this.dust(f); this.fx.push({ type: 'dust', x: oldX, y: f.y, t: 0, life: 16, color: '#fff8e8' }); this.fx.push({ type: 'ring', x: f.x, y: f.y - 80, r: 70, t: 0, life: 14, color: f.def.colors.accent });
+    if (mv.teleport.back) this.popup('ROLLBACK', f.x, f.y - 200, M.C.cyan, 18);
+    M.audio.play('dodge');
+  }
+  heal(f, n) {
+    if (f.hp >= f.maxHp) { this.popup('SEM BUGS', f.x, f.y - 200, '#8d8a84', 16); return; }
+    f.hp = Math.min(f.maxHp, f.hp + n); this.popup('+' + n + ' HOTFIX', f.x, f.y - 200, M.C.green, 22);
+    for (let i = 0; i < 10; i++) this.particles.push({ x: f.x + (Math.random() - 0.5) * 50, y: f.y - 20 - Math.random() * 100, vx: 0, vy: -1.5, life: 30, max: 30, size: 4, color: M.C.green, type: 'confetti', rot: 0, vr: 0.1 });
+    M.audio.play('patua');
   }
   spawnTrap(f, mv) {
     this.traps = this.traps.filter(t => t.owner !== f);

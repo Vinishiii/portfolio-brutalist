@@ -65,6 +65,7 @@ M.Fighter = class Fighter {
     const B = ['light', 'heavy', 'special', 'ginga', 'mandinga', 'taunt', 'up', 'throw'];
     for (const a of B) if (inp.pressed[a]) this.buf[a] = 8;
     if (this.hitstop > 0) { this.hitstop--; return; }
+    if (this.state !== 'attack') this.counterNow = false;
     for (const a of B) if (this.buf[a] > 0) this.buf[a]--;
     const h = this.held;
     h.fwd = this.facing === 1 ? inp.held.right : inp.held.left;
@@ -169,8 +170,8 @@ M.Fighter = class Fighter {
     if (this.buf.mandinga > 0 && G.superReady(this)) { this.buf.mandinga = 0; return this.startMove('M', G); }
     if (this.buf.throw > 0 || (this.buf.light >= 6 && this.buf.heavy >= 6)) { this.buf.throw = 0; this.buf.light = 0; this.buf.heavy = 0; return this.startMove('TH', G); }
     if (this.buf.heavy >= 6 && this.buf.special >= 6 && G.axeSide(this) >= 0.25) { this.buf.heavy = 0; this.buf.special = 0; this.ex = true; const ok = this.startMove(h.down && mv.dS ? 'dS' : 'S', G); if (ok) G.spendEx(this); this.ex = false; return ok; }
-    if (this.buf.special > 0) { this.buf.special = 0; return this.startMove(h.down && mv.dS ? 'dS' : 'S', G); }
-    if (this.buf.heavy > 0) { this.buf.heavy = 0; return this.startMove(h.down ? 'cH' : (h.fwd && mv.fH ? 'fH' : 'H'), G); }
+    if (this.buf.special > 0) { this.buf.special = 0; return this.startMove(h.down && mv.dS ? 'dS' : (h.fwd && mv.fS ? 'fS' : 'S'), G); }
+    if (this.buf.heavy > 0) { this.buf.heavy = 0; return this.startMove(h.down ? 'cH' : (h.fwd && mv.fH ? 'fH' : (h.back && mv.bH ? 'bH' : 'H')), G); }
     if (this.buf.light > 0) { this.buf.light = 0; return this.startMove(h.down ? 'cL' : 'L', G); }
     if (this.buf.ginga > 0 && this.dodgeCd <= 0) { this.buf.ginga = 0; this.startDodge(G, h.fwd); return true; }
     if (this.buf.up > 0 && !h.down) { this.buf.up = 0; this.jump(G); return true; }
@@ -198,7 +199,7 @@ M.Fighter = class Fighter {
     const mv = this.def.moves[id]; if (!mv) return false;
     if (mv.air && this.grounded) return false;
     if (!mv.air && !this.grounded) return false;
-    this.state = 'attack'; this.move = mv; this.mf = 0; this.t = 0; this.hitIds = new Set(); this.hitCount = 0; this.lastHitFrame = -99; this.exMove = this.ex;
+    this.state = 'attack'; this.move = mv; this.mf = 0; this.t = 0; this.hitIds = new Set(); this.hitCount = 0; this.lastHitFrame = -99; this.exMove = this.ex; this.counterNow = false;
     this.moveHit = false; this.spawned = false; this.extraRec = 0; this.dodgedBy = null; this.throwing = null; this.threw = false; this.throwT = 0;
     if (this.grounded) this.vx = 0;
     this.crouching = !!mv.crouch; this.poseFrom = this.pose;
@@ -213,13 +214,16 @@ M.Fighter = class Fighter {
     const f = this.mf;
     if (mv.invuln && f >= mv.invuln[0] && f <= mv.invuln[1]) this.invuln = Math.max(this.invuln, 1);
     this.armorNow = !!(mv.armor && f >= mv.armor[0] && f <= mv.armor[1]) || (this.exMove && f <= mv.startup);
+    this.counterNow = !!(mv.counter && f >= mv.counter[0] && f <= mv.counter[1]);
     if (mv.move) for (const m of mv.move) if (f >= m.f && f < m.t) { this.x += (m.vx || 0) * this.facing; if (m.vy !== undefined && !this.grounded) this.vy = m.vy; }
     if (mv.glide && !this.grounded) { this.vy = Math.min(this.vy, 1.4); this.x += this.def.stats.airSpeed * 0.9 * this.facing * (this.held.fwd ? 1 : this.held.back ? -0.6 : 0.45); }
     if (this.grounded && !mv.move) this.vx = 0;
     if (f === mv.startup + 1 && !this.spawned) {
       this.spawned = true;
       if (mv.projectile) G.spawnProjectile(this, mv);
-      if (mv.trap) G.spawnTrap(this, mv);
+      if (mv.trail) G.spawnTrail(this, mv); else if (mv.trap) G.spawnTrap(this, mv);
+      if (mv.teleport) G.teleport(this, mv);
+      if (mv.heal) G.heal(this, mv.heal);
       if (mv.fx === 'wave') G.fx.push({ type: 'wave', x: this.x, y: this.y - 80, t: 0, life: 30, color: '#f2b70c' });
       if (mv.fx === 'arc') G.fx.push({ type: 'arc', x: this.x + this.facing * 30, y: this.y - 80, r: 50, dir: this.facing, t: 0, life: 14, color: this.def.colors.accent });
       if (mv.buff) { this.ritmo = mv.buff * (this.exMove ? 2 : 1); G.popup('NO TOQUE!', this.x, this.y - 240, '#f2b70c', 24); G.fx.push({ type: 'ring', x: this.x, y: this.y - 80, r: 110, t: 0, life: 24, color: '#f2b70c' }); }
@@ -240,7 +244,7 @@ M.Fighter = class Fighter {
     }
     if (this.moveHit && mv.launch && !mv.super && this.grounded && this.buf.up > 0 && f > mv.startup && f <= mv.total - 3) { this.buf.up = 0; this.move = null; this.jump(G); G.popup('PULO-CANCEL!', this.x, this.y - 200, '#2aa9b8', 16); return; }
     if (f >= mv.total + this.extraRec) {
-      this.move = null; this.throwing = null;
+      this.move = null; this.throwing = null; this.counterNow = false;
       if (this.grounded) { this.state = 'idle'; this.crouching = false; } else this.state = 'jump';
     }
   }

@@ -174,3 +174,6 @@ body.touch-on #fs { top: 12px; }
 .credits.epi { font-size: 12px; line-height: 1.6; text-align: left; background: rgba(20,18,16,.06); padding: 8px 10px; border-left: 3px solid var(--red); }
 .howto table { font-size: 11px; }
 .howto p { font-size: 12px; }
+
+.cs-info .cmds { display: flex; flex-wrap: wrap; gap: 2px 8px; font-size: 11px; line-height: 1.3; }
+.cs-info .cmds b { color: var(--red); font-family: var(--display); font-size: 10px; }

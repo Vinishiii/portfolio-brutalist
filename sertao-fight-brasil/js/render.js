@@ -425,6 +425,28 @@ M.render = (function () {
         ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(10, -8); ctx.lineTo(18, -16); ctx.moveTo(-10, -8); ctx.lineTo(-18, -16); ctx.moveTo(-14, 2); ctx.lineTo(-22, 8); ctx.moveTo(14, 2); ctx.lineTo(22, 8); ctx.stroke();
         break;
       }
+      case 'boomerang': {
+        ctx.rotate(t * 0.5); const cols = ['#f2b70c', '#c7267a', '#2aa9b8', '#1f7a4d', '#c8371d', '#f2b70c'];
+        for (let i = 0; i < 6; i++) { ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, 24, i * Math.PI / 3, (i + 1) * Math.PI / 3); ctx.closePath(); ctx.fillStyle = cols[i]; ctx.fill(); }
+        ctx.beginPath(); ctx.arc(0, 0, 24, 0, Math.PI * 2); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, 30); ctx.lineWidth = 4; ctx.stroke();
+        break;
+      }
+      case 'net': {
+        ctx.strokeStyle = '#8b5a2b'; ctx.lineWidth = 2; for (let i = -3; i <= 3; i++) { ctx.beginPath(); ctx.moveTo(i * 10, -24); ctx.lineTo(i * 10 + Math.sin(t * 0.3) * 4, 24); ctx.stroke(); ctx.beginPath(); ctx.moveTo(-32, i * 7); ctx.lineTo(32, i * 7 + Math.cos(t * 0.3) * 3); ctx.stroke(); }
+        ctx.fillStyle = '#f2b70c'; for (const [x, y] of [[-30, -22], [30, -22], [-30, 22], [30, 22]]) { ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = INK; ctx.stroke(); }
+        break;
+      }
+      case 'tide': {
+        ctx.fillStyle = '#1c4e9c'; ctx.beginPath(); ctx.moveTo(-32, 80); ctx.quadraticCurveTo(-30, -70, 22, -78); ctx.quadraticCurveTo(0, -30, 32, 80); ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#2aa9b8'; ctx.beginPath(); ctx.moveTo(-20, 80); ctx.quadraticCurveTo(-18, -40, 14, -60); ctx.quadraticCurveTo(4, -10, 22, 80); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#fff8e8'; for (let i = 0; i < 6; i++) { ctx.beginPath(); ctx.arc(10 + Math.sin(t * 0.4 + i) * 8, -70 + i * 14, 6 - i * 0.6, 0, Math.PI * 2); ctx.fill(); }
+        break;
+      }
+      case 'snake': {
+        for (let i = 5; i >= 0; i--) { const sx = -i * 12, sy = Math.sin(t * 0.4 + i) * 6; ctx.fillStyle = i % 2 ? '#e8712b' : '#c8371d'; ctx.beginPath(); ctx.arc(sx, sy, 14 - i * 1.4, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
+        ctx.fillStyle = '#f2b70c'; ctx.beginPath(); ctx.moveTo(8, -12); ctx.lineTo(30, 0); ctx.lineTo(8, 12); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.fillStyle = INK; ctx.beginPath(); ctx.arc(14, -3, 2.5, 0, Math.PI * 2); ctx.fill();
+        break;
+      }
       case 'ash': {
         ctx.fillStyle = '#8d8a84';
         for (let i = 0; i < 5; i++) { const a = t * 0.1 + i * 1.3; ctx.beginPath(); ctx.arc(Math.cos(a) * 16, Math.sin(a * 1.3) * 22, 16 + (i % 2) * 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
