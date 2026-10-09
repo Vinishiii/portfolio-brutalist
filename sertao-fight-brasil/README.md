@@ -74,3 +74,14 @@ sertao-fight-brasil/
   js/ui.js             telas em DOM
   js/main.js           loop fixo a 60fps e fluxo de modos
 ```
+
+## Camada visual "Pintura" (opcional)
+
+`js/paint.js` é uma camada de apresentação aditiva, ligada por padrão e desligável em Opções (Estilo visual: Pintura / Xilogravura; Pós-processamento). Ela só lê o estado da partida e desenha: nenhuma regra, física, hitbox ou IA é alterada.
+
+- Fundos repintados com pinceladas sensíveis a bordas, perspectiva atmosférica e textura de pincel.
+- Iluminação por cenário: luz principal quente da fogueira, luz de preenchimento fria, rim light e sombreamento cel em três tons nos lutadores; contorno seletivo (silhueta grossa, traços internos finos e tingidos).
+- Névoa volumétrica em camadas, raios de luz, sombras suaves.
+- VFX desenhados à mão (respingos frame a frame, linhas tremidas, fumaça), smear frames nos golpes rápidos, impact frames em golpes fortes e nocautes.
+- Câmera dinâmica (enquadramento entre os lutadores, parallax do fundo, letterbox nas cenas).
+- Pós-processamento em WebGL/GLSL: grade de cor com split tone, bloom, tinta nas bordas, névoa de profundidade, vinheta, grão e micro-pinceladas. Sem WebGL, o jogo cai para o canvas 2D sem pós.

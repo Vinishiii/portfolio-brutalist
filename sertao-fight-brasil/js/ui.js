@@ -295,6 +295,8 @@ M.ui = (function () {
       <label class="slider">VOLUME <input type="range" min="0" max="1" step="0.05" value="${s.volume}" id="vol"></label>
       <nav>
         ${tog('music', 'MÚSICA')}${tog('sfx', 'EFEITOS')}${tog('shake', 'TREMOR DE TELA')}${tog('hitboxes', 'MOSTRAR HITBOXES')}
+        <button class="mi" data-go="paint">ESTILO VISUAL <b>${s.paint ? 'PINTURA' : 'XILOGRAVURA'}</b></button>
+        <button class="mi" data-go="post">PÓS-PROCESSAMENTO <b>${s.post ? 'LIGADO' : 'DESLIGADO'}</b></button>
         <button class="mi" data-go="touch">CONTROLES DE TOQUE <b>${{ auto: 'AUTO', on: 'SEMPRE', off: 'NUNCA' }[s.touch]}</b></button>
         <button class="mi" data-go="diff">DIFICULDADE (CPU) <b>${diffLabel(s.difficulty).toUpperCase()}</b></button>
         <button class="mi" data-go="reset">APAGAR PROGRESSO</button>
@@ -305,6 +307,7 @@ M.ui = (function () {
       actions: {
         music: () => { s.music = !s.music; save(); }, sfx: () => { s.sfx = !s.sfx; save(); }, shake: () => { s.shake = !s.shake; save(); }, hitboxes: () => { s.hitboxes = !s.hitboxes; save(); },
         touch: () => { s.touch = { auto: 'on', on: 'off', off: 'auto' }[s.touch]; save(); M.flow.updateTouch(); },
+        paint: () => { s.paint = !s.paint; save(); M.paint.apply(); }, post: () => { s.post = !s.post; save(); M.paint.apply(); },
         diff: () => { const L = ['novato', 'brabo', 'lendario']; s.difficulty = L[(L.indexOf(s.difficulty) + 1) % 3]; save(); },
         reset: () => { if (confirm('Apagar todo o progresso salvo?')) { localStorage.removeItem(M.store.key); M.store.load(); save(); } },
         back: onBack

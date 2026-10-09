@@ -305,7 +305,7 @@ M.stages = (function () {
       this.parts = [];
       this.fireLevel = this.def.fireLevel !== undefined ? this.def.fireLevel : 1;
       this.dark = 0; this.t = 0;
-      this.darkCanvas = null;
+      this.darkCanvas = null; this.bgPaint = null;
     }
     update(G) {
       this.t++;
@@ -318,8 +318,11 @@ M.stages = (function () {
     }
     drawBack(ctx, G) {
       const d = this.def;
-      ctx.drawImage(this.bg, 0, 0);
+      const paint = M.paint && M.paint.enabled;
+      if (paint) M.paint.ensureStage(this);
+      ctx.drawImage(paint && this.bgPaint ? this.bgPaint : this.bg, paint ? M.paint.bgOffset : 0, 0);
       d.dyn(ctx, this.t);
+      if (paint) M.paint.atmosphere(ctx, this, G);
       drawFire(ctx, d.firePos[0], d.firePos[1], this.fireLevel * (G ? G.fireScale : 1), this.t, this.dark > 0.5);
       const beat = M.audio.music.beat().phase;
       drawCrowd(ctx, this.crowd, this.t, beat, G ? G.crowdExcite : 0.1, G ? G.axeSign : 0);

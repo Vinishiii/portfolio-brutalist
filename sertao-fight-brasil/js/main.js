@@ -20,7 +20,7 @@
     for (const f of a.fs) { f.animT += M.poses.idleSpeed(f.def.idle); f.updatePose(); }
   }
   function renderAmbient() {
-    const a = ambient;
+    const a = ambient; M.ambientStage = a.st;
     a.st.drawBack(ctx, a);
     for (const f of a.fs) { M.render.drawShadow(ctx, f); M.render.drawFighter(ctx, f, { umbrellaOpen: true }); }
     a.st.drawFront(ctx, a);
@@ -51,6 +51,7 @@
   function render() {
     if (M.match) M.match.render(ctx);
     else if (ambient) renderAmbient();
+    M.paint.post();
   }
 
   // ---------- pausa ----------
@@ -192,6 +193,7 @@
     M.store.load();
     const s = M.store.data.settings; M.audio.A.settings.volume = s.volume; M.audio.A.settings.music = s.music; M.audio.A.settings.sfx = s.sfx;
     M.ui.init();
+    M.paint.init(canvas, document.getElementById('post'));
     M.input.bindTouch(document.getElementById('touch'));
     resize();
     ambient = makeAmbient('porto', ['zeca', 'cinzas']);

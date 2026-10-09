@@ -12,6 +12,7 @@ html, body { margin: 0; padding: 0; height: 100%; background: #0b0a0c; overflow:
 #app { position: fixed; inset: 0; background: radial-gradient(ellipse at center, #1b1816 0%, #0b0a0c 70%); }
 #stage { position: absolute; left: 50%; top: 50%; width: 960px; height: 540px; transform: translate(-50%, -50%); transform-origin: center center; box-shadow: 0 0 0 4px var(--ink), 0 30px 80px rgba(0,0,0,.6); }
 #game { display: block; width: 960px; height: 540px; background: #141210; image-rendering: auto; }
+#post { position: absolute; left: 0; top: 0; width: 960px; height: 540px; display: none; pointer-events: none; }
 #ui { position: absolute; inset: 0; pointer-events: none; }
 #ui.active { pointer-events: auto; }
 #fs { position: fixed; right: 10px; top: 10px; z-index: 50; background: var(--ink); color: var(--paper); border: 2px solid var(--paper); font-size: 18px; width: 36px; height: 36px; border-radius: 4px; cursor: pointer; opacity: .6; }
