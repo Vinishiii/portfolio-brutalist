@@ -228,3 +228,5 @@ body.touch-on #fs { top: 12px; }
 .report-challenge.fail { background: rgba(20,18,16,.08); }
 .report-challenge small { font-size: 12px; }
 .dialog-choices .mi.sel, .dialog-choices .mi:hover { background: var(--ink); color: var(--paper); border-color: var(--yellow); }
+.credits-author { font-family: var(--display); font-size: 22px; text-align: center; margin: 10px 0 6px; letter-spacing: 1px; }
+.credits-author b { color: var(--red); }
