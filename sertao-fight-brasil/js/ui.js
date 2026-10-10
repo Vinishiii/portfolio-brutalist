@@ -83,7 +83,7 @@ M.ui = (function () {
         </nav></div>
       <div class="menu-right"><div class="stamp">${free ? 'GUARDIÃO DA BRASA' : 'VILA BRASA, SERTÃO'}</div>
         <p class="pitch">Quem tem <b>Energia</b> manda na rinha.<br>O público é a barra de poder — e ele escolhe quem merece a Peia.</p>
-        ${d.progress.bestTime ? `<p class="tiny">Melhor História: ${M.fmtTime(d.progress.bestTime)} • Finais vistos: ${d.progress.endings.length}/2</p>` : ''}
+        ${d.progress.bestTime ? `<p class="tiny">Melhor História: ${M.fmtTime(d.progress.bestTime)}${d.progress.bestGrade ? ' • Nota ' + d.progress.bestGrade : ''} • Finais vistos: ${d.progress.endings.length}/2</p>` : ''}
       </div>
     </div>`, {
       actions: {
@@ -132,22 +132,103 @@ M.ui = (function () {
   }
 
   // ---------- DIÁLOGO ----------
-  function dialogue(lines, title, onDone) {
-    let i = 0, finish = null;
+  function dialogue(lines, title, onDone, onChoice) {
+    lines = lines.slice();
+    let i = 0, finish = null, choosing = false;
     show(`<div class="screen dialog-screen">
       <div class="dialog-title">${esc(title || '')}</div>
       <div class="dialog"><div class="dialog-port" id="dPort"></div><div class="dialog-body"><div class="dialog-name" id="dName"></div><div class="dialog-text" id="dText"></div><div class="dialog-hint">ENTER / TOQUE ▸ <button class="btn ghost" data-go="skip">pular</button></div></div></div>
-    </div>`, { actions: { skip: () => onDone() }, onKey: e => { if (KEYS_CONFIRM.includes(e.code)) { next(); return true; } return false; } });
+    </div>`, { actions: { skip: () => onDone() }, onKey: e => { if (choosing) return false; if (KEYS_CONFIRM.includes(e.code)) { next(); return true; } return false; } });
     root.querySelector('.dialog').addEventListener('pointerdown', e => { if (e.target.closest('button')) return; next(); });
     function render() {
       const L = lines[i]; const sp = M.SPEAKERS[L.who] || { name: L.who, color: '#fff' };
       const port = document.getElementById('dPort'); port.innerHTML = '';
       if (M.FIGHTERS[L.who]) port.appendChild(portrait(L.who, 130, 160, { facing: L.who === 'zeca' ? 1 : -1 })); else port.innerHTML = '<div class="pandeiro">♪</div>';
       const nm = document.getElementById('dName'); nm.textContent = sp.name; nm.style.color = sp.color;
-      finish = typeInto(document.getElementById('dText'), L.text, 22, () => { finish = null; });
+      finish = typeInto(document.getElementById('dText'), L.text, 22, () => { finish = null; if (L.choice) showChoice(L); });
     }
-    function next() { if (finish) { finish(); return; } i++; if (i >= lines.length) { onDone(); return; } render(); }
+    function showChoice(L) {
+      choosing = true;
+      const box = document.createElement('div'); box.className = 'dialog-choices';
+      box.innerHTML = L.choice.map(o => `<button class="mi" data-opt="${esc(o.id)}">${esc(o.label)}</button>`).join('');
+      document.querySelector('.dialog-body').appendChild(box);
+      items = Array.from(box.querySelectorAll('.mi')); idx = 0; focus();
+      items.forEach((el, k) => { el.addEventListener('mouseenter', () => { idx = k; focus(); }); el.addEventListener('click', e => { e.stopPropagation(); pick(el.dataset.opt); }); });
+      function pick(id) {
+        choosing = false; items = [];
+        const extra = (onChoice && onChoice(L.key, id)) || [];
+        lines.splice(i + 1, 0, ...extra);
+        box.remove(); next();
+      }
+    }
+    function next() { if (choosing) return; if (finish) { finish(); return; } i++; if (i >= lines.length) { onDone(); return; } render(); }
     render();
+  }
+
+
+  // ---------- FOGUEIRA (bênção para a próxima rinha) ----------
+  function camp(data, options, onPick) {
+    show(`<div class="screen center"><div class="panel wide dark">
+      <h2>${esc(data.title)}</h2><p>${esc(data.text)}</p>
+      <div class="cards">${options.map(p => `<button class="mi card" data-go="${p.id}"><div class="card-icon">${p.icon}</div><div class="card-name">${esc(p.name)}</div><div class="card-desc">${esc(p.desc)}</div></button>`).join('')}</div>
+    </div></div>`, { actions: Object.fromEntries(options.map(p => [p.id, () => { M.audio.play('patua'); onPick(p); }])) });
+  }
+
+  // ---------- TELA DE CONFRONTO (VS) ----------
+  function versusCard(o, onDone) {
+    const A = M.FIGHTERS[o.p1], B = M.FIGHTERS[o.p2];
+    const ch = o.challenge ? M.CHALLENGES[o.challenge] : null;
+    show(`<div class="screen vs-screen">
+      <div class="vs-title">${esc(o.title || '')}</div>
+      <div class="vs-row">
+        <div class="vs-side left"><div class="vs-port" id="vsA"></div><h3>${esc(A.name)}</h3><p>${esc(A.alias)}</p></div>
+        <div class="vs-mid"><span class="vs-x">VS</span><span class="vs-stage">${esc(o.stageName || '')}</span><span class="vs-diff">CPU • ${esc(diffLabel(o.difficulty))}</span></div>
+        <div class="vs-side right"><div class="vs-port" id="vsB"></div><h3>${esc(B.name)}</h3><p>${esc(B.alias)}</p></div>
+      </div>
+      ${ch ? `<div class="vs-challenge"><b>DESAFIO</b> ${esc(ch.text)}${o.best ? ` <i>(melhor nota: ${o.best})</i>` : ''}</div>` : ''}
+      <div class="vs-foot">ENTER / TOQUE ▸ <button class="btn ghost" data-go="skip">pular</button></div>
+    </div>`, { actions: { skip: () => { clearTimeout(t); onDone(); } }, onKey: e => { if (KEYS_CONFIRM.includes(e.code)) { clearTimeout(t); onDone(); return true; } return false; } });
+    document.getElementById('vsA').appendChild(portrait(o.p1, 200, 250, { facing: 1 }));
+    document.getElementById('vsB').appendChild(portrait(o.p2, 200, 250, { facing: -1 }));
+    const t = setTimeout(onDone, 4200);
+    root.querySelector('.screen').addEventListener('pointerdown', e => { if (e.target.closest('button')) return; clearTimeout(t); onDone(); });
+    M.audio.play('super');
+  }
+
+  // ---------- MAPA DA NOITE ----------
+  function nightMap(S, onDone) {
+    const fights = M.STORY.fights;
+    const nodes = fights.map((F, i) => {
+      const st = i < S.idx ? 'done' : i === S.idx ? 'cur' : 'todo';
+      const g = S.grades && S.grades[i];
+      return `<div class="map-node ${st}"><div class="map-port" data-id="${F.opp}"></div><div class="map-name">${st === 'todo' && i > S.idx + 0 ? '???' : esc(M.FIGHTERS[F.opp].name.split(' ')[0])}</div>${g ? `<div class="map-grade g${g}">${g}</div>` : ''}${F.challenge && i < S.idx ? `<div class="map-ch ${S.challenges && S.challenges[i] ? 'ok' : ''}">${S.challenges && S.challenges[i] ? '★' : '☆'}</div>` : ''}</div>`;
+    }).join('<div class="map-link"></div>');
+    const mods = (S.patuas || []).concat(S.licoes || []).map(id => M.modById(id)).filter(Boolean);
+    const F = fights[S.idx];
+    show(`<div class="screen center"><div class="panel wide dark map">
+      <div class="stamp">A NOITE DA RINHA</div>
+      <h2>${esc(F ? F.title : '')}</h2>
+      <div class="map-row">${nodes}</div>
+      <div class="map-info"><span>Fama <b>${S.fama || 0}</b></span><span>Laços <b>${(S.bonds || []).length}/6</b></span><span>Quedas <b>${S.deaths || 0}</b></span></div>
+      <div class="map-mods">${mods.length ? mods.map(m => `<span title="${esc(m.desc)}">${m.icon} ${esc(m.name)}</span>`).join('') : '<em>Nenhuma garrafada ou lição ainda.</em>'}</div>
+      ${S.bless ? `<p class="tiny">Bênção da fogueira ativa: <b>${esc(M.modById(S.bless).name)}</b></p>` : ''}
+      <nav><button class="mi" data-go="go">SEGUIR PRA RINHA ▸</button></nav>
+    </div></div>`, { actions: { go: onDone } });
+    root.querySelectorAll('.map-port').forEach(el => el.appendChild(portrait(el.dataset.id, 64, 80, { facing: 1 })));
+  }
+
+  // ---------- RELATÓRIO DA RINHA (nota + desafio) ----------
+  function fightReport(o, onDone) {
+    const r = o.result; const st = r.stats.p1, taken = r.stats.p2.dmg;
+    show(`<div class="screen center"><div class="panel report">
+      <div class="stamp">${esc(o.title || 'RINHA VENCIDA')}</div>
+      <div class="grade-row"><div class="big-grade g${o.grade}">${o.grade}</div>
+        <div class="report-stats"><span>Tempo <b>${M.fmtTime(r.frames / 60)}</b></span><span>Vida perdida <b>${Math.round(taken / r.winner.maxHp * 100)}%</b></span><span>Esquivas perfeitas <b>${st.perfect}</b></span><span>No compasso <b>${st.beats || 0}</b></span><span>Golpes <b>${st.hits}</b></span></div></div>
+      ${o.challenge ? `<div class="report-challenge ${o.done ? 'ok' : 'fail'}">${o.done ? '★ DESAFIO CUMPRIDO' : '☆ Desafio não cumprido'} — ${esc(M.CHALLENGES[o.challenge].text)}${o.done ? '<br><small>+1 Fama • três garrafadas à escolha</small>' : ''}</div>` : ''}
+      ${o.newBest ? '<p class="unlock">✦ Nova melhor nota nesta rinha!</p>' : ''}
+      <nav><button class="mi" data-go="go">CONTINUAR ▸</button></nav>
+    </div></div>`, { actions: { go: onDone } });
+    M.audio.play(o.grade === 'S' ? 'win' : 'patua');
   }
 
   // ---------- GARRAFADA ----------
@@ -185,7 +266,7 @@ M.ui = (function () {
     cordel(E.cordel, E.title, () => {
       show(`<div class="screen center"><div class="panel">
         <div class="stamp">FIM</div><h2>${esc(E.title.replace('FINAL: ', ''))}</h2>
-        <div class="stats"><span>Tempo total ${M.fmtTime(stats.frames / 60)}</span><span>Garrafadas ${stats.patuas.length}</span><span>Quedas ${stats.deaths}</span><span>Dificuldade ${diffLabel(stats.difficulty)}</span></div>
+        <div class="stats"><span>Tempo total ${M.fmtTime(stats.frames / 60)}</span><span>Garrafadas ${stats.patuas.length}</span><span>Quedas ${stats.deaths}</span><span>Dificuldade ${diffLabel(stats.difficulty)}</span>${stats.grade ? `<span>Nota geral <b>${stats.grade}</b></span><span>Fama <b>${stats.fama}</b></span><span>Laços <b>${stats.bonds}/6</b></span>` : ''}</div>${stats.bondText ? `<p class="tiny">${esc(stats.bondText)}</p>` : ''}
         <p class="unlock">${E.unlock || '✦ MESTRE CINZAS liberado no Versus e no Treino<br>✦ RINHA LIVRE liberada<br>✦ LENDAS DA NOITE liberado no menu'}</p>
         <p class="tiny">${E.unlock ? 'As lendas do Nordeste agora vigiam a noite da Vila Brasa.' : (() => { const e = M.store.data.progress.endings; return e.length >= 3 ? 'Você viu todos os finais. A Brasa é sua, e de todo mundo.' : e.length === 2 ? 'Os dois caminhos foram vistos. Da próxima vez, a praça abre um terceiro.' : 'Existe outro final. A Brasa ainda tem uma escolha pra você.'; })()}</p>
         <nav><button class="mi" data-go="credits">CRÉDITOS</button><button class="mi" data-go="menu">VOLTAR AO MENU</button></nav>
@@ -373,9 +454,9 @@ M.ui = (function () {
   }
   function credits() {
     const done = M.store.data.progress.storyDone;
-    const epi = (done ? `<h3>O QUE FOI FEITO DE CADA UM</h3><p class="credits epi">${M.STORY.epilogues.map(esc).join('<br>')}</p>` : '') + (M.store.data.progress.legendsDone ? `<h3>E DAS LENDAS DA NOITE</h3><p class="credits epi">${M.LEGENDS.epilogues.map(esc).join('<br>')}</p>` : '');
+    const epi = (done ? `<h3>O QUE FOI FEITO DE CADA UM</h3><p class="credits epi">${M.STORY.epilogues.map(esc).join('<br>')}</p>` : '') + (Object.keys(M.store.data.progress.bonds || {}).length ? `<h3>LAÇOS DA NOITE</h3><p class="credits epi">${Object.keys(M.store.data.progress.bonds).map(k => esc(M.STORY.bondEpilogues[k] || '')).filter(Boolean).join('<br>')}</p>` : '') + (M.store.data.progress.legendsDone ? `<h3>E DAS LENDAS DA NOITE</h3><p class="credits epi">${M.LEGENDS.epilogues.map(esc).join('<br>')}</p>` : '');
     show(`<div class="screen center"><div class="panel wide"><div class="stamp">CRÉDITOS</div>${epi}<p class="credits">${esc(M.STORY.credits).replace(/\n/g, '<br>')}</p><nav><button class="mi back" data-go="back">VOLTAR</button></nav></div></div>`, { onBack: menu, actions: { back: menu } });
   }
 
-  return { init, show, hide, title, menu, storyStart, cordel, dialogue, patua, choice, results, ending, charselect, pause, options, howto, credits, portrait };
+  return { init, show, hide, title, menu, storyStart, cordel, dialogue, camp, versusCard, nightMap, fightReport, patua, choice, results, ending, charselect, pause, options, howto, credits, portrait };
 })();

@@ -177,3 +177,54 @@ body.touch-on #fs { top: 12px; }
 
 .cs-info .cmds { display: flex; flex-wrap: wrap; gap: 2px 8px; font-size: 11px; line-height: 1.3; }
 .cs-info .cmds b { color: var(--red); font-family: var(--display); font-size: 10px; }
+
+/* ---------- história: confronto, mapa, relatório, escolhas ---------- */
+.dialog-choices { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.dialog-choices .mi { border: 3px solid var(--ink); background: rgba(20,18,16,.06); font-size: 16px; padding: 6px 12px; justify-content: flex-start; }
+.vs-screen { background: radial-gradient(ellipse at center, rgba(10,8,14,.55), rgba(10,8,14,.92)); justify-content: center; align-items: center; flex-direction: column; gap: 14px; padding: 20px 40px; }
+.vs-title { font-family: var(--display); color: var(--yellow); letter-spacing: 4px; font-size: 20px; text-shadow: 2px 2px 0 var(--ink); }
+.vs-row { display: flex; align-items: flex-end; justify-content: center; gap: 22px; width: 100%; }
+.vs-side { flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; animation: vsIn .5s ease-out both; }
+.vs-side.right { animation-name: vsInR; }
+.vs-side h3 { font-family: var(--display); font-size: 24px; margin: 6px 0 0; text-shadow: 3px 3px 0 var(--ink); }
+.vs-side p { margin: 2px 0 0; color: var(--yellow); font-size: 13px; }
+.vs-port { background: linear-gradient(var(--yellow), #c8371d); border: 4px solid var(--ink); box-shadow: 8px 8px 0 var(--ink); width: 210px; height: 260px; display: flex; align-items: flex-end; justify-content: center; overflow: hidden; }
+.vs-mid { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 140px; }
+.vs-x { font-family: var(--display); font-size: 74px; color: var(--paper); text-shadow: 5px 5px 0 var(--red), 8px 8px 0 var(--ink); transform: rotate(-6deg); animation: vsPop .5s .25s cubic-bezier(.3,1.6,.5,1) both; }
+.vs-stage { font-family: var(--display); font-size: 13px; letter-spacing: 1px; text-align: center; }
+.vs-diff { font-size: 11px; opacity: .8; letter-spacing: 2px; }
+.vs-challenge { background: var(--paper); color: var(--ink); border: 3px solid var(--ink); padding: 6px 14px; font-size: 14px; box-shadow: 4px 4px 0 var(--ink); }
+.vs-challenge b { color: var(--red); font-family: var(--display); letter-spacing: 2px; margin-right: 6px; }
+.vs-foot { font-size: 11px; opacity: .7; }
+@keyframes vsIn { from { transform: translateX(-120px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes vsInR { from { transform: translateX(120px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes vsPop { from { transform: scale(3) rotate(-6deg); opacity: 0; } to { transform: scale(1) rotate(-6deg); opacity: 1; } }
+.map-row { display: flex; align-items: center; justify-content: center; margin: 12px 0 8px; }
+.map-node { position: relative; display: flex; flex-direction: column; align-items: center; width: 70px; }
+.map-port { width: 62px; height: 76px; border: 3px solid var(--paper); background: #4a3828; overflow: hidden; display: flex; align-items: flex-end; justify-content: center; filter: grayscale(1) brightness(.55); }
+.map-node.done .map-port { filter: none; border-color: var(--green); }
+.map-node.cur .map-port { filter: none; border-color: var(--yellow); box-shadow: 0 0 0 3px var(--ink), 0 0 18px var(--yellow); animation: mapPulse 1.2s infinite alternate; }
+.map-node.todo .map-port canvas { filter: brightness(0); }
+.map-name { font-family: var(--display); font-size: 9px; margin-top: 3px; letter-spacing: 0; white-space: nowrap; }
+.map-link { width: 12px; height: 4px; background: var(--paper); opacity: .5; }
+.map-grade { position: absolute; top: -8px; right: 0; width: 22px; height: 22px; line-height: 22px; text-align: center; font-family: var(--display); font-size: 13px; border: 2px solid var(--ink); color: var(--ink); }
+.map-ch { position: absolute; bottom: 14px; left: 0; font-size: 14px; color: var(--paper); text-shadow: 1px 1px 0 var(--ink); }
+.map-ch.ok { color: var(--yellow); }
+.gS { background: #f2b70c; } .gA { background: #7ac95a; } .gB { background: #2aa9b8; } .gC { background: #b8b2a4; }
+@keyframes mapPulse { from { transform: translateY(0); } to { transform: translateY(-4px); } }
+.map-info { display: flex; justify-content: center; gap: 20px; font-family: var(--display); font-size: 13px; letter-spacing: 1px; }
+.map-info b { color: var(--yellow); }
+.map-mods { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 10px 0; font-size: 12px; }
+.map-mods span { border: 2px solid var(--paper); padding: 2px 8px; }
+.map-mods em { opacity: .6; }
+.report { width: 640px; }
+.grade-row { display: flex; align-items: center; gap: 22px; margin: 6px 0 10px; }
+.big-grade { width: 110px; height: 110px; line-height: 110px; text-align: center; font-family: var(--display); font-size: 74px; border: 5px solid var(--ink); box-shadow: 6px 6px 0 var(--ink); transform: rotate(-5deg); color: var(--ink); animation: vsPop .5s cubic-bezier(.3,1.6,.5,1) both; }
+.report-stats { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 14px; }
+.report-stats span { background: rgba(20,18,16,.08); border: 1px solid rgba(20,18,16,.3); padding: 3px 8px; }
+.report-stats b { color: var(--red); }
+.report-challenge { border: 3px solid var(--ink); padding: 8px 12px; font-size: 14px; margin: 8px 0; }
+.report-challenge.ok { background: #f2b70c; }
+.report-challenge.fail { background: rgba(20,18,16,.08); }
+.report-challenge small { font-size: 12px; }
+.dialog-choices .mi.sel, .dialog-choices .mi:hover { background: var(--ink); color: var(--paper); border-color: var(--yellow); }

@@ -185,6 +185,122 @@ M.STORY = {
   credits: 'SERTÃO FIGHT BRASIL — A Rinha Nunca Para\nUm jogo de luta brasileiro em xilogravura.\n\nPersonagens, mundo, música e código: criados do zero.\nTudo procedural — nenhum asset externo.\n\nObrigado por jogar. Agora vai lá e ensina alguém a arredar.'
 };
 
+
+// ============================================================
+// MELHORIAS DA HISTÓRIA — lições (laços), bênçãos, desafios, notas
+// ============================================================
+M.LICOES = [
+  { id: 'l_passo', name: 'Passo de Forró', icon: '♫', desc: 'Lição da Bia: +12% de velocidade e Arreda 15% mais rápida.', apply: m => { m.speed *= 1.12; m.dodgeCd *= 0.85; } },
+  { id: 'l_sombra', name: 'Sombrinha da Sorte', icon: '☂', desc: 'Presente da Bia: janela do NO COMPASSO 50% maior.', apply: m => { m.beat *= 1.5; } },
+  { id: 'l_rio', name: 'Paciência do Rio', icon: '≈', desc: 'Lição da Maré: +5% de vida e 4% de vida de volta entre as rodadas.', apply: m => { m.hp *= 1.05; m.regen = Math.max(m.regen || 0, 0.04); } },
+  { id: 'l_remo', name: 'Remada Firme', icon: '╫', desc: 'Presente da Maré: +6% de dano e defesa dói menos.', apply: m => { m.dmg *= 1.06; m.chip *= 0.5; } },
+  { id: 'l_couro', name: 'Couro de Vaqueiro', icon: '▣', desc: 'Lição do Tião: +8% de vida e a defesa dói bem menos.', apply: m => { m.hp *= 1.08; m.chip *= 0.6; } },
+  { id: 'l_aboio', name: 'Aboio', icon: '◉', desc: 'Presente do Tião: ganho de Energia +15%.', apply: m => { m.axe *= 1.15; } },
+  { id: 'l_ouvido', name: 'Ouvido de Sanfoneiro', icon: '♪', desc: 'Lição do Bené: NO COMPASSO com janela 60% maior e +8% de dano na batida.', apply: m => { m.beat *= 1.6; m.beatDmg = Math.max(m.beatDmg || 1, 1.08); } },
+  { id: 'l_fole', name: 'Fole no Peito', icon: '◈', desc: 'Presente do Bené: Energia +15% e +5% de velocidade.', apply: m => { m.axe *= 1.15; m.speed *= 1.05; } },
+  { id: 'l_brasa', name: 'Brasa no Peito', icon: '●', desc: 'Lição do Juvenal: +8% de dano em todos os golpes.', apply: m => { m.dmg *= 1.08; } },
+  { id: 'l_cinza', name: 'Cinza Fria', icon: '◌', desc: 'Presente do Juvenal: Arreda 20% mais rápida e 3% de vida entre rodadas.', apply: m => { m.dodgeCd *= 0.8; m.regen = Math.max(m.regen || 0, 0.03); } },
+  { id: 'l_patch', name: 'Patch de Reflexo', icon: '⌁', desc: 'Lição do Vinícius: +8% de velocidade e Arreda 10% mais rápida.', apply: m => { m.speed *= 1.08; m.dodgeCd *= 0.9; } },
+  { id: 'l_backup', name: 'Backup', icon: '▤', desc: 'Presente do Vinícius: +10% de vida máxima.', apply: m => { m.hp *= 1.1; } }
+];
+// bênçãos da fogueira: valem só para a próxima rinha
+M.BENCAOS = [
+  { id: 'b_mocoto', name: 'Caldo de Mocotó', icon: '♨', desc: '+30% de vida na próxima rinha.', apply: m => { m.hp *= 1.3; } },
+  { id: 'b_treino', name: 'Treino de Sombra', icon: '✶', desc: '+15% de dano e +8% de velocidade na próxima rinha.', apply: m => { m.dmg *= 1.15; m.speed *= 1.08; } },
+  { id: 'b_cordel', name: 'Cordel da Dona Lourdes', icon: '♬', desc: 'Começa a próxima rinha com 30% de Energia a seu favor.', apply: () => { }, startAxe: 0.3 }
+];
+M.modById = id => M.PATUAS.find(p => p.id === id) || M.LICOES.find(p => p.id === id) || M.BENCAOS.find(p => p.id === id);
+
+M.CHALLENGES = {
+  fast: { text: 'Vença em menos de 80 segundos', check: r => r.frames < 80 * 60 },
+  perfect2: { text: 'Faça 2 esquivas perfeitas', check: r => r.stats.p1.perfect >= 2 },
+  perfect3: { text: 'Faça 3 esquivas perfeitas', check: r => r.stats.p1.perfect >= 3 },
+  hp35: { text: 'Perca menos de 35% de vida', check: r => r.stats.p2.dmg < 0.35 * r.winner.maxHp },
+  hp25: { text: 'Perca menos de 25% de vida', check: r => r.stats.p2.dmg < 0.25 * r.winner.maxHp },
+  beat4: { text: 'Acerte 4 golpes NO COMPASSO', check: r => (r.stats.p1.beats || 0) >= 4 },
+  super: { text: 'Vença usando a Peia', check: r => r.stats.p1.supers >= 1 }
+};
+// Nota S/A/B/C por rinha
+M.gradeFight = (r, challengeDone, retries) => {
+  const taken = r.stats.p2.dmg / r.winner.maxHp, t = r.frames / 60; let pts = 0;
+  pts += taken < 0.15 ? 3 : taken < 0.4 ? 2 : taken < 0.8 ? 1 : 0;
+  pts += t < 60 ? 2 : t < 90 ? 1 : 0;
+  pts += r.stats.p1.perfect >= 2 ? 1 : 0;
+  pts += (r.stats.p1.beats || 0) >= 3 ? 1 : 0;
+  pts += challengeDone ? 2 : 0;
+  pts -= retries;
+  return pts >= 7 ? 'S' : pts >= 5 ? 'A' : pts >= 3 ? 'B' : 'C';
+};
+M.GRADE_VAL = { S: 4, A: 3, B: 2, C: 1 };
+M.overallGrade = grades => { const v = Object.values(grades); if (!v.length) return 'C'; const a = v.reduce((s, g) => s + M.GRADE_VAL[g], 0) / v.length; return a >= 3.5 ? 'S' : a >= 2.6 ? 'A' : a >= 1.7 ? 'B' : 'C'; };
+
+(function () {
+  const F = M.STORY.fights;
+  const ch = (i, k) => { F[i].challenge = k; };
+  ch(1, 'fast'); ch(2, 'perfect2'); ch(3, 'hp35'); ch(4, 'beat4'); ch(5, 'super'); ch(6, 'hp25'); ch(7, 'perfect3');
+  const bond = (i, o) => { F[i].bond = o; };
+  bond(1, {
+    prompt: 'Antes de você ir, menino... a ladeira ensina uma coisa pra quem dança bonito. Quer ouvir?',
+    options: [
+      { id: 'ouvir', bond: true, lesson: 'l_passo', label: 'Ficar e aprender o passo com a Bia', reply: [{ who: 'bia', text: 'O segredo é não pisar no chão: é deixar o chão te empurrar. Vai, tenta.' }, { who: 'zeca', text: '...Parece que o corpo lembrou sozinho.' }] },
+      { id: 'seguir', lesson: 'l_sombra', label: 'Agradecer e pegar a sombrinha emprestada', reply: [{ who: 'bia', text: 'Devolve depois, hein? Ela dá sorte no compasso.' }, { who: 'zeca', text: 'Prometo. Obrigado, Bia.' }] }
+    ]
+  });
+  bond(2, {
+    prompt: 'O rio me ensinou a esperar. Quer aprender, ou prefere levar o remo e correr?',
+    options: [
+      { id: 'ouvir', bond: true, lesson: 'l_rio', label: 'Sentar na beira e escutar o rio com a Maré', reply: [{ who: 'mare', text: 'Respira. A corrente não luta contra a pedra: dá a volta. Você também vai dar.' }, { who: 'zeca', text: 'Nunca tinha ficado tão calmo antes de uma rinha.' }] },
+      { id: 'seguir', lesson: 'l_remo', label: 'Aceitar o remo e seguir viagem', reply: [{ who: 'mare', text: 'Segura firme. Remo pesado só atrapalha quem tem pressa.' }, { who: 'zeca', text: 'Eu não tenho. Só não posso perder tempo.' }] }
+    ]
+  });
+  bond(3, {
+    prompt: 'Cabra, eu aboio pra boi voltar pra casa. Quer aprender, ou quer meu gibão de couro?',
+    options: [
+      { id: 'ouvir', bond: true, lesson: 'l_aboio', label: 'Aprender o aboio com o Tião', reply: [{ who: 'tiao', text: 'Solta do peito, não da garganta! Assim... isso, o chão até estremeceu.' }, { who: 'zeca', text: 'Parece que a rinha respondeu.' }] },
+      { id: 'seguir', lesson: 'l_couro', label: 'Vestir o gibão de couro e partir', reply: [{ who: 'tiao', text: 'Cheira a boi, mas segura bala de pedra. Vai com Deus, cabra.' }, { who: 'zeca', text: 'Cheiro de boi é cheiro de coragem.' }] }
+    ]
+  });
+  bond(4, {
+    prompt: 'Menino, o baião tem um segredo. Escuta primeiro, ou leva o fole emprestado?',
+    options: [
+      { id: 'ouvir', bond: true, lesson: 'l_ouvido', label: 'Escutar o baião com o Bené', reply: [{ who: 'bene', text: 'Fecha o olho. Ouve a zabumba entrar... agora! Sente? Isso é o compasso.' }, { who: 'zeca', text: 'Cada golpe tem uma hora. Agora eu escuto.' }] },
+      { id: 'seguir', lesson: 'l_fole', label: 'Levar o fole emprestado', reply: [{ who: 'bene', text: 'Ele respira por você. Leva, mas devolve na festa.' }, { who: 'zeca', text: 'Combinado.' }] }
+    ]
+  });
+  bond(5, {
+    prompt: 'A chama tem duas faces: aquece e queima. Quer entender as duas, ou levar só a brasa?',
+    options: [
+      { id: 'ouvir', bond: true, lesson: 'l_cinza', label: 'Sentar com o Juvenal e entender a chama', reply: [{ who: 'juvenal', text: 'O fogo não é raiva. É atenção. Quem arde sem pressa nunca se queima.' }, { who: 'zeca', text: '...Obrigado, Juvenal. Eu precisava ouvir isso.' }] },
+      { id: 'seguir', lesson: 'l_brasa', label: 'Levar a brasa no peito e seguir', reply: [{ who: 'juvenal', text: 'Leve. Ela é sua enquanto você não esquecer de onde veio.' }, { who: 'zeca', text: 'Não vou esquecer.' }] }
+    ]
+  });
+  bond(6, {
+    prompt: 'Tenho dois presentes: um patch de reflexo ou um backup. Ou... quer que eu te explique como o Mestre pensa?',
+    options: [
+      { id: 'ouvir', bond: true, lesson: 'l_patch', label: 'Ouvir o Vinícius analisar o Mestre', reply: [{ who: 'vinicius', text: 'Ele nunca ataca de graça. Todo golpe dele é resposta. Faz ele errar a pergunta.' }, { who: 'zeca', text: 'Entendi. E o patch?' }, { who: 'vinicius', text: 'Já instalado. De nada.' }] },
+      { id: 'seguir', lesson: 'l_backup', label: 'Pegar o backup e ir logo', reply: [{ who: 'vinicius', text: 'Salvei teu estado. Se der erro, restaura. Boa sorte.' }, { who: 'zeca', text: 'Valeu, Vinícius.' }] }
+    ]
+  });
+  // acampamentos: depois das lutas 3 e 5
+  M.STORY.camps = { 3: { title: 'A FOGUEIRA DA MADRUGADA', text: 'A rinha deu um respiro. Dona Lourdes acende uma fogueira pequena e a Vila se junta em volta. Escolha como passar a pausa — vale só para a próxima rinha.' }, 5: { title: 'A ÚLTIMA FOGUEIRA', text: 'Falta só a praça. O povo se espalha pelo terreiro, em silêncio. Uma última pausa antes do Mestre.' } };
+  // laços na reta final
+  F[7].preBond = [
+    { who: 'bia', text: 'Você não tá sozinho, menino. A ladeira inteira veio pra ver.', needBonds: 4 },
+    { who: 'mare', text: 'O rio também. E o rio nunca erra o caminho.', needBonds: 4 },
+    { who: 'bene', text: 'Escuta a zabumba. É a Vila inteira batendo palma.', needBonds: 4 },
+    { who: 'cinzas', text: '...Eles vieram. Todos. Por você.', needBonds: 4 }
+  ];
+  M.STORY.bondEpilogues = {
+    bia: 'BIA SOMBRINHA ensinou o passo da ladeira a Zeca — e ele dança melhor que ela, só que não admite.',
+    mare: 'MARÉ BACURI passa as tardes com Zeca na beira do rio. Ele aprendeu a esperar.',
+    tiao: 'TIÃO SERTÃO ensinou o aboio. Hoje a praça toda aboia no São João.',
+    bene: 'BENÉ SANFONA tocou o baião do compasso até o fim da noite. Zeca batia o pé sem perceber.',
+    juvenal: 'JUVENAL BOITATÁ e Zeca acendem juntos a primeira brasa de cada São João.',
+    vinicius: 'VINÍCIUS ANDREY documentou o estilo do Zeca num README. Tem 12 mil estrelas.'
+  };
+  M.STORY.bondsEndingText = 'Todos os laços feitos ao longo da noite estavam lá na praça. A Vila inteira veio ver o desfecho — e a Brasa, pela primeira vez, brilhou de verdade.';
+})();
+
 M.SPEAKERS = {
   zeca: { name: 'Zeca Ventania', color: '#f2c230' },
   cinzas: { name: 'Mestre Cinzas', color: '#8d8a84' },
@@ -198,7 +314,8 @@ M.SPEAKERS = {
   mula: { name: 'Mula-sem-Cabeça', color: '#4aa3ff' },
   papafigo: { name: 'Seu Papa-Figo', color: '#c8371d' },
   cuia: { name: 'Cabeça de Cuia', color: '#c9993a' },
-  lourdes: { name: 'Dona Lourdes (na zabumba)', color: '#1f7a4d' }
+  lourdes: { name: 'Dona Lourdes (na zabumba)', color: '#1f7a4d' },
+  narrador: { name: '✦', color: '#f2b70c' }
 };
 
 Object.assign(M.STORY.endings, M.STORY.endingsExtra);

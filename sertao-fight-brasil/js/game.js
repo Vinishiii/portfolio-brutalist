@@ -25,7 +25,7 @@ M.Match = class Match {
     this.p2 = new M.Fighter(M.FIGHTERS[o.p2.id], 2, o.p2.ctrl);
     for (const [f, cfg] of [[this.p1, o.p1], [this.p2, o.p2]]) {
       if (cfg.mods) Object.assign(f.mods, cfg.mods);
-      if (cfg.patuas) { f.patuas = cfg.patuas.slice(); for (const id of f.patuas) { const pt = M.PATUAS.find(p => p.id === id); if (pt) pt.apply(f.mods); } }
+      if (cfg.patuas) { f.patuas = cfg.patuas.slice(); for (const id of f.patuas) { const pt = M.modById ? M.modById(id) : M.PATUAS.find(p => p.id === id); if (pt) pt.apply(f.mods); } }
       f.applyMods();
       if (f.ctrl === 'cpu') { f.ai = M.AI.make(o.difficulty || 'brabo', f.def, cfg.aiExtra); const d = o.difficulty || 'brabo'; if (d === 'novato') { f.mods.dmg *= 0.75; f.mods.hp *= 0.9; } else if (d === 'lendario') { f.mods.dmg *= 1.1; f.mods.hp *= 1.05; } }
     }
@@ -35,7 +35,7 @@ M.Match = class Match {
     this.winsNeeded = o.rounds || 2; this.timerOn = o.timer !== 0 && !this.tutorial && this.mode !== 'training';
     this.timeStart = o.timer || 99;
     this.projectiles = []; this.traps = []; this.particles = []; this.fx = []; this.ghosts = [];
-    this.axe = 0; this.readyShown = [false, false];
+    this.axe = o.startAxe || 0; this.readyShown = [false, false];
     this.wins = [0, 0]; this.round = 0; this.frame = 0; this.phase = 'intro'; this.phaseT = 0;
     this.slow = 0; this.slowAcc = 0; this.shakeAmt = 0; this.cam = { zoom: 1, x: W / 2, y: M.H / 2 }; this.camTarget = null; this.camT = 0;
     this.crowdExcite = 0.2; this.fireScale = 1; this.banner = null; this.bigText = null; this.freeze = 0;
@@ -284,7 +284,7 @@ M.Match = class Match {
     let gain = 0.035 + dmg / 1000 * 0.3;
     const same = att.recent.filter(id => id === mv.id).length; gain *= 1 / (1 + same * 0.8);
     if (same >= 2 && !mv.super) this.popup('REPETIDO...', att.x, att.y - 200, '#8d8a84', 16);
-    if (onBeat) { gain *= 1.8; this.popup('NO COMPASSO!', hx, hy - 50, M.C.yellow, 24); this.fx.push({ type: 'ring', x: hx, y: hy, r: 70, t: 0, life: 18, color: M.C.yellow }); M.audio.play('axe'); this.beatHits++; }
+    if (onBeat) { gain *= 1.8; this.popup('NO COMPASSO!', hx, hy - 50, M.C.yellow, 24); this.fx.push({ type: 'ring', x: hx, y: hy, r: 70, t: 0, life: 18, color: M.C.yellow }); M.audio.play('axe'); this.beatHits++; att.stats.beats = (att.stats.beats || 0) + 1; }
     if (counter) { gain += 0.04; this.popup(fromWindow ? 'CONTRA-ATAQUE!' : 'CONTRA-GOLPE!', hx, hy - 80, M.C.red, 22); M.audio.play('counter'); }
     if (att.def.id === 'cinzas' && this.boss && this.phase2) gain += 0.06;
     this.gainAxe(att, gain);

@@ -111,27 +111,36 @@
     // ---- história ----
     newStory(diff) {
       M.store.data.settings.difficulty = diff; M.store.save();
-      flow.story = { idx: 0, patuas: [], difficulty: diff, frames: 0, deaths: 0 };
+      flow.story = { idx: 0, patuas: [], licoes: [], bonds: [], grades: {}, challenges: {}, fama: 0, bless: null, difficulty: diff, frames: 0, deaths: 0, fightDeaths: {} };
       flow.saveStory();
       M.match = null;
       M.ui.cordel(M.STORY.intro, 'A RINHA DO FOGO', () => flow.storyFight());
     },
     continueStory() {
       const s = M.store.data.story; if (!s) return flow.newStory('brabo');
-      flow.story = { idx: s.idx, patuas: s.patuas || [], difficulty: s.difficulty || 'brabo', frames: s.frames || 0, deaths: s.deaths || 0, fightDeaths: s.fightDeaths || {} };
+      flow.story = { idx: s.idx, patuas: s.patuas || [], licoes: s.licoes || [], bonds: s.bonds || [], grades: s.grades || {}, challenges: s.challenges || {}, fama: s.fama || 0, bless: s.bless || null, difficulty: s.difficulty || 'brabo', frames: s.frames || 0, deaths: s.deaths || 0, fightDeaths: s.fightDeaths || {} };
       flow.storyFight();
     },
-    saveStory() { const s = flow.story; M.store.data.story = { idx: s.idx, patuas: s.patuas, difficulty: s.difficulty, frames: s.frames, deaths: s.deaths, fightDeaths: s.fightDeaths || {} }; M.store.save(); },
+    saveStory() { const s = flow.story; M.store.data.story = { idx: s.idx, patuas: s.patuas, licoes: s.licoes, bonds: s.bonds, grades: s.grades, challenges: s.challenges, fama: s.fama, bless: s.bless, difficulty: s.difficulty, frames: s.frames, deaths: s.deaths, fightDeaths: s.fightDeaths || {} }; M.store.save(); },
     storyFight() {
       const S = flow.story; const F = M.STORY.fights[S.idx];
       if (!F) return flow.storyChoice();
       M.match = null; ambient = makeAmbient(F.stage, ['zeca', F.opp]);
       M.state = 'story';
       S.fightDeaths = S.fightDeaths || {};
-      const pre = (S.fightDeaths[S.idx] > 0 && F.retry) ? [{ who: F.opp, text: F.retry }].concat(F.pre.slice(1)) : F.pre;
-      M.ui.dialogue(pre, F.title, () => {
-        flow.startMatch({ mode: 'story', p1: { id: 'zeca', ctrl: 'human', patuas: S.patuas }, p2: { id: F.opp, ctrl: 'cpu' }, stage: F.stage, rounds: F.tutorial ? 1 : 2, timer: 99, difficulty: S.difficulty, tutorial: !!F.tutorial, boss: !!F.boss, onEnd: r => flow.storyEnd(r) });
-      });
+      const retry = S.fightDeaths[S.idx] > 0;
+      const begin = () => {
+        let pre = (retry && F.retry) ? [{ who: F.opp, text: F.retry }].concat(F.pre.slice(1)) : F.pre.slice();
+        if (F.preBond && S.bonds.length >= 4) { const extra = F.preBond.filter(l => !l.needBonds || S.bonds.length >= l.needBonds); pre = pre.slice(0, -1).concat(extra, pre.slice(-1)); }
+        M.ui.dialogue(pre, F.title, () => {
+          M.ui.versusCard({ p1: 'zeca', p2: F.opp, title: F.title, stageName: M.stages.DEFS[F.stage].name, difficulty: S.difficulty, challenge: F.challenge, best: M.store.data.progress.fightBest && M.store.data.progress.fightBest[S.idx] }, () => {
+            const mods = S.patuas.concat(S.licoes, S.bless ? [S.bless] : []);
+            const bl = S.bless && M.modById(S.bless);
+            flow.startMatch({ mode: 'story', p1: { id: 'zeca', ctrl: 'human', patuas: mods }, p2: { id: F.opp, ctrl: 'cpu' }, stage: F.stage, rounds: F.tutorial ? 1 : 2, timer: 99, difficulty: S.difficulty, tutorial: !!F.tutorial, boss: !!F.boss, startAxe: bl && bl.startAxe ? bl.startAxe * 2 : 0, onEnd: r => flow.storyEnd(r) });
+          });
+        });
+      };
+      if (retry) begin(); else M.ui.nightMap(S, begin);
     },
     storyEnd(r) {
       const S = flow.story; const F = M.STORY.fights[S.idx]; S.frames += r.frames; M.state = 'results';
@@ -140,32 +149,64 @@
         M.ui.results({ result: r, defeat: true, buttons: [{ id: 'retry', label: 'LEVANTAR E TENTAR DE NOVO', fn: () => flow.storyFight() }, { id: 'menu', label: 'VOLTAR AO MENU', fn: () => M.ui.menu() }] });
         return;
       }
-      const after = () => {
-        const inter = M.STORY.interludes[S.idx];
-        S.idx++; flow.saveStory();
-        const next = () => { if (F.patua) {
-          const opts = M.shuffle(M.PATUAS.filter(p => !S.patuas.includes(p.id))).slice(0, 2);
-          M.ui.patua(opts, p => { S.patuas.push(p.id); flow.saveStory(); flow.storyFight(); });
-        } else flow.storyFight(); };
-        if (inter) M.ui.cordel(inter.pages, inter.title, next); else next();
+      const prog = M.store.data.progress; prog.fightBest = prog.fightBest || {};
+      const retries = S.fightDeaths[S.idx] || 0;
+      const done = !!(F.challenge && M.CHALLENGES[F.challenge].check(r));
+      const grade = F.tutorial ? null : M.gradeFight(r, done, retries);
+      let newBest = false;
+      if (grade) {
+        S.grades[S.idx] = grade; S.challenges[S.idx] = done; if (done) S.fama++;
+        const prev = prog.fightBest[S.idx]; if (!prev || M.GRADE_VAL[grade] > M.GRADE_VAL[prev]) { prog.fightBest[S.idx] = grade; newBest = !!prev; }
+        M.store.save();
+      }
+      S.bless = null;
+      const lines = F.post.concat(F.bond ? [{ who: F.opp, text: F.bond.prompt, key: 'bond', choice: F.bond.options.map(o => ({ id: o.id, label: o.label })) }] : []);
+      const onChoice = (key, id) => {
+        const opt = F.bond.options.find(o => o.id === id); const les = M.modById(opt.lesson);
+        S.licoes.push(opt.lesson); if (opt.bond && !S.bonds.includes(F.opp)) S.bonds.push(F.opp);
+        flow.saveStory();
+        return opt.reply.concat([{ who: 'narrador', text: `${opt.bond ? 'Laço feito! ' : ''}Lição aprendida: ${les.name} — ${les.desc}` }]);
       };
-      M.ui.dialogue(F.post, F.title, after);
+      const after = () => {
+        const inter = M.STORY.interludes[S.idx]; const camp = M.STORY.camps[S.idx];
+        const finishedIdx = S.idx;
+        S.idx++; flow.saveStory();
+        const patuaStep = () => {
+          if (F.patua) {
+            const opts = M.shuffle(M.PATUAS.filter(p => !S.patuas.includes(p.id))).slice(0, done ? 3 : 2);
+            M.ui.patua(opts, p => { S.patuas.push(p.id); flow.saveStory(); flow.storyFight(); });
+          } else flow.storyFight();
+        };
+        const campStep = () => {
+          if (!camp) return patuaStep();
+          M.ui.camp(camp, M.BENCAOS, b => { S.bless = b.id; flow.saveStory(); patuaStep(); });
+        };
+        if (inter) M.ui.cordel(inter.pages, inter.title, campStep); else campStep();
+        void finishedIdx;
+      };
+      const dlg = () => M.ui.dialogue(lines, F.title, after, onChoice);
+      if (grade) M.ui.fightReport({ result: r, grade, challenge: F.challenge, done, newBest, title: F.title }, dlg); else dlg();
     },
     storyChoice() {
-      const p = M.store.data.progress; const both = p.endings.includes('acender') && p.endings.includes('descansar');
-      const data = Object.assign({}, M.STORY.choice, { options: M.STORY.choice.options.filter(o => !o.secret || both) });
+      const S = flow.story; const p = M.store.data.progress; const both = p.endings.includes('acender') && p.endings.includes('descansar');
+      const bonded = S.bonds.length >= 4;
+      const data = Object.assign({}, M.STORY.choice, { options: M.STORY.choice.options.filter(o => !o.secret || both || bonded) });
       if (both) data.text += ' Desta vez, há um terceiro caminho.';
+      else if (bonded) data.text += ' ' + M.STORY.bondsEndingText;
       M.ui.choice(data, id => flow.storyEnding(id));
     },
     storyEnding(id) {
       const S = flow.story; const p = M.store.data.progress;
       p.storyDone = true; p.cinzas = true; if (!p.endings.includes(id)) p.endings.push(id);
       if (!p.bestTime || S.frames / 60 < p.bestTime) p.bestTime = Math.round(S.frames / 60);
+      const grade = M.overallGrade(S.grades);
+      if (!p.bestGrade || M.GRADE_VAL[grade] > M.GRADE_VAL[p.bestGrade]) p.bestGrade = grade;
+      p.bonds = p.bonds || {}; for (const b of S.bonds) p.bonds[b] = true;
       p.wins++; M.store.data.story = null; M.store.save();
       M.audio.music.setMode('ending');
       ambient = makeAmbient(id === 'acender' ? 'ladeira' : 'cinzas', ['zeca', 'cinzas']);
       if (id === 'acender') ambient.crowdExcite = 1.2;
-      M.ui.ending(id, { frames: S.frames, patuas: S.patuas, deaths: S.deaths, difficulty: S.difficulty }, () => M.ui.menu());
+      M.ui.ending(id, { frames: S.frames, patuas: S.patuas, deaths: S.deaths, difficulty: S.difficulty, grade, fama: S.fama, bonds: S.bonds.length, bondText: S.bonds.length >= 4 ? M.STORY.bondsEndingText : '' }, () => M.ui.menu());
     },
     // ---- lendas da noite (segundo arco) ----
     legends: null,
@@ -189,7 +230,9 @@
       M.state = 'story';
       const pre = (S.fightDeaths[S.idx] > 0 && F.retry) ? [{ who: F.opp, text: F.retry }].concat(F.pre.slice(1)) : F.pre;
       M.ui.dialogue(pre, F.title, () => {
-        flow.startMatch({ mode: 'story', p1: { id: 'zeca', ctrl: 'human', patuas: S.patuas }, p2: { id: F.opp, ctrl: 'cpu' }, stage: F.stage, rounds: 2, timer: 99, difficulty: S.difficulty, onEnd: r => flow.legendsEnd(r) });
+        M.ui.versusCard({ p1: 'zeca', p2: F.opp, title: F.title, stageName: M.stages.DEFS[F.stage].name, difficulty: S.difficulty }, () => {
+          flow.startMatch({ mode: 'story', p1: { id: 'zeca', ctrl: 'human', patuas: S.patuas }, p2: { id: F.opp, ctrl: 'cpu' }, stage: F.stage, rounds: 2, timer: 99, difficulty: S.difficulty, onEnd: r => flow.legendsEnd(r) });
+        });
       });
     },
     legendsEnd(r) {

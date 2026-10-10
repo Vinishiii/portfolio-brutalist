@@ -39,7 +39,11 @@ Variações: agachado + golpe (baixo), frente + forte (comando), dash + forte (g
 
 ## Modos
 
-- **História** — a Rinha do Fogo com Zeca Ventania: tutorial, seis rinhas, garrafadas, chefe em duas fases e dois finais.
+- **História** — a Rinha do Fogo com Zeca Ventania: tutorial, seis rinhas, chefe em duas fases e três finais. Cada rinha tem:
+  - **Mapa da noite** e tela de confronto (VS) com o **desafio** opcional da luta (cumprir dá +1 Fama e três garrafadas à escolha).
+  - **Nota S/A/B/C** por tempo, vida perdida, esquivas perfeitas, golpes no compasso e tentativas; nota geral no final e melhor nota salva.
+  - **Laços**: depois de cada rinha dos seis adversários, escolha entre ouvir a lição do rival (faz um laço) ou levar o presente (lição mais direta). Cada escolha dá uma lição permanente diferente. Com 4+ laços a Vila aparece na praça e o final secreto abre direto.
+  - **Fogueira** (depois do Tião e do Juvenal): uma bênção para a próxima luta — mocotó (+vida), treino de sombra (+dano/velocidade) ou cordel (Energia inicial).
 - **Lendas da Noite** — segundo arco, liberado ao terminar a História: quatro rinhas contra o folclore do Nordeste (Fulozinha, Cabeça de Cuia, Mula-sem-Cabeça e Papa-Figo), com cordéis, diálogos, garrafadas e um final próprio.
 
 ## Dinâmica
