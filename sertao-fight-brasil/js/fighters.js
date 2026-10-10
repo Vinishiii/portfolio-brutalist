@@ -152,9 +152,9 @@
       quote: 'Golpe fora do baião é só barulho.', winQuote: 'Isso é que é baião!',
       colors: { skin: '#6b4a30', torso: '#fff8e8', arms: '#6b4a30', legs: '#1c4e9c', shoes: '#fff8e8', accent: '#f2b70c', hair: '#141210' },
       hair: 'cap', prop: 'sanfona', idle: 'bounce', idleOver: { na: [38, 110], fa: [30, 105] }, body: { height: 1.02, build: 0.98 }, details: ['necklace', 'stripe', 'kerchief', 'suspenders'],
-      stats: { hp: 980, speed: 3.1, jumpV: -13, weight: 0.95, dashV: 9.5, airSpeed: 3.2, maxJumps: 1 },
+      stats: { hp: 1030, speed: 3.2, jumpV: -13, weight: 0.95, dashV: 9.8, airSpeed: 3.2, maxJumps: 1 },
       superName: 'Baião de Dois', superDesc: 'Acelera o fole: uma sequência em que todo golpe cai no compasso.',
-      ai: { zone: 0.2, air: 0.25, grab: 0, rush: 0.45, poke: 0.8 },
+      ai: { zone: 0.1, air: 0.25, grab: 0.1, rush: 0.65, poke: 0.6 },
       moves: {
         L: mv({ id: 'L', name: 'Tapa de fole', startup: 5, active: 8, recovery: 10, dmg: 28, hits: 2, hitInterval: 4, hitstun: 18, blockstun: 9, kb: 3, hitbox: { x: 24, y: 85, w: 86, h: 36 }, pose: 'lunge', cancel: ['L', 'H', 'S'], sfx: 'whoosh' }),
         cL: mv({ id: 'cL', name: 'Pisada de forró', startup: 6, active: 3, recovery: 11, dmg: 42, type: 'low', crouch: true, hitstun: 17, blockstun: 8, kb: 2, hitbox: { x: 20, y: 0, w: 95, h: 30 }, pose: 'castLow', cancel: ['H', 'S'], sfx: 'whoosh' }),

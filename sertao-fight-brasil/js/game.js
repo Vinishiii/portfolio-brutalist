@@ -244,6 +244,7 @@ M.Match = class Match {
     const beat = M.audio.music.beat(); const onBeat = !!mv.onBeatAlways || beat.dist < 0.075 * att.mods.beat * (att.ritmo > 0 ? 2.5 : 1);
     if (onBeat) dmg *= att.mods.beatDmg * (att.ritmo > 0 ? 1.15 : 1);
     if (counter) dmg *= 1.25;
+    if (att.ritmo > 0) dmg *= 1.1;
     if (mv.super) dmg *= att.superBoost || 1;
     if (att.arretado) dmg *= 1.1;
     if (!mv.super) dmg *= Math.max(0.4, 1 - 0.1 * att.combo);

@@ -120,7 +120,7 @@ M.AI = (function () {
         const stunned = opp.state === 'hitstun' || opp.state === 'blockstun' || opp.state === 'thrown';
         if (f.state === 'attack' && f.moveHit && f.move.launch && !f.move.super && f.grounded && Math.random() < ai.p.combo * 0.6) { pr.up = true; h[fwd] = true; ai.seq = ['aL', 'aH']; break; }
         if (!f.grounded && f.airActs < 1 && ai.seq.length && ai.seq[0][0] === 'a' && opp.state === 'hitstun' && dist < 130) { const id = ai.seq.shift(); pr[id === 'aL' ? 'light' : 'heavy'] = true; break; }
-        if (f.state === 'attack' && (f.moveHit || f.move.followAny) && f.move.follow && f.mf > f.move.startup + f.move.active && Math.random() < ai.p.combo * 0.3) { pr.special = true; h.special = true; }
+        if (f.state === 'attack' && (f.moveHit || (f.move.followAny && Math.abs(opp.x - f.x) < 150)) && f.move.follow && f.mf > f.move.startup + f.move.active && Math.random() < ai.p.combo * 0.3) { pr.special = true; h.special = true; }
         else if (f.state === 'attack' && f.moveHit && f.move.cancel && G.superReady(f) && Math.random() < ai.p.superUse * 0.4) { pr.mandinga = true; }
         else if (f.state === 'attack' && (f.moveHit || f.moveBlocked) && f.move.cancel && ai.seq.length && Math.random() < ai.p.combo) { pressMove(inp, f, ai.seq.shift()); }
         else if (f.actionable) { if (stunned && dist < 160 && ai.seq.length && Math.random() < ai.p.combo) pressMove(inp, f, ai.seq.shift()); else if (!stunned) ai.timer = 0; else h[fwd] = true; }
