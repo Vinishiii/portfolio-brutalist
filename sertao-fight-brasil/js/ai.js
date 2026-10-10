@@ -112,7 +112,7 @@ M.AI = (function () {
         break;
       }
       case 'poke': case 'attack': {
-        if (f.actionable) { const id = chooseAttack(f, dist); pressMove(inp, f, id); if ((id === 'S' || id === 'dS') && G.axeSide(f) >= 0.5 && Math.random() < 0.35) pr.heavy = true; ai.seq = ['L', 'H', 'S']; set(ai, 'combo', 30); ai.started = true; }
+        if (f.actionable) { const id = chooseAttack(f, dist); pressMove(inp, f, id); if ((id === 'S' || id === 'dS') && G.axeSide(f) >= 0.5 && Math.random() < 0.35) pr.heavy = true; ai.seq = M.choice([['L', 'H', 'S'], ['L', 'L', 'L', 'S'], ['L', 'L', 'H', 'S'], ['cL', 'cH', 'S'], ['L', 'H']]); set(ai, 'combo', 30); ai.started = true; }
         else if (f.state === 'attack') { /* esperando */ } else h[fwd] = true;
         break;
       }
@@ -120,7 +120,9 @@ M.AI = (function () {
         const stunned = opp.state === 'hitstun' || opp.state === 'blockstun' || opp.state === 'thrown';
         if (f.state === 'attack' && f.moveHit && f.move.launch && !f.move.super && f.grounded && Math.random() < ai.p.combo * 0.6) { pr.up = true; h[fwd] = true; ai.seq = ['aL', 'aH']; break; }
         if (!f.grounded && f.airActs < 1 && ai.seq.length && ai.seq[0][0] === 'a' && opp.state === 'hitstun' && dist < 130) { const id = ai.seq.shift(); pr[id === 'aL' ? 'light' : 'heavy'] = true; break; }
-        if (f.state === 'attack' && f.moveHit && f.move.cancel && ai.seq.length && Math.random() < ai.p.combo) { pressMove(inp, f, ai.seq.shift()); }
+        if (f.state === 'attack' && (f.moveHit || f.move.followAny) && f.move.follow && f.mf > f.move.startup + f.move.active && Math.random() < ai.p.combo * 0.3) { pr.special = true; h.special = true; }
+        else if (f.state === 'attack' && f.moveHit && f.move.cancel && G.superReady(f) && Math.random() < ai.p.superUse * 0.4) { pr.mandinga = true; }
+        else if (f.state === 'attack' && (f.moveHit || f.moveBlocked) && f.move.cancel && ai.seq.length && Math.random() < ai.p.combo) { pressMove(inp, f, ai.seq.shift()); }
         else if (f.actionable) { if (stunned && dist < 160 && ai.seq.length && Math.random() < ai.p.combo) pressMove(inp, f, ai.seq.shift()); else if (!stunned) ai.timer = 0; else h[fwd] = true; }
         break;
       }

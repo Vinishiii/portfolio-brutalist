@@ -222,7 +222,7 @@ M.Match = class Match {
       if (!src && att.grounded && (def.x <= 44 || def.x >= M.W - 44)) att.vx = -mv.kb * 0.5 * facing;
       const chip = seca ? 0 : Math.round((mv.chip || 0) * def.mods.chip);
       if (chip > 0) { def.hp = Math.max(mv.super ? 0 : 1, def.hp - chip); def.lastHurt = this.frame; this.popup('-' + chip, def.x, def.y - 150, '#8d8a84', 14); }
-      def.stats.blocks++;
+      def.stats.blocks++; att.moveBlocked = true;
       this.fx.push({ type: 'star', x: hx, y: hy, r: 16, t: 0, life: 10, n: 6, color: '#2aa9b8' });
       this.spark(hx, hy, 5, '#2aa9b8');
       M.audio.play('block', hx); def.hitstop = 3; if (!src) att.hitstop = 3;
@@ -235,7 +235,12 @@ M.Match = class Match {
     const counter = (def.state === 'attack' && def.mf <= def.move.startup) || def.state === 'taunt' || fromWindow;
     att.counterWin = 0;
     const armor = def.armorNow && !mv.super && !src;
+    const isLastHit = src ? (!src.hits || src.hitCount >= src.hits) : (!mv.hits || att.hitCount >= mv.hits);
+    const cornered = !armor && def.grounded && isLastHit && (mv.kb >= 5 || mv.launch) && (def.x < att.x ? def.x <= 54 : def.x >= M.W - 54);
+    const finisher = mv.super && isLastHit;
     let dmg = mv.dmg * att.mods.dmg;
+    if (cornered) dmg *= 1.1;
+    if (finisher) dmg *= 1.2;
     const beat = M.audio.music.beat(); const onBeat = !!mv.onBeatAlways || beat.dist < 0.075 * att.mods.beat * (att.ritmo > 0 ? 2.5 : 1);
     if (onBeat) dmg *= att.mods.beatDmg * (att.ritmo > 0 ? 1.15 : 1);
     if (counter) dmg *= 1.25;
@@ -254,8 +259,8 @@ M.Match = class Match {
     if (!armor) {
       def.state = 'hitstun'; def.t = mv.hitstun; def.move = null; def.throwing = null;
       def.crouching = def.crouching && mv.type !== 'high';
-      def.hurtKind = (hb.y + hb.h > def.y - 50) ? 'lo' : 'hi';
-      const isLast = src ? (!src.hits || src.hitCount >= src.hits) : (!mv.hits || att.hitCount >= mv.hits);
+      def.hurtKind = (hb.y + hb.h > def.y - 50) ? 'lo' : 'hi'; def.hurtBig = dmg >= 90 || counter; if (def.grounded) def.bounced = false;
+      const isLast = isLastHit;
       const launchBase = mv.launch ? mv.launch + (exB > 1 ? 3 : 0) : 0;
       def.vx = (isLast ? mv.kb : Math.min(mv.kb, 1)) * facing / def.def.stats.weight;
       if (!isLast) def.t = Math.max(def.t, (mv.hitInterval || 6) + 6);
@@ -265,9 +270,11 @@ M.Match = class Match {
         def.grounded = false; def.vy = -v / Math.sqrt(def.def.stats.weight); def.launched = true; def.t = 60; def.crouching = false;
       }
       if (mv.knockdown) def.kdPending = true;
+      if (cornered) { def.t += 16; def.vx = 0; att.vx = -facing * 1.5; this.popup('ENCURRALADO!', def.x, def.y - 215, M.C.orange, 22); this.fx.push({ type: 'lines', x: def.x, y: def.y - 90, r: 70, t: 0, life: 14, rot: 0.3 }); this.shake(7); }
+      if (finisher) { def.kdPending = true; if (!mv.launch && def.grounded) { def.grounded = false; def.vy = -9; def.launched = true; def.t = 60; } def.vx = 8 * facing / def.def.stats.weight; }
       att.combo++; att.comboDmg += dmg; att.comboShow = 70;
     } else { this.popup('ARMADURA!', def.x, def.y - 190, M.C.yellow); M.audio.play('armor'); }
-    const stop = mv.super ? 9 : heavy ? 7 : 4;
+    let stop = mv.super ? 10 : Math.round(3 + Math.min(9, dmg / 20)); if (counter) stop += 2; if (isLastHit && mv.hits > 1) stop += 3;
     def.hitstop = stop; if (!src) att.hitstop = stop;
     this.shake(mv.super ? 10 : heavy ? 6 : 2.5);
     this.fx.push({ type: 'star', x: hx, y: hy, r: heavy ? 42 : 26, t: 0, life: heavy ? 14 : 10, n: heavy ? 10 : 7, rot: Math.random() * Math.PI, color: counter ? M.C.red : '#fff8e8' });
@@ -291,7 +298,11 @@ M.Match = class Match {
     att.recent.push(mv.id); if (att.recent.length > 4) att.recent.shift();
     this.crowdExcite = Math.min(1.5, this.crowdExcite + dmg / 250);
     if (att.combo >= 3 && att.combo % 2 === 1) M.audio.cheer(0.4);
-    if (mv.super && src === null && att.hitCount === (mv.hits || 1)) { this.camTarget = { zoom: 1.2, x: def.x, y: def.y - 80 }; this.camT = 30; }
+    if (finisher) {
+      this.camTarget = { zoom: 1.32, x: def.x, y: def.y - 80 }; this.camT = def.hp <= 0 ? 70 : 38; this.slow = Math.max(this.slow, def.hp <= 0 ? 44 : 26); this.slowAcc = 0;
+      this.shake(15); this.fx.push({ type: 'flash', t: 0, life: 8, color: '#fff8e8', alpha: 0.75 }); this.fx.push({ type: 'ring', x: hx, y: hy, r: 150, t: 0, life: 22, color: att.def.colors.accent });
+      this.popup(def.hp <= 0 ? 'ARREMATE FATAL!' : 'ARREMATE!', def.x, def.y - 225, M.C.magenta, 30); M.audio.cheer(0.9);
+    }
     if (def.hp <= 0) this.ko(def);
   }
   perfectDodge(def, att) {
@@ -626,6 +637,8 @@ M.Match = class Match {
       ctx.fillStyle = C.ink; ctx.fillRect(-700, -52, 1400, 6); ctx.fillRect(-700, 46, 1400, 6);
       M.text(ctx, b.text.toUpperCase(), (1 - slide) * (f.side === 1 ? -300 : 300), 2, { size: 46, color: C.paper });
       M.text(ctx, f.def.name.toUpperCase() + ' — PEIA', 0, 72, { size: 16, color: C.yellow });
+      const bp = M._bp = M._bp || {}; if (!bp[f.def.id]) { const c = document.createElement('canvas'); c.width = 220; c.height = 270; M.render.drawPortrait(c, f.def, { facing: 1 }); bp[f.def.id] = c; }
+      ctx.save(); ctx.translate((f.side === 1 ? -380 : 380) + (1 - slide) * (f.side === 1 ? -500 : 500), 0); if (f.side === 2) ctx.scale(-1, 1); ctx.rotate(0.06); ctx.drawImage(bp[f.def.id], -85, -150, 170, 208); ctx.restore();
       ctx.restore();
     }
     if (this.bigText && !(this.banner && this.phase === 'fight')) {

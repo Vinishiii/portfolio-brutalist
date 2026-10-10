@@ -323,8 +323,10 @@ M.ui = (function () {
     function cycleDiff(d) { const L = ['novato', 'brabo', 'lendario']; const s = M.store.data.settings; s.difficulty = L[(L.indexOf(s.difficulty) + d + 3) % 3]; M.store.save(); refresh(); }
     function info(el, i, label) {
       const id = roster[i], f = M.FIGHTERS[id]; const locked = id === 'cinzas' && !unlocked;
-      const cmds = [['S', 'L'], ['dS', '↓+L'], ['fS', '→+L'], ['aS', 'ar+L'], ['fH', '→+K'], ['bH', '←+K'], ['dH', 'dash+K']].filter(([k]) => f.moves[k]).map(([k, i]) => `<span><b>${i}</b> ${esc(f.moves[k].name)}</span>`).join('');
-      el.innerHTML = locked ? `<div class="cs-label">${label}</div><h3>???</h3><p>Vença a História para liberar.</p>` : `<div class="cs-label">${label}</div><h3>${esc(f.name)}</h3><p class="alias">${esc(f.alias)} • ${esc(f.origin)}</p><p class="style">${esc(f.style)}</p><p class="cmds">${cmds}</p><p class="super"><b>PEIA:</b> ${esc(f.superName)} — ${esc(f.superDesc)}</p>`;
+      const cmds = [['S', 'L'], ['dS', '↓+L'], ['fS', '→+L'], ['aS', 'ar+L'], ['fH', '→+K'], ['bH', '←+K'], ['dH', 'dash+K']].filter(([k]) => f.moves[k]).map(([k, i]) => `<span><b>${i}</b> ${esc(f.moves[k].name)}</span>`).join('')
+      const fk = f.moves.S && f.moves.S.follow ? 'S' : f.moves.dS && f.moves.dS.follow ? 'dS' : null;
+      const extra = (f.moves.L2 ? `<span><b>J,J,J</b> ${esc(f.moves.L2.name)} ▸ ${esc(f.moves.L3.name)}</span>` : '') + (fk ? `<span><b>${fk === 'S' ? 'L,L' : '↓L,L'}</b> ${esc(f.moves[f.moves[fk].follow].name)}</span>` : '');
+      el.innerHTML = locked ? `<div class="cs-label">${label}</div><h3>???</h3><p>Vença a História para liberar.</p>` : `<div class="cs-label">${label}</div><h3>${esc(f.name)}</h3><p class="alias">${esc(f.alias)} • ${esc(f.origin)}</p><p class="style">${esc(f.style)}</p><p class="cmds">${cmds}${extra}</p><p class="super"><b>PEIA:</b> ${esc(f.superName)} — ${esc(f.superDesc)}</p>`;
     }
     function refresh() {
       grid.querySelectorAll('.cs-card').forEach((el, i) => { el.classList.toggle('c1', i === sel.p1); el.classList.toggle('c2', o.players === 2 && i === sel.p2 && sel.step === 2 || (o.players === 2 && sel.step === 3 && i === sel.p2)); });
@@ -446,6 +448,9 @@ M.ui = (function () {
           <p><b>AGARRÃO</b> (H ou J+K): ignora defesa. <b>ESCAPAR</b>: em um combo de 3+ golpes, aperte ARREDA gastando 30% de Energia.</p>
           <p><b>FÔLEGO</b> (K+L): especial reforçado — mais dano, armadura na preparação, projétil duplo. Custa 25% de Energia: gastar agora ou guardar pra Peia?</p>
           <p><b>PEIA BRABA</b>: com a barra em 100%, a Peia causa 30% a mais. Soltar aos 70% ou esperar?</p>
+          <p><b>STRINGS</b>: aperte leve 3 vezes — cada lutador tem um segundo e um terceiro golpe próprios (o terceiro derruba e cancela em especial). Vale também na defesa.</p>
+          <p><b>SEQUÊNCIA DO ESPECIAL</b>: logo depois de um especial, aperte ESPECIAL de novo e ele ganha um segundo golpe (veja o nome na seleção do lutador).</p>
+          <p><b>CANCELAR NA PEIA</b>: com a barra cheia, qualquer golpe que acertar ou for defendido pode virar Peia. O último golpe da Peia é um <b>ARREMATE</b>, com câmera lenta. No canto, golpes fortes <b>ENCURRALAM</b> (+10% de dano).</p>
           <p><b>SEQUÊNCIAS</b>: leve ▸ leve ▸ forte ▸ especial ▸ peia, se os golpes acertarem. Lançou o oponente pro alto? Aperte PULAR na hora (<b>PULO-CANCEL</b>) e continue no ar.</p>
         </div>
       </div>

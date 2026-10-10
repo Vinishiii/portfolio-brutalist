@@ -36,6 +36,7 @@ M.poses = (function () {
     backdash: P({ torso: -18, nl: [-30, 22], fl: [32, 12], na: [70, 110], fa: [60, 105] }),
     land: P({ hy: 14, torso: 14, na: [40, 80], fa: [30, 70], nl: [40, 60], fl: [-10, 50] }),
     hurtHi: P({ hx: -5, torso: -22, head: -22, na: [-35, -10], fa: [55, 20], nl: [12, 12], fl: [-20, 18] }),
+    hurtBig: P({ hx: -9, torso: -34, head: -32, hy: -2, na: [-55, -20], fa: [75, 30], nl: [8, 20], fl: [-26, 24] }),
     hurtLo: P({ hy: 10, torso: 26, head: 14, na: [20, 30], fa: [10, 25], nl: [35, 60], fl: [-10, 40] }),
     hurtAir: P({ rot: -28, torso: -28, head: -15, na: [-60, -20], fa: [-85, -15], nl: [30, 10], fl: [-15, 25] }),
     block: P({ torso: 4, na: [85, 105], fa: [75, 115], nl: [14, 12], fl: [-14, 16] }),
@@ -104,17 +105,30 @@ M.poses = (function () {
   }
   function idleSpeed(style) { return style === 'ginga' ? 0.055 : style === 'bounce' ? 0.1 : style === 'sway' ? 0.035 : 0.04; }
 
-  // Pose de um ataque conforme fase (0..1 em cada fase)
+  // Peso do corpo por golpe: [recuo na preparação, avanço no golpe] em px (só visual)
+  const WEIGHT = { jab: [-5, 11], lunge: [-6, 13], swing: [-6, 11], upper: [-4, 7], spinKick: [-7, 9], headbutt: [-8, 15], tackle: [-6, 15], charge: [-5, 13], cast: [-4, 6], bite: [-6, 13], grab: [-3, 9], shout: [-3, 3], play: [-2, 2], cKick: [-3, 7], sweep: [-4, 11], negativa: [-3, 6], riseKick: [0, 0], overhead: [-5, 7], trap: [-3, 6] };
+  // Pose de um ataque conforme fase (0..1 em cada fase): antecipação, golpe com peso e retorno com rebote
   function attackPose(name, phase, t, from) {
     const pair = S[name];
     if (!Array.isArray(pair)) return S.idle;
     const [wind, strike] = pair;
+    const w = WEIGHT[name];
+    let pose;
     if (phase === 'startup') {
-      if (t < 0.45) return blend(from || S.idle, wind, M.easeOut(t / 0.45));
-      return blend(wind, strike, M.easeIn((t - 0.45) / 0.55));
+      if (t < 0.45) pose = blend(from || S.idle, wind, M.easeOut(t / 0.45));
+      else pose = blend(wind, strike, M.easeIn((t - 0.45) / 0.55));
+      if (w) { const k = t < 0.45 ? M.easeOut(t / 0.45) : 1 - M.easeIn((t - 0.45) / 0.55); const hx = w[0] * k + (t < 0.45 ? 0 : w[1] * M.easeIn((t - 0.45) / 0.55)); pose = Object.assign({}, pose, { hx: (pose.hx || 0) + hx }); }
+      return pose;
     }
-    if (phase === 'active') return strike;
-    return blend(strike, S.idle, M.easeInOut(t));
+    if (phase === 'active') {
+      pose = Object.assign({}, strike);
+      if (w) { pose.hx = (pose.hx || 0) + w[1] + 3 * t; pose.torso += 2 * t; }
+      return pose;
+    }
+    const k = M.easeInOut(t);
+    pose = blend(strike, S.idle, k);
+    if (w) { const sw = Math.sin(Math.PI * t); pose = Object.assign({}, pose, { hx: (pose.hx || 0) + (w[1] + 3) * (1 - k), torso: pose.torso - 3.5 * sw * Math.sign(w[1] || 1) }); }
+    return pose;
   }
 
   return { S, P, blend, idlePose, idleSpeed, attackPose };

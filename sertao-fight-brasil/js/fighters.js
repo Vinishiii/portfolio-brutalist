@@ -337,6 +337,62 @@
     }
   };
 
+  // ============================================================
+  // DINÂMICA DE COMBATE — strings de três golpes, golpes de
+  // sequência dos especiais, cancelamentos e deslocamento.
+  // ============================================================
+  // [nome do 2º golpe, pose, nome do 3º golpe, pose, deslocamento de hitbox do 3º]
+  const STRINGS = {
+    zeca: ['Cotovelada de açude', 'lunge', 'Rabo de arraia curto', 'spinKick'],
+    bia: ['Giro de sombrinha', 'swing', 'Frevo final', 'spinKick'],
+    mare: ['Cabo do remo', 'lunge', 'Remada de popa', 'swing'],
+    tiao: ['Gancho de vaqueiro', 'upper', 'Marrada de touro', 'headbutt'],
+    bene: ['Fole de volta', 'swing', 'Estouro de fole', 'overhead'],
+    juvenal: ['Chama dupla', 'jab', 'Labareda final', 'spinKick'],
+    vinicius: ['Duplo clique', 'jab', 'Commit', 'lunge'],
+    cinzas: ['Palma de cinza', 'lunge', 'Fim da brasa', 'spinKick'],
+    fulozinha: ['Beliscão duplo', 'jab', 'Chicote de cabelo curto', 'swing'],
+    mula: ['Coice de volta', 'airKick', 'Ombrada de arranque', 'charge'],
+    papafigo: ['Navalha curta', 'lunge', 'Estocada final', 'swing'],
+    cuia: ['Cotovelo de anzol', 'jab', 'Cabeçada de cuia', 'headbutt']
+  };
+  // [golpe-base, id do golpe seguinte, dados, vale mesmo sem acertar]
+  const FOLLOW = {
+    zeca: ['S', 'S2', { name: 'Chute de arremate', startup: 6, active: 5, recovery: 16, dmg: 110, knockdown: true, hitstun: 20, blockstun: 12, kb: 8, hitbox: { x: 10, y: 50, w: 110, h: 90 }, pose: 'spinKick', move: [{ f: 0, t: 10, vx: 4 }], sfx: 'whooshH', fx: 'arc' }, false],
+    bia: ['S', 'S2', { name: 'Frevo de sombrinha', startup: 5, active: 6, recovery: 16, dmg: 95, launch: 11, hitstun: 21, blockstun: 12, kb: 3, hitbox: { x: -10, y: 60, w: 90, h: 120 }, pose: 'upper', umbrellaOpen: true, sfx: 'whooshH' }, false],
+    mare: ['S', 'S2', { name: 'Remada sobre a onda', startup: 7, active: 4, recovery: 16, dmg: 95, hitstun: 20, blockstun: 12, kb: 9, hitbox: { x: 20, y: 50, w: 135, h: 90 }, pose: 'swing', sfx: 'whooshH' }, true],
+    tiao: ['dS', 'dS2', { name: 'Boiada', startup: 7, active: 8, recovery: 18, dmg: 105, launch: 9, hitstun: 22, blockstun: 13, kb: 6, armor: [0, 10], hitbox: { x: 10, y: 30, w: 100, h: 110 }, pose: 'tackle', move: [{ f: 0, t: 14, vx: 7 }], sfx: 'whooshH' }, true],
+    bene: ['S', 'S2', { name: 'Estouro de fole', startup: 7, active: 5, recovery: 17, dmg: 85, hitstun: 19, blockstun: 11, kb: 12, hitbox: { x: -10, y: 30, w: 150, h: 130 }, pose: 'play', fx: 'wave', sfx: 'taunt' }, true],
+    juvenal: ['S', 'S2', { name: 'Explosão de brasa', startup: 7, active: 6, recovery: 18, dmg: 90, burn: true, launch: 10, hitstun: 21, blockstun: 12, kb: 3, hitbox: { x: -20, y: 20, w: 120, h: 130 }, pose: 'upper', sfx: 'fire', fx: 'fire' }, true],
+    vinicius: ['S', 'S2', { name: 'Debug', startup: 6, active: 4, recovery: 14, dmg: 95, launch: 8, hitstun: 20, blockstun: 11, kb: 4, hitbox: { x: 10, y: 40, w: 100, h: 90 }, pose: 'airKick', sfx: 'whooshH' }, true],
+    cinzas: ['S', 'S2', { name: 'Passo de cinza', startup: 6, active: 5, recovery: 15, dmg: 100, hitstun: 20, blockstun: 12, kb: 6, hitbox: { x: 10, y: 50, w: 110, h: 90 }, pose: 'lunge', move: [{ f: 0, t: 10, vx: 9 }], sfx: 'whooshH' }, true],
+    fulozinha: ['S', 'S2', { name: 'Chicote rasteiro', startup: 7, active: 5, recovery: 15, dmg: 80, type: 'low', crouch: true, knockdown: true, hitstun: 20, blockstun: 11, kb: 4, hitbox: { x: 20, y: 0, w: 130, h: 30 }, pose: 'sweep', sfx: 'whooshH' }, true],
+    mula: ['S', 'S2', { name: 'Coice flamejante', startup: 6, active: 5, recovery: 16, dmg: 100, burn: true, launch: 10, hitstun: 21, blockstun: 12, kb: 4, hitbox: { x: 10, y: 40, w: 100, h: 90 }, pose: 'spinKick', sfx: 'fire', fx: 'arc' }, true],
+    papafigo: ['S', 'S2', { name: 'Navalha rápida', startup: 5, active: 4, recovery: 14, dmg: 85, steal: 0.3, hitstun: 19, blockstun: 11, kb: 5, hitbox: { x: 20, y: 60, w: 130, h: 60 }, pose: 'swing', sfx: 'whooshH' }, true],
+    cuia: ['S', 'S2', { name: 'Sacudida do anzol', startup: 7, active: 4, recovery: 16, dmg: 100, hitstun: 20, blockstun: 12, kb: 9, hitbox: { x: 20, y: 60, w: 140, h: 80 }, pose: 'swing', sfx: 'whooshH' }, true]
+  };
+  for (const id in M.FIGHTERS) {
+    const mvs = M.FIGHTERS[id].moves;
+    // deslocamento nos golpes básicos: o corpo acompanha o soco/chute
+    for (const [k, d] of [['L', 1.2], ['H', 1.9], ['cH', 1.1], ['cL', 0.5]]) if (mvs[k] && !mvs[k].move && mvs[k].drift === undefined) mvs[k].drift = d;
+    // cancelamentos padrão (também valem na defesa)
+    if (mvs.L && !mvs.L.cancel) mvs.L.cancel = ['L', 'H', 'S'];
+    if (mvs.cL && !mvs.cL.cancel) mvs.cL.cancel = ['H', 'S'];
+    for (const k of ['H', 'cH', 'fH']) if (mvs[k] && !mvs[k].cancel) mvs[k].cancel = ['S'];
+    for (const k of ['S', 'dS', 'fS']) if (mvs[k] && !mvs[k].cancel) mvs[k].cancel = [];
+    // string de três golpes: L > L2 > L3 (finalizador cancelável em especial)
+    const st = STRINGS[id], L = mvs.L;
+    if (st && L) {
+      const hb = L.hitbox, base = { type: 'mid', kb: 3, hitstun: 18, blockstun: 9, chip: 0, sfx: 'whoosh' };
+      mvs.L2 = Object.assign({}, base, { id: 'L2', name: st[0], startup: Math.max(3, L.startup - 1), active: 3, recovery: 9, dmg: Math.round(L.dmg * 1.2), hitstun: 18, blockstun: 9, kb: 3, hitbox: { x: hb.x + 4, y: Math.max(20, hb.y - 8), w: hb.w + 8, h: hb.h + 6 }, pose: st[1], drift: 1.5, chain: 'L3', cancel: ['L', 'H', 'S'] });
+      mvs.L3 = Object.assign({}, base, { id: 'L3', name: st[2], startup: L.startup + 1, active: 4, recovery: 15, dmg: Math.round(L.dmg * 2.1), hitstun: 22, blockstun: 12, kb: 6.5, knockdown: true, hitbox: { x: hb.x + 6, y: Math.max(30, hb.y - 24), w: hb.w + 26, h: 76 }, pose: st[3], move: [{ f: 1, t: 8, vx: 3 }], cancel: ['S'], sfx: 'whooshH', fx: 'arc' });
+      L.chain = 'L2';
+    }
+    // segundo golpe do especial (aperte o especial de novo)
+    const fo = FOLLOW[id];
+    if (fo && mvs[fo[0]]) { mvs[fo[1]] = mv(Object.assign({ id: fo[1] }, fo[2])); mvs[fo[0]].follow = fo[1]; if (fo[3]) mvs[fo[0]].followAny = true; }
+  }
+
   M.ROSTER = ['zeca', 'bia', 'mare', 'tiao', 'bene', 'juvenal', 'vinicius', 'fulozinha', 'mula', 'papafigo', 'cuia', 'cinzas'];
   for (const id in M.FIGHTERS) {
     const f = M.FIGHTERS[id];

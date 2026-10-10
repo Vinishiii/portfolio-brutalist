@@ -52,6 +52,9 @@ Variações: agachado + golpe (baixo), frente + forte (comando), dash + forte (g
 - **Arreda**: esquiva com invencibilidade. Perfeita = câmera lenta, muita Energia e um **Contra-ataque** garantido no próximo golpe.
 - **Agarrão** universal (H ou J+K) quebra defesa. **Escapar** de um combo de 3+ golpes custa 30% de Energia.
 - **Fôlego**: K+L gasta 25% de Energia por um especial reforçado (dano, armadura, projétil duplo).
+- **Strings**: leve ▸ leve ▸ leve vira um combo de três golpes próprio de cada lutador (o terceiro derruba e cancela em especial). Golpes cancelam também na defesa.
+- **Sequência do especial**: apertar especial de novo logo após o primeiro golpe dá um segundo golpe exclusivo (Rodopio ▸ Chute de arremate, Aboio ▸ Boiada...).
+- **Cancelar na Peia, arremate e canto**: qualquer golpe que conectar pode cancelar na Peia; o último golpe da Peia é um arremate em câmera lenta; no canto, golpes fortes encurralam (+10% de dano). Golpes fortes fazem o corpo quicar no chão; peso do corpo e hitstop proporcionais ao golpe.
 - **Mobilidade**: corrida, dash aéreo, super pulo, pulo na parede e rolamento ao levantar.
 - **No Compasso**: acertar na batida da zabumba dobra a Energia. Bené Sanfona toca para alargar sua própria janela.
 - **Versus CPU** — você contra a máquina, escolhendo o adversário e a dificuldade.
