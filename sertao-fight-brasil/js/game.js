@@ -59,7 +59,7 @@ M.Match = class Match {
     this.camTarget = null; this.cam.zoom = 1; this.cam.x = M.W / 2; this.cam.y = M.H / 2;
     for (const f of this.fighters) if (f.mods.regen && this.round > 1) f.hp = Math.min(f.maxHp, f.hp + f.maxHp * f.mods.regen);
     for (const f of this.fighters) if (f.ai) { f.ai.timer = 0; f.ai.intent = 'wait'; }
-    M.audio.music.setMode(this.phase2 ? 'boss2' : this.boss ? 'boss' : 'fight');
+    M.audio.music.setMode(this.phase2 ? 'boss2' : this.boss ? 'boss' : 'fight', this.stage.id);
     M.audio.crowd(0.5);
     if (this.tutorial) { this.p2.ai = M.AI.make(this.o.difficulty || 'brabo', this.p2.def); this.p2.ai.p.aggro *= 0.8; this.p2.ai.p.superUse *= 0.5; }
   }
@@ -154,7 +154,7 @@ M.Match = class Match {
     if (t === 24) this.bigText = { text: 'CAIU!', t: 0, life: 80, size: 84, color: M.C.red };
     if (t === 130) {
       const w = this.roundWinner;
-      if (this.wins[w.side - 1] >= this.winsNeeded) { this.phase = 'end'; this.phaseT = 0; w.state = 'win'; w.t = 0; this.bigText = { text: 'VENCEU A RINHA', t: 0, life: 150, size: 54, color: M.C.yellow }; M.audio.play('win'); this.camTarget = { zoom: 1.15, x: w.x, y: w.y - 80 }; this.camT = 400; M.audio.music.setMode(this.mode === 'story' && w === this.p1 ? 'ending' : 'menu'); }
+      if (this.wins[w.side - 1] >= this.winsNeeded) { this.phase = 'end'; this.phaseT = 0; w.state = 'win'; w.t = 0; M.audio.voice('win', w.def.id, w.x); this.bigText = { text: 'VENCEU A RINHA', t: 0, life: 150, size: 54, color: M.C.yellow }; M.audio.play('win'); this.camTarget = { zoom: 1.15, x: w.x, y: w.y - 80 }; this.camT = 400; M.audio.music.setMode(this.mode === 'story' && w === this.p1 ? 'ending' : 'menu'); }
       else { this.startRound(); }
     }
   }
@@ -225,7 +225,7 @@ M.Match = class Match {
       def.stats.blocks++;
       this.fx.push({ type: 'star', x: hx, y: hy, r: 16, t: 0, life: 10, n: 6, color: '#2aa9b8' });
       this.spark(hx, hy, 5, '#2aa9b8');
-      M.audio.play('block'); def.hitstop = 3; if (!src) att.hitstop = 3;
+      M.audio.play('block', hx); def.hitstop = 3; if (!src) att.hitstop = 3;
       this.gainAxe(att, 0.012);
       if (this.tutorial && def.side === 1) this.tut.blocks++;
       if (def.hp <= 0) this.ko(def);
@@ -275,7 +275,7 @@ M.Match = class Match {
     this.confetti(hx, hy, heavy ? 14 : 6);
     if (mv.fx === 'fire' || mv.burn) this.embers(hx, hy, 8);
     if (src && (src.kind === 'wave' || src.kind === 'ripple' || src.kind === 'rain' || src.kind === 'pororoca' || src.kind === 'gourd' || src.kind === 'whirl' || src.kind === 'fish')) this.drops(hx, hy, 10);
-    M.audio.play(mv.super ? 'hitS' : heavy ? 'hitH' : 'hitL');
+    M.audio.play(mv.super ? 'hitS' : heavy ? 'hitH' : 'hitL', hx); if (!armor) M.audio.voice(mv.super || heavy || counter ? 'hurtH' : 'hurt', def.def.id, def.x);
     if (mv.burn) { def.burn = 150; this.popup('QUEIMANDO!', def.x, def.y - 200, M.C.orange, 20); }
     if (mv.lag) { def.lag = mv.lag; this.popup(mv.lagText || 'LAG!', def.x, def.y - 200, M.C.cyan, 22); }
     if (mv.steal && !armor) this.leech(att, Math.round(dmg * mv.steal));
@@ -475,7 +475,7 @@ M.Match = class Match {
     if (!timeout) { if (loser.grounded) { loser.grounded = false; loser.vy = -9; } loser.vx = (loser.x < winner.x ? -1 : 1) * 7; }
     winner.hitstop = 0; winner.throwing = null; if (winner.state === 'attack' && winner.move && winner.move.throw) { winner.state = 'idle'; winner.move = null; }
     this.slow = 70; this.slowAcc = 0; this.shake(14);
-    M.audio.play('ko'); M.audio.music.duck(1.6);
+    M.audio.play('ko', loser.x); M.audio.voice('ko', loser.def.id, loser.x); M.audio.music.duck(1.6);
     this.fx.push({ type: 'flash', t: 0, life: 10, color: '#fff8e8', alpha: 0.9 });
     this.camTarget = { zoom: 1.3, x: loser.x, y: loser.y - 80 }; this.camT = 120;
     this.crowdExcite = 1.5; M.audio.cheer(1.5);

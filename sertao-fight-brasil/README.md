@@ -72,6 +72,15 @@ Zeca Ventania, Bia Sombrinha, Maré Bacuri, Tião Sertão, Bené Sanfona, Juvena
 
 Cada lenda tem seu cenário: Mata Branca Encantada, Estrada da Meia-Noite, Beco da Matriz e Delta do Parnaíba.
 
+## Som e música
+
+Tudo sintetizado na hora com Web Audio (nenhum arquivo de áudio):
+
+- **Instrumentos**: zabumba (pele grave e baqueta fina com notas fantasma), triângulo (parciais inarmônicos), ganzá, sanfona (palhetas desafinadas em coro, fole e tremolo), pífano (sopro, vibrato tardio), violão e baixo (corda dedilhada por Karplus-Strong).
+- **Trilha**: 4 compassos com progressão harmônica por cenário (mixolídio, jônio, dórico, menor), tonalidade, andamento e solista próprios (sanfona, pífano ou sintetizador); camadas entram conforme a Energia; versões lenta (menu), lírica (final), pesada (chefe) e acelerada (chefe fase 2). A torcida bate palma no 2 e no 4.
+- **Efeitos em camadas**: cada impacto soma grave, corpo e estalo, com variação de tom a cada golpe; reverb procedural, eco de praça, compressor e panorâmica pela posição do lutador.
+- **Vozes**: grunhidos, gritos de esforço, gritos de dor e nocaute por síntese de formantes, com timbre próprio por lutador; a torcida também grita e aplaude.
+
 ## Estrutura
 
 ```

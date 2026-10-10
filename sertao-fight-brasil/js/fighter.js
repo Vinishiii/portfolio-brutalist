@@ -205,7 +205,8 @@ M.Fighter = class Fighter {
     this.crouching = !!mv.crouch; this.poseFrom = this.pose;
     if (!this.grounded) this.airActs++;
     if (mv.super) { this.stats.supers++; G.superStart(this, mv); }
-    else if (mv.sfx) M.audio.play(mv.sfx);
+    else if (mv.sfx) M.audio.play(mv.sfx, this.x);
+    if (!mv.super && (mv.dmg >= 90 || mv.projectile || mv.launch)) M.audio.voice('kiai', this.def.id, this.x);
     return true;
   }
   updateAttack(G, opp) {
