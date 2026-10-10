@@ -455,7 +455,7 @@ M.ui = (function () {
   function credits() {
     const done = M.store.data.progress.storyDone;
     const epi = (done ? `<h3>O QUE FOI FEITO DE CADA UM</h3><p class="credits epi">${M.STORY.epilogues.map(esc).join('<br>')}</p>` : '') + (Object.keys(M.store.data.progress.bonds || {}).length ? `<h3>LAÇOS DA NOITE</h3><p class="credits epi">${Object.keys(M.store.data.progress.bonds).map(k => esc(M.STORY.bondEpilogues[k] || '')).filter(Boolean).join('<br>')}</p>` : '') + (M.store.data.progress.legendsDone ? `<h3>E DAS LENDAS DA NOITE</h3><p class="credits epi">${M.LEGENDS.epilogues.map(esc).join('<br>')}</p>` : '');
-    show(`<div class="screen center"><div class="panel wide"><div class="stamp">CRÉDITOS</div><p class="credits-author">Criado por <b>Vinícius Andrey</b> — 2026</p>${epi}<p class="credits">${esc(M.STORY.credits).replace(/\n/g, '<br>')}</p><nav><button class="mi back" data-go="back">VOLTAR</button></nav></div></div>`, { onBack: menu, actions: { back: menu } });
+    show(`<div class="screen center"><div class="panel wide"><div class="stamp">CRÉDITOS</div>${epi}<p class="credits">${esc(M.STORY.credits).replace(/\n/g, '<br>')}</p><p class="credits-author">Criado por <b>Vinícius Andrey</b> — 2026</p><nav><button class="mi back" data-go="back">VOLTAR</button></nav></div></div>`, { onBack: menu, actions: { back: menu } });
   }
 
   return { init, show, hide, title, menu, storyStart, cordel, dialogue, camp, versusCard, nightMap, fightReport, patua, choice, results, ending, charselect, pause, options, howto, credits, portrait };
