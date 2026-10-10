@@ -84,6 +84,7 @@ M.ui = (function () {
           <button class="mi" data-go="howto">COMO JOGAR</button>
           <button class="mi" data-go="options">OPÇÕES</button>
           <button class="mi" data-go="credits">CRÉDITOS</button>
+          ${M.platform.desktop ? '<button class="mi" data-go="quit">SAIR DO JOGO</button>' : ''}
         </nav></div>
       <div class="menu-right"><div class="stamp">${free ? 'GUARDIÃO DA BRASA' : 'VILA BRASA, SERTÃO'}</div>
         <p class="pitch">Quem tem <b>Energia</b> manda na rinha.<br>O público é a barra de poder — e ele escolhe quem merece a Peia.</p>
@@ -93,7 +94,7 @@ M.ui = (function () {
       actions: {
         cont: () => M.flow.continueStory(), story: () => storyStart(), legends: () => { if (!legUnlocked) { M.audio.play('uiBack'); return; } if (legCont) legendsMenu(); else storyStart({ title: 'LENDAS DA NOITE', text: 'Quatro assombrações do Nordeste — Fulozinha, Cabeça de Cuia, Mula-sem-Cabeça e Papa-Figo — esperam o novo guardião da Brasa. Garrafada entre as rinhas. Caiu? Levanta e tenta de novo.', pick: dd => M.flow.newLegends(dd) }); }, versus: () => charselect({ players: 2, mode: 'versus' }), cpu: () => charselect({ players: 2, mode: 'cpu' }),
         training: () => charselect({ players: 1, mode: 'training' }), free: () => { if (free) charselect({ players: 1, mode: 'free' }); else M.audio.play('uiBack'); },
-        ach: () => achievements(menu), howto: () => howto(menu), options: () => options(menu), credits: () => credits()
+        ach: () => achievements(menu), howto: () => howto(menu), options: () => options(menu), credits: () => credits(), quit: () => M.platform.quit()
       }
     });
   }

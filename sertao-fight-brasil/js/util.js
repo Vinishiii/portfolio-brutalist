@@ -37,7 +37,9 @@ M.store = {
   key: 'sfb.save.v1',
   data: null,
   load() {
-    try { this.data = JSON.parse(localStorage.getItem(this.key)) || {}; } catch (e) { this.data = {}; }
+    let raw = null;
+    try { if (window.steam && window.steam.loadSave) raw = window.steam.loadSave() || null; } catch (e) { /* ignora */ }
+    try { if (!raw) raw = localStorage.getItem(this.key); this.data = JSON.parse(raw) || {}; } catch (e) { this.data = {}; }
     const d = this.data;
     d.settings = Object.assign({ volume: 0.8, music: true, sfx: true, shake: true, hitboxes: false, difficulty: 'brabo', touch: 'auto', paint: true, post: true, lang: null, speed: 1, reduceFlash: false, quality: 'auto', keys: null }, d.settings || {});
     d.progress = Object.assign({ storyDone: false, endings: [], cinzas: false, bestTime: null, freeBest: null, wins: 0, legendsDone: false, bestGrade: null, bonds: {} }, d.progress || {});
@@ -45,7 +47,11 @@ M.store = {
     d.legends = d.legends || null;
     return d;
   },
-  save() { try { localStorage.setItem(this.key, JSON.stringify(this.data)); } catch (e) { /* sem storage */ } }
+  save() {
+    const txt = JSON.stringify(this.data);
+    try { localStorage.setItem(this.key, txt); } catch (e) { /* sem storage */ }
+    try { if (window.steam && window.steam.writeSave) window.steam.writeSave(txt); } catch (e) { /* ignora */ }
+  }
 };
 
 // Texto com contorno (estilo xilo) no canvas

@@ -6,6 +6,13 @@
 <title>SERTÃO FIGHT BRASIL — A Rinha Nunca Para</title>
 <meta name="description" content="Sertão Fight Brasil: jogo de luta brasileiro em xilogravura. Quem tem energia, manda na rinha. Jogue no navegador: teclado, toque ou controle.">
 <meta name="theme-color" content="#141210">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/favicon.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta property="og:title" content="Sertão Fight Brasil">
+<meta property="og:description" content="Jogo de luta brasileiro em xilogravura. A rinha nunca para.">
+<meta property="og:image" content="store/key-art-1920x1080.png">
 <link rel="preload" href="fonts/AlfaSlabOne-Regular.ttf" as="font" type="font/ttf" crossorigin>
 <link rel="preload" href="fonts/SpecialElite-Regular.ttf" as="font" type="font/ttf" crossorigin>
 <link rel="stylesheet" href="css/style.css">
@@ -57,5 +64,6 @@
 <script src="js/ui.js"></script>
 <script src="js/paint.js"></script>
 <script src="js/main.js"></script>
+<script>if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !window.steam) navigator.serviceWorker.register("sw.js").catch(function () {});</script>
 </body>
 </html>

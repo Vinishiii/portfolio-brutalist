@@ -1,0 +1,36 @@
+{
+  "name": "sertao-fight-brasil",
+  "productName": "Sertão Fight Brasil",
+  "version": "1.5.0",
+  "description": "Jogo de luta brasileiro em xilogravura — A Rinha Nunca Para.",
+  "author": "Vinícius Andrey",
+  "license": "UNLICENSED",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win",
+    "dist:mac": "electron-builder --mac",
+    "dist:linux": "electron-builder --linux"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "optionalDependencies": {
+    "steamworks.js": "^0.4.0"
+  },
+  "build": {
+    "appId": "br.com.sertaofight.app",
+    "productName": "Sertão Fight Brasil",
+    "directories": { "output": "dist" },
+    "files": ["main.js", "preload.js", "package.json"],
+    "extraResources": [
+      { "from": "..", "to": "game", "filter": ["index.html", "manifest.webmanifest", "css/**", "js/**", "fonts/**", "icons/**"] }
+    ],
+    "asarUnpack": ["node_modules/steamworks.js/**"],
+    "win": { "target": ["dir", "zip"], "icon": "../icons/icon-512.png" },
+    "mac": { "target": ["dir", "zip"], "icon": "../icons/icon-512.png", "category": "public.app-category.games" },
+    "linux": { "target": ["dir", "tar.gz"], "icon": "../icons/icon-512.png", "category": "Game" }
+  }
+}

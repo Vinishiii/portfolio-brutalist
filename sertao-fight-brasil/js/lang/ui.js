@@ -394,6 +394,7 @@ M.i18n.add([
   ['Termine as Lendas da Noite.', 'Finish the Legends of the Night.', 'Termina las Leyendas de la Noche.'],
   ['Rinha Inteira', 'The Whole Brawl', 'Riña Entera'],
   ['Vença a Rinha Livre completa.', 'Win the complete Free Brawl.', 'Gana la Riña Libre completa.'],
+  ['SAIR DO JOGO', 'QUIT GAME', 'SALIR DEL JUEGO'],
   ['CONQUISTA DESBLOQUEADA', 'ACHIEVEMENT UNLOCKED', 'LOGRO DESBLOQUEADO'],
   ['CONQUISTAS', 'ACHIEVEMENTS', 'LOGROS'],
   ['JOGO', 'GAME', 'JUEGO'], ['ÁUDIO', 'AUDIO', 'AUDIO'], ['VÍDEO', 'VIDEO', 'VÍDEO'], ['ACESSIBILIDADE', 'ACCESSIBILITY', 'ACCESIBILIDAD'], ['DADOS', 'DATA', 'DATOS'],

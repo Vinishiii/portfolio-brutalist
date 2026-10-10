@@ -20,8 +20,8 @@ M.i18n = (function () {
   function pat(re, en, es) { PATS.push([re, { en, es: es === undefined ? en : es }]); }
 
   function detect() {
-    const n = ((navigator.languages && navigator.languages[0]) || navigator.language || 'pt').toLowerCase();
-    return n.startsWith('pt') ? 'pt' : n.startsWith('es') ? 'es' : 'en';
+    const n = String((window.steam && window.steam.locale) || (navigator.languages && navigator.languages[0]) || navigator.language || 'pt').toLowerCase();
+    return (n.startsWith('pt') || n.includes('brazil') || n.includes('portug')) ? 'pt' : (n.startsWith('es') || n.includes('span') || n.includes('latam')) ? 'es' : 'en';
   }
   function tr(s) {
     if (lang === 'pt' || typeof s !== 'string' || s.length === 0) return s;
