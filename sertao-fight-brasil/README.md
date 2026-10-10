@@ -35,6 +35,8 @@ Funciona em desktop (teclado ou gamepad) e no celular (controles de toque, melho
 | Fôlego (EX) | K + L | Num 2 + Num 3 |
 | Pausa | ESC | ESC |
 
+As teclas são **remapeáveis** em Opções ▸ CONTROLES (TECLAS). Com controle (padrão Xbox), os menus navegam pelo direcional e a luta usa A/B/X/Y e gatilhos; Start pausa.
+
 Variações: agachado + golpe (baixo), frente + forte (comando), dash + forte (golpe corrido), golpes no ar, agachado + especial. Lançadores aceitam pulo-cancel para combos aéreos.
 
 ## Modos
@@ -75,6 +77,23 @@ Zeca Ventania, Bia Sombrinha, Maré Bacuri, Tião Sertão, Bené Sanfona, Juvena
 
 Cada lenda tem seu cenário: Mata Branca Encantada, Estrada da Meia-Noite, Beco da Matriz e Delta do Parnaíba.
 
+## Idiomas
+
+**Português (Brasil), English e Español** — interface, diálogos, cordéis, nomes de golpes, tutorial e conquistas. O idioma inicial segue o do sistema/Steam; troque na tela inicial ou em Opções. O português é a fonte de verdade: `js/i18n.js` traduz na hora de exibir usando os pacotes de `js/lang/` (linhas `[pt, en, es]`). `index.html?lang=en` força um idioma na sessão; `M.i18n.misses` no console lista textos ainda sem tradução.
+
+## Conquistas e opções
+
+- **26 conquistas** (primeira vitória, combos, esquivas perfeitas, finais, nota S, nível Lendário...), com aviso na tela e integração com a Steam (`ACH_<ID>`, ver `STEAM.md`).
+- Opções: volume, música/efeitos, tremor de tela, idioma, **velocidade do jogo**, **reduzir flashes**, **qualidade** (auto / alta / baixa), estilo visual (Pintura / Xilogravura), controles de toque e remapeamento de teclas.
+- **Qualidade automática**: se os quadros caem, o jogo desliga primeiro o pós-processamento e depois a camada de pintura.
+- Fontes embutidas (funciona offline), salvamento automático (arquivo no desktop, `localStorage` no navegador).
+
+## Publicação
+
+- **Web / itch.io**: `python3 tools/build_web.py` gera `sw.js` (cache offline, jogo instalável como PWA) e `dist/sertao-fight-brasil-web.zip`.
+- **Desktop / Steam**: `desktop/` é um app Electron com ponte para a Steamworks (conquistas, idioma e Steam Cloud). Passo a passo, AppID, depots, Auto-Cloud e checklist em **[STEAM.md](STEAM.md)**.
+- **Página da loja** (PT/EN/ES) em `store/STORE_PAGE.md` e arte pronta em `store/` (capsules, hero, logo, capturas de tela), gerada do próprio jogo por `tools/make_assets.js`.
+
 ## Som e música
 
 Tudo sintetizado na hora com Web Audio (nenhum arquivo de áudio):
@@ -90,7 +109,7 @@ Tudo sintetizado na hora com Web Audio (nenhum arquivo de áudio):
 sertao-fight-brasil/
   index.html
   css/style.css        interface (menus, diálogos, toque)
-  js/util.js           utilitários, paleta, salvamento
+  js/util.js           utilitários, paleta, salvamento, versão
   js/audio.js          síntese: zabumba, atabaque, pandeiro, agogô, efeitos, torcida
   js/input.js          teclado, toque, gamepad, dash
   js/fighters.js       os doze lutadores: stats, visual, frame data
@@ -102,7 +121,15 @@ sertao-fight-brasil/
   js/game.js           partida: rodadas, Energia, colisões, chefe, tutorial, HUD
   js/story.js          cordéis, diálogos, garrafadas, finais
   js/ui.js             telas em DOM
+  js/i18n.js           tradução PT/EN/ES (dicionário, padrões, DOM)
+  js/lang/*.js         pacotes de tradução [pt, en, es]
+  js/achievements.js   conquistas e ponte com a plataforma (Steam)
+  js/paint.js          camada de pintura e pós-processamento (opcional)
   js/main.js           loop fixo a 60fps e fluxo de modos
+  fonts/               Alfa Slab One e Special Elite (embutidas)
+  desktop/             app Electron + Steamworks
+  tools/               build web (PWA) e gerador de arte de loja
+  store/               arte e textos da página da loja
 ```
 
 ## Camada visual "Pintura" (opcional)

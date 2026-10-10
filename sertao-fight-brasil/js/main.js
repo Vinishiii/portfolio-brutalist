@@ -307,7 +307,9 @@
   function boot() {
     M.store.load();
     if (!M.store.data.settings.lang) { M.store.data.settings.lang = M.i18n.detect(); M.store.save(); }
-    M.i18n.set(M.store.data.settings.lang);
+    // ?lang=en|es|pt força o idioma só nesta sessão (útil para testar traduções)
+    const qLang = (new URLSearchParams(location.search).get('lang') || '').slice(0, 2).toLowerCase();
+    M.i18n.set(M.i18n.LANGS.some(x => x[0] === qLang) ? qLang : M.store.data.settings.lang);
     M.input.applyKeys(M.store.data.settings.keys);
     const s = M.store.data.settings; M.audio.A.settings.volume = s.volume; M.audio.A.settings.music = s.music; M.audio.A.settings.sfx = s.sfx;
     M.ui.init();

@@ -27,7 +27,8 @@ if (process.platform === 'linux') app.commandLine.appendSwitch('no-sandbox');
 
 let win = null;
 function steamLang() {
-  try { const l = steam && steam.localplayer && steam.localplayer.getLanguage ? steam.localplayer.getLanguage() : null; if (l) return l; } catch (e) { /* ignora */ }
+  // idioma escolhido nas propriedades do jogo na Steam: 'brazilian', 'english', 'spanish', 'latam'...
+  try { const l = steam && steam.apps && steam.apps.currentGameLanguage ? steam.apps.currentGameLanguage() : null; if (l) return l; } catch (e) { /* ignora */ }
   return app.getLocale();
 }
 function createWindow() {
