@@ -82,7 +82,7 @@
       } else if (sel.mode === 'training') {
         flow.startMatch({ mode: 'training', p1: { id: sel.p1, ctrl: 'human' }, p2: { id: sel.p2, ctrl: 'dummy' }, stage: sel.stage, rounds: 99, timer: 0, difficulty: diff, dummy: 'stand', onEnd: () => M.ui.menu() });
       } else if (sel.mode === 'free') {
-        flow.free = { p1: sel.p1, order: M.shuffle(M.ROSTER.filter(id => id !== sel.p1 && id !== 'cinzas')).concat(['cinzas']), idx: 0, patuas: [], frames: 0, deaths: 0, difficulty: diff };
+        flow.free = { p1: sel.p1, order: M.shuffle(M.ROSTER.filter(id => id !== sel.p1 && id !== 'cinzas')).slice(0, 7).concat(['cinzas']), idx: 0, patuas: [], frames: 0, deaths: 0, difficulty: diff };
         flow.freeFight();
       }
     },
@@ -166,6 +166,57 @@
       ambient = makeAmbient(id === 'acender' ? 'ladeira' : 'cinzas', ['zeca', 'cinzas']);
       if (id === 'acender') ambient.crowdExcite = 1.2;
       M.ui.ending(id, { frames: S.frames, patuas: S.patuas, deaths: S.deaths, difficulty: S.difficulty }, () => M.ui.menu());
+    },
+    // ---- lendas da noite (segundo arco) ----
+    legends: null,
+    newLegends(diff) {
+      M.store.data.settings.difficulty = diff; M.store.save();
+      flow.legends = { idx: 0, patuas: [], difficulty: diff, frames: 0, deaths: 0, fightDeaths: {} };
+      flow.saveLegends(); M.match = null;
+      M.audio.music.setMode('menu');
+      M.ui.cordel(M.LEGENDS.intro, 'LENDAS DA NOITE', () => flow.legendsFight());
+    },
+    continueLegends() {
+      const s = M.store.data.legends; if (!s) return flow.newLegends('brabo');
+      flow.legends = { idx: s.idx, patuas: s.patuas || [], difficulty: s.difficulty || 'brabo', frames: s.frames || 0, deaths: s.deaths || 0, fightDeaths: s.fightDeaths || {} };
+      flow.legendsFight();
+    },
+    saveLegends() { const s = flow.legends; M.store.data.legends = { idx: s.idx, patuas: s.patuas, difficulty: s.difficulty, frames: s.frames, deaths: s.deaths, fightDeaths: s.fightDeaths || {} }; M.store.save(); },
+    legendsFight() {
+      const S = flow.legends; const F = M.LEGENDS.fights[S.idx];
+      if (!F) return flow.legendsEnding();
+      M.match = null; ambient = makeAmbient(F.stage, ['zeca', F.opp]);
+      M.state = 'story';
+      const pre = (S.fightDeaths[S.idx] > 0 && F.retry) ? [{ who: F.opp, text: F.retry }].concat(F.pre.slice(1)) : F.pre;
+      M.ui.dialogue(pre, F.title, () => {
+        flow.startMatch({ mode: 'story', p1: { id: 'zeca', ctrl: 'human', patuas: S.patuas }, p2: { id: F.opp, ctrl: 'cpu' }, stage: F.stage, rounds: 2, timer: 99, difficulty: S.difficulty, onEnd: r => flow.legendsEnd(r) });
+      });
+    },
+    legendsEnd(r) {
+      const S = flow.legends; const F = M.LEGENDS.fights[S.idx]; S.frames += r.frames; M.state = 'results';
+      if (r.winnerSide !== 1) {
+        S.deaths++; S.fightDeaths[S.idx] = (S.fightDeaths[S.idx] || 0) + 1; flow.saveLegends();
+        M.ui.results({ result: r, defeat: true, buttons: [{ id: 'retry', label: 'LEVANTAR E TENTAR DE NOVO', fn: () => flow.legendsFight() }, { id: 'menu', label: 'VOLTAR AO MENU', fn: () => M.ui.menu() }] });
+        return;
+      }
+      M.ui.dialogue(F.post, F.title, () => {
+        const inter = M.LEGENDS.interludes[S.idx];
+        S.idx++; flow.saveLegends();
+        const next = () => {
+          if (F.patua && S.idx < M.LEGENDS.fights.length) {
+            const opts = M.shuffle(M.PATUAS.filter(p => !S.patuas.includes(p.id))).slice(0, 2);
+            M.ui.patua(opts, p => { S.patuas.push(p.id); flow.saveLegends(); flow.legendsFight(); });
+          } else flow.legendsFight();
+        };
+        if (inter) M.ui.cordel(inter.pages, inter.title, next); else next();
+      });
+    },
+    legendsEnding() {
+      const S = flow.legends; const p = M.store.data.progress;
+      p.legendsDone = true; p.wins++; M.store.data.legends = null; M.store.save();
+      M.audio.music.setMode('ending');
+      ambient = makeAmbient('mata', ['zeca', 'fulozinha']);
+      M.ui.ending('lendas', { frames: S.frames, patuas: S.patuas, deaths: S.deaths, difficulty: S.difficulty }, () => M.ui.menu());
     },
     // ---- toque ----
     updateTouch() {

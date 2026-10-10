@@ -274,10 +274,12 @@ M.Match = class Match {
     if (heavy) this.fx.push({ type: 'lines', x: hx, y: hy, r: 60, t: 0, life: 12, rot: Math.random() * Math.PI });
     this.confetti(hx, hy, heavy ? 14 : 6);
     if (mv.fx === 'fire' || mv.burn) this.embers(hx, hy, 8);
-    if (src && (src.kind === 'wave' || src.kind === 'ripple' || src.kind === 'rain' || src.kind === 'pororoca')) this.drops(hx, hy, 10);
+    if (src && (src.kind === 'wave' || src.kind === 'ripple' || src.kind === 'rain' || src.kind === 'pororoca' || src.kind === 'gourd' || src.kind === 'whirl' || src.kind === 'fish')) this.drops(hx, hy, 10);
     M.audio.play(mv.super ? 'hitS' : heavy ? 'hitH' : 'hitL');
     if (mv.burn) { def.burn = 150; this.popup('QUEIMANDO!', def.x, def.y - 200, M.C.orange, 20); }
-    if (mv.lag) { def.lag = mv.lag; this.popup('LAG!', def.x, def.y - 200, M.C.cyan, 22); }
+    if (mv.lag) { def.lag = mv.lag; this.popup(mv.lagText || 'LAG!', def.x, def.y - 200, M.C.cyan, 22); }
+    if (mv.steal && !armor) this.leech(att, Math.round(dmg * mv.steal));
+    if (mv.pull && !armor && !def.invuln) this.pull(att, def, mv, src, facing);
     if (mv.drainAxe) this.gainAxe(att, mv.drainAxe, 'ROUBOU A ENERGIA!');
     let gain = 0.035 + dmg / 1000 * 0.3;
     const same = att.recent.filter(id => id === mv.id).length; gain *= 1 / (1 + same * 0.8);
@@ -348,6 +350,7 @@ M.Match = class Match {
     const dmg = Math.round(mv.dmg * att.mods.dmg * (att.exMove ? 1.35 : 1));
     def.hp -= dmg; def.lastHurt = this.frame;
     this.popup('-' + dmg, def.x, def.y - 150, M.C.yellow, 22);
+    if (mv.steal) this.leech(att, Math.round(dmg * mv.steal));
     att.stats.dmg += dmg; att.stats.hits++; att.stats.landed[mv.id] = (att.stats.landed[mv.id] || 0) + 1;
     att.combo = 1; att.comboDmg = dmg; att.comboShow = 70; def.flash = 5;
     this.shake(7); this.fx.push({ type: 'star', x: def.x, y: def.y - 60, r: 40, t: 0, life: 14, n: 10, color: '#fff8e8' }); this.confetti(def.x, def.y - 60, 12); M.audio.play('hitH');
@@ -372,13 +375,13 @@ M.Match = class Match {
     const p = mv.projectile;
     this.projectiles.push({ owner: f, mv, kind: p.kind, x: f.x + f.facing * 50, y: f.y - p.y - p.h / 2, vx: p.vx * f.facing * (f.exMove ? 1.15 : 1), vy: p.vy || 0, w: p.w * (f.exMove ? 1.3 : 1), h: p.h * (f.exMove ? 1.3 : 1), dir: f.facing, life: p.life, age: 0, hits: (p.hits || 1) + (f.exMove && !mv.super ? 1 : 0), hitCount: 0, lastHit: -99, interval: p.hitInterval || 8, dead: false, dodged: false, ex: !!f.exMove });
     M.audio.play('projectile');
-    if (p.kind === 'ember') this.embers(f.x + f.facing * 50, f.y - p.y, 6);
+    if (p.kind === 'ember' || p.kind === 'bluefire') this.embers(f.x + f.facing * 50, f.y - p.y, 6);
   }
   updateProjectiles() {
     for (const pr of this.projectiles) {
       pr.age++;
       if (pr.kind === 'boomerang') { if (pr.age === Math.floor(pr.life / 2)) { pr.vx = -pr.vx; pr.dir = -pr.dir; } if (pr.age > pr.life / 2 + 6 && Math.abs(pr.x - pr.owner.x) < 30) { pr.dead = true; continue; } }
-      if (pr.kind === 'net') pr.vy += (pr.mv.projectile.gravity || 0);
+      if (pr.mv.projectile.gravity) pr.vy += pr.mv.projectile.gravity;
       if (pr.kind === 'snake' && pr.age === (pr.mv.projectile.rise || 999)) { pr.vy = -4.2; pr.vx *= 0.8; }
       pr.x += pr.vx; pr.y += pr.vy; pr.life--;
       if (pr.vy > 0 && pr.y + pr.h / 2 >= M.GROUND) { pr.dead = true; if (pr.kind === 'rain') this.drops(pr.x, M.GROUND, 8); else this.embers(pr.x, M.GROUND - 10, 6); }
@@ -424,6 +427,20 @@ M.Match = class Match {
     this.dust(f); this.fx.push({ type: 'dust', x: oldX, y: f.y, t: 0, life: 16, color: '#fff8e8' }); this.fx.push({ type: 'ring', x: f.x, y: f.y - 80, r: 70, t: 0, life: 14, color: f.def.colors.accent });
     if (mv.teleport.back) this.popup('ROLLBACK', f.x, f.y - 200, M.C.cyan, 18);
     M.audio.play('dodge');
+  }
+  leech(f, n) {
+    if (n <= 0 || f.hp >= f.maxHp) return;
+    f.hp = Math.min(f.maxHp, f.hp + n); this.popup('+' + n + ' SUGOU', f.x, f.y - 215, M.C.red, 20);
+    for (let i = 0; i < 6; i++) this.particles.push({ x: this.other(f).x + (Math.random() - 0.5) * 30, y: this.other(f).y - 60 - Math.random() * 70, vx: (f.x - this.other(f).x) * 0.03, vy: -0.5, life: 26, max: 26, size: 4, color: '#c8371d', type: 'confetti', rot: 0, vr: 0.1 });
+  }
+  pull(att, def, mv, src, facing) {
+    // fisga o oponente: anzol puxa até 'pull' px do dono; redemoinho puxa até o centro do projétil
+    const tx = mv.pullProj && src ? src.x : att.x + facing * mv.pull;
+    const far = Math.abs(def.x - tx) > 14;
+    if (!far) return;
+    def.x = M.clamp(mv.pullProj ? def.x + (tx - def.x) * 0.55 : tx, 44, M.W - 44);
+    this.popup(mv.pullProj ? 'SUGADO!' : 'FISGADO!', def.x, def.y - 205, M.C.cyan, 22);
+    this.fx.push({ type: 'dust', x: def.x, y: def.y, t: 0, life: 14, color: '#fff8e8' });
   }
   heal(f, n) {
     if (f.hp >= f.maxHp) { this.popup('SEM BUGS', f.x, f.y - 200, '#8d8a84', 16); return; }

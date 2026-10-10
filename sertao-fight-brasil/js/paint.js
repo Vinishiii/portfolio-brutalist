@@ -24,6 +24,10 @@ M.paint = (function () {
     terreiro: { key: '#ffc070', rim: '#ffe8b0', fill: '#a05030', fog: '#c47a4a', fogA: 0.2, haze: 0.16, rays: 0.3, warm: [1.08, 0.99, 0.88], cool: [0.95, 0.9, 0.95], sat: 1.1, con: 1.07, vig: 0.5, bloom: 0.35, grain: 0.045, ink: 0.32 },
     pantanal: { key: '#ffa040', rim: '#ffd080', fill: '#2a6aa0', fog: '#0f2a45', fogA: 0.45, haze: 0.3, rays: 0.4, warm: [1.05, 0.96, 0.9], cool: [0.85, 0.95, 1.15], sat: 1.1, con: 1.1, vig: 0.6, bloom: 0.5, grain: 0.055, ink: 0.35 },
     galpao:   { key: '#40c8d8', rim: '#c7267a', fill: '#2040a0', fog: '#101a33', fogA: 0.4, haze: 0.2, rays: 0.2, warm: [1.0, 0.98, 1.05], cool: [0.85, 0.95, 1.2], sat: 1.15, con: 1.12, vig: 0.6, bloom: 0.6, grain: 0.05, ink: 0.3 },
+    mata:     { key: '#a8ffd0', rim: '#e0ffe8', fill: '#1a6a5a', fog: '#0a2a22', fogA: 0.5, haze: 0.3, rays: 0.45, warm: [0.96, 1.04, 0.94], cool: [0.82, 1.0, 1.1], sat: 1.12, con: 1.1, vig: 0.62, bloom: 0.55, grain: 0.055, ink: 0.34 },
+    estrada:  { key: '#d0b8ff', rim: '#f0e0ff', fill: '#3a2a8a', fog: '#1a1038', fogA: 0.5, haze: 0.3, rays: 0.3, warm: [1.02, 0.94, 1.06], cool: [0.84, 0.88, 1.18], sat: 1.12, con: 1.12, vig: 0.65, bloom: 0.55, grain: 0.055, ink: 0.36 },
+    beco:     { key: '#ffc070', rim: '#ffe0a0', fill: '#6a3a7a', fog: '#2a1a30', fogA: 0.42, haze: 0.26, rays: 0.28, warm: [1.08, 0.96, 0.9], cool: [0.88, 0.88, 1.08], sat: 1.05, con: 1.12, vig: 0.62, bloom: 0.45, grain: 0.06, ink: 0.4 },
+    parnaiba: { key: '#b0f0e0', rim: '#e0fff4', fill: '#2a6a8a', fog: '#0f3038', fogA: 0.42, haze: 0.3, rays: 0.4, warm: [1.0, 1.02, 0.96], cool: [0.84, 1.0, 1.14], sat: 1.1, con: 1.08, vig: 0.58, bloom: 0.5, grain: 0.05, ink: 0.33 },
     cinzas:   { key: '#ff9040', rim: '#ffc080', fill: '#5a5a70', fog: '#4a4744', fogA: 0.5, haze: 0.35, rays: 0.25, warm: [1.04, 0.98, 0.94], cool: [0.9, 0.9, 0.98], sat: 0.85, con: 1.12, vig: 0.65, bloom: 0.4, grain: 0.07, ink: 0.4 }
   };
   const profileOf = st => PROFILES[st && st.id] || PROFILES.porto;

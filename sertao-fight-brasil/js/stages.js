@@ -269,6 +269,99 @@ M.stages = (function () {
         if (Math.floor(st / 7) % 23 === 0) { ctx.fillStyle = 'rgba(199,38,122,0.08)'; ctx.fillRect(0, 0, W, 420); }
       }
     },
+    mata: {
+      name: 'Mata Branca Encantada', sub: 'Onde a Fulozinha assobia', palette: ['#0f2018', '#142a1e', '#0b1812'], music: 'fight', firePos: [480, 400], fireLevel: 0.55, dustColor: '#4a6a3a',
+      build(ctx, rnd) {
+        sky(ctx, '#050d14', '#0e2a2a', '#1c4a3a'); stars(ctx, rnd, 70, 0.7); moon(ctx, 760, 100, 50, '#dff2e0');
+        // serra distante e camadas de mata
+        ctx.fillStyle = '#0a1c1a'; ctx.beginPath(); ctx.moveTo(0, 300); ctx.quadraticCurveTo(220, 200, 430, 290); ctx.quadraticCurveTo(650, 210, W, 300); ctx.lineTo(W, 340); ctx.lineTo(0, 340); ctx.closePath(); ctx.fill();
+        for (const [col, base, n, hh] of [['#0c2a20', 350, 9, 190], ['#103626', 390, 8, 230]]) {
+          for (let i = 0; i < n; i++) {
+            const x = (i + 0.3 + rnd() * 0.4) * W / n, h = hh * (0.7 + rnd() * 0.4), w = 22 + rnd() * 16;
+            ctx.fillStyle = '#2a1c12'; ctx.fillRect(x - w / 2, base - h, w, h); ctx.strokeStyle = INK; ctx.lineWidth = 3; ctx.strokeRect(x - w / 2, base - h, w, h);
+            ctx.fillStyle = col; for (let k = 0; k < 5; k++) { ctx.beginPath(); ctx.arc(x + (rnd() - 0.5) * 90, base - h + (rnd() - 0.4) * 40, 34 + rnd() * 26, 0, Math.PI * 2); ctx.fill(); }
+            ctx.strokeStyle = '#0a1c14'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(x - w / 2, base - h * 0.6); ctx.quadraticCurveTo(x - 40, base - h * 0.5, x - 55, base - h * 0.2); ctx.stroke();
+          }
+        }
+        // cipós pendentes
+        ctx.strokeStyle = '#1f5a34'; ctx.lineWidth = 4; for (let i = 0; i < 12; i++) { const x = rnd() * W; ctx.beginPath(); ctx.moveTo(x, 0); ctx.quadraticCurveTo(x + (rnd() - 0.5) * 50, 100 + rnd() * 70, x + (rnd() - 0.5) * 30, 150 + rnd() * 110); ctx.stroke(); }
+        // trilha com tocos e cogumelos
+        ground(ctx, '#3a2c1c', INK, c => { c.fillStyle = '#4a3a24'; for (let i = 0; i < 26; i++) { c.beginPath(); c.ellipse(rnd() * W, G + 10 + rnd() * 70, 12 + rnd() * 18, 3.5, 0, 0, Math.PI * 2); c.fill(); } c.fillStyle = '#2f6b3a'; for (let i = 0; i < 40; i++) { const x = rnd() * W, y = G + 4 + rnd() * 80; c.beginPath(); c.moveTo(x, y); c.lineTo(x + 3, y - 12 - rnd() * 8); c.lineTo(x + 7, y); c.fill(); } });
+      },
+      dyn(ctx, st) {
+        ctx.save();
+        for (let i = 0; i < 22; i++) { const x = (i * 83 + Math.sin(st * 0.012 + i) * 40 + 40) % W, y = 150 + (i * 47) % 230 + Math.cos(st * 0.015 + i * 1.3) * 22; const a = 0.4 + 0.55 * Math.max(0, Math.sin(st * 0.05 + i * 2.1)); ctx.globalAlpha = a; ctx.fillStyle = '#d9ff7a'; ctx.shadowColor = '#d9ff7a'; ctx.shadowBlur = 12; ctx.beginPath(); ctx.arc(x, y, 2.4, 0, Math.PI * 2); ctx.fill(); }
+        ctx.shadowBlur = 0; ctx.globalAlpha = 0.14; ctx.fillStyle = '#bfe9d0'; for (let i = 0; i < 4; i++) { const x = ((st * 0.25 * (1 + i * 0.2)) + i * 260) % (W + 200) - 100; ctx.beginPath(); ctx.ellipse(x, 360 + i * 8, 140, 20, 0, 0, Math.PI * 2); ctx.fill(); }
+        ctx.restore();
+      }
+    },
+    estrada: {
+      name: 'Estrada da Meia-Noite', sub: 'Quinta pra sexta, a ferradura soa', palette: ['#1a1230', '#221840', '#120d24'], music: 'fight', firePos: [480, 400], fireLevel: 0.5, dust: true, dustColor: '#7a6a8a',
+      build(ctx, rnd) {
+        sky(ctx, '#05030f', '#1a1038', '#3a2060'); stars(ctx, rnd, 120); moon(ctx, 220, 120, 70, '#f0e8ff');
+        ctx.fillStyle = 'rgba(255,255,255,0.08)'; ctx.beginPath(); ctx.arc(220, 120, 110, 0, Math.PI * 2); ctx.fill();
+        // serra e capela abandonada
+        ctx.fillStyle = '#0c0818'; ctx.beginPath(); ctx.moveTo(0, 320); for (let x = 0; x <= W; x += 60) ctx.lineTo(x, 270 + Math.sin(x * 0.011) * 40 + rnd() * 16); ctx.lineTo(W, 330); ctx.lineTo(0, 330); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#17102a'; ctx.fillRect(660, 250, 110, 100); ctx.strokeStyle = INK; ctx.lineWidth = 3; ctx.strokeRect(660, 250, 110, 100);
+        ctx.beginPath(); ctx.moveTo(650, 250); ctx.lineTo(715, 200); ctx.lineTo(780, 250); ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#e8712b'; ctx.globalAlpha = 0.8; ctx.fillRect(702, 280, 26, 40); ctx.globalAlpha = 1;
+        ctx.strokeStyle = '#d9c27a'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(715, 196); ctx.lineTo(715, 172); ctx.moveTo(705, 182); ctx.lineTo(725, 182); ctx.stroke();
+        // mandacarus e cerca de arame
+        for (let i = 0; i < 6; i++) cactus(ctx, 40 + i * 175 + rnd() * 60, 405, 60 + rnd() * 80, '#1b3a30');
+        ctx.strokeStyle = '#0a0612'; ctx.lineWidth = 3; for (let i = 0; i < 10; i++) { const x = 20 + i * 100; ctx.beginPath(); ctx.moveTo(x, 410); ctx.lineTo(x, 340); ctx.stroke(); }
+        ctx.lineWidth = 1.5; for (const y of [352, 370, 388]) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+        // estrada de terra com marcas de ferradura
+        ground(ctx, '#4a3a4a', INK, c => { c.strokeStyle = '#6a5a6a'; c.lineWidth = 3; for (let i = 0; i < 9; i++) { const x = 60 + i * 105 + rnd() * 20, y = G + 24 + (i % 3) * 22; c.beginPath(); c.arc(x, y, 8, Math.PI * 0.15, Math.PI * 0.85, true); c.stroke(); } c.fillStyle = '#3a2c3a'; for (let i = 0; i < 24; i++) { c.beginPath(); c.ellipse(rnd() * W, G + 10 + rnd() * 70, 12 + rnd() * 18, 3.5, 0, 0, Math.PI * 2); c.fill(); } });
+      },
+      dyn(ctx, st) {
+        ctx.save(); ctx.globalAlpha = 0.18; ctx.fillStyle = '#b8a8d8'; for (let i = 0; i < 5; i++) { const x = ((st * 0.5 * (1 + i * 0.25)) + i * 220) % (W + 160) - 80; ctx.beginPath(); ctx.ellipse(x, 372 + i * 8, 90, 11, 0, 0, Math.PI * 2); ctx.fill(); }
+        ctx.globalAlpha = 0.5 + 0.2 * Math.sin(st * 0.12); ctx.fillStyle = '#4aa3ff'; ctx.shadowColor = '#4aa3ff'; ctx.shadowBlur = 14; for (let i = 0; i < 3; i++) { const x = 520 + i * 140 + Math.sin(st * 0.02 + i) * 18, y = 330 - Math.abs(Math.sin(st * 0.035 + i * 2)) * 30; ctx.beginPath(); ctx.ellipse(x, y, 4, 9, 0, 0, Math.PI * 2); ctx.fill(); }
+        ctx.restore();
+      }
+    },
+    beco: {
+      name: 'Beco da Matriz', sub: 'Depois do Ângelus, ninguém passa', palette: ['#241a1e', '#2e2024', '#1a1216'], music: 'fight', firePos: [480, 400], fireLevel: 0.45, dustColor: '#8a7a6a',
+      build(ctx, rnd) {
+        sky(ctx, '#0a0810', '#1c1424', '#3a2030'); stars(ctx, rnd, 40, 0.5);
+        // sobrados coloniais enfileirados
+        const cols = ['#5a3a2e', '#6b4a38', '#44343c', '#5b3d4a', '#3e3a2e'];
+        let x = -20; while (x < W) { const w = 100 + rnd() * 60, h = 170 + rnd() * 90; const c = cols[Math.floor(rnd() * cols.length)];
+          ctx.fillStyle = c; ctx.fillRect(x, 400 - h, w, h); ctx.strokeStyle = INK; ctx.lineWidth = 3; ctx.strokeRect(x, 400 - h, w, h);
+          ctx.fillStyle = '#2a1a1e'; ctx.beginPath(); ctx.moveTo(x - 4, 400 - h); ctx.lineTo(x + w / 2, 400 - h - 26); ctx.lineTo(x + w + 4, 400 - h); ctx.closePath(); ctx.fill(); ctx.stroke();
+          for (let r = 0; r < 2; r++) for (let k = 0; k < Math.max(1, Math.floor(w / 40)); k++) { const wx = x + 12 + k * 38, wy = 400 - h + 20 + r * 62; ctx.fillStyle = '#0b0810'; ctx.fillRect(wx, wy, 20, 36); ctx.beginPath(); ctx.arc(wx + 10, wy, 10, Math.PI, 0); ctx.fill(); if (rnd() < 0.35) { ctx.fillStyle = 'rgba(242,183,12,0.75)'; ctx.fillRect(wx + 2, wy + 4, 16, 28); } ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.strokeRect(wx, wy, 20, 36); }
+          x += w + 4; }
+        // poste de gás e igreja ao fundo
+        ctx.fillStyle = '#0c0812'; ctx.fillRect(884, 190, 8, 220); ctx.fillRect(876, 186, 24, 10);
+        ctx.fillStyle = '#d9c27a'; ctx.globalAlpha = 0.9; ctx.fillRect(879, 196, 18, 22); ctx.globalAlpha = 1; ctx.strokeStyle = INK; ctx.strokeRect(879, 196, 18, 22);
+        ground(ctx, '#5a4a4e', INK, c => { c.strokeStyle = '#3d3034'; c.lineWidth = 2; for (let i = 0; i < 60; i++) { c.beginPath(); c.arc(i * 24 + 12, G + 14 + (i % 3) * 20, 11, 0, Math.PI * 2); c.stroke(); } });
+      },
+      dyn(ctx, st) {
+        const g = ctx.createRadialGradient(888, 210, 6, 888, 220, 190); g.addColorStop(0, 'rgba(242,200,100,0.35)'); g.addColorStop(1, 'rgba(242,200,100,0)'); ctx.fillStyle = g; ctx.fillRect(660, 0, 300, 420);
+        ctx.save(); ctx.globalAlpha = 0.16; ctx.fillStyle = '#c8bcc8'; for (let i = 0; i < 4; i++) { const x = ((st * 0.35 * (1 + i * 0.3)) + i * 280) % (W + 200) - 100; ctx.beginPath(); ctx.ellipse(x, 380 + i * 10, 120, 14, 0, 0, Math.PI * 2); ctx.fill(); } ctx.restore();
+        // morcego
+        ctx.strokeStyle = '#0c0812'; ctx.lineWidth = 3; const bx = (st * 1.1) % (W + 80) - 40, by = 90 + Math.sin(st * 0.04) * 30, f = Math.sin(st * 0.3) * 6; ctx.beginPath(); ctx.moveTo(bx - 14, by - f); ctx.quadraticCurveTo(bx - 6, by - 8, bx, by); ctx.quadraticCurveTo(bx + 6, by - 8, bx + 14, by - f); ctx.stroke();
+      }
+    },
+    parnaiba: {
+      name: 'Delta do Parnaíba', sub: 'O rio devolve tudo, menos o que perdeu', palette: ['#10222a', '#15303a', '#0b1a22'], music: 'fight', firePos: [480, 400], fireLevel: 0.55, fireflies: true, dustColor: '#7aa6a0',
+      build(ctx, rnd) {
+        sky(ctx, '#071018', '#123a48', '#3a7a7a'); stars(ctx, rnd, 60, 0.6); moon(ctx, 700, 110, 48, '#e6f4ee');
+        // manguezal e dunas ao longe
+        ctx.fillStyle = '#0c2a2a'; ctx.beginPath(); ctx.moveTo(0, 300); for (let x = 0; x <= W; x += 40) ctx.lineTo(x, 290 + Math.sin(x * 0.03) * 12); ctx.lineTo(W, 330); ctx.lineTo(0, 330); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#1c5a6a'; ctx.fillRect(0, 320, W, 110);
+        ctx.strokeStyle = '#08181a'; ctx.lineWidth = 5; for (let i = 0; i < 13; i++) { const x = 30 + i * 74 + rnd() * 30, y = 330 + rnd() * 20, h = 50 + rnd() * 50; ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo(x - 14, y - h * 0.5, x - 8, y - h); ctx.moveTo(x, y); ctx.quadraticCurveTo(x + 16, y - h * 0.5, x + 10, y - h * 0.9); ctx.stroke(); ctx.fillStyle = '#134a34'; ctx.beginPath(); ctx.arc(x, y - h, 20 + rnd() * 12, 0, Math.PI * 2); ctx.fill(); }
+        // canoa e lampião do pescador
+        ctx.fillStyle = '#3a2416'; ctx.beginPath(); ctx.moveTo(110, 392); ctx.quadraticCurveTo(160, 420, 250, 392); ctx.lineTo(236, 382); ctx.lineTo(124, 382); ctx.closePath(); ctx.fill(); ctx.strokeStyle = INK; ctx.lineWidth = 3; ctx.stroke();
+        ctx.strokeStyle = '#2a1a10'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(180, 386); ctx.lineTo(180, 320); ctx.stroke(); ctx.fillStyle = '#f2b70c'; ctx.beginPath(); ctx.arc(180, 316, 8, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        ground(ctx, '#7a6a4a', INK, c => { c.fillStyle = '#6a5a3a'; for (let i = 0; i < 40; i++) { c.beginPath(); c.ellipse(rnd() * W, G + 10 + rnd() * 70, 10 + rnd() * 16, 3, 0, 0, Math.PI * 2); c.fill(); } c.strokeStyle = '#a8b8a0'; c.lineWidth = 2; for (let i = 0; i < 14; i++) { const x = rnd() * W, y = G + 6 + rnd() * 70; c.beginPath(); c.moveTo(x, y); c.lineTo(x + 12, y + 2); c.moveTo(x + 4, y); c.lineTo(x + 8, y + 5); c.stroke(); } });
+      },
+      dyn(ctx, st) {
+        ctx.save(); ctx.globalAlpha = 0.5; for (let i = 0; i < 18; i++) { const y = 326 + i * 5; const x = (i * 89 + st * 0.5) % W; ctx.fillStyle = i % 4 === 0 ? '#f2b70c' : '#9fd8d0'; ctx.fillRect(x, y, 26 + Math.sin(st * 0.03 + i) * 12, 2); }
+        const gl = ctx.createRadialGradient(180, 318, 4, 180, 330, 100); gl.addColorStop(0, 'rgba(242,183,12,0.5)'); gl.addColorStop(1, 'rgba(242,183,12,0)'); ctx.globalAlpha = 1; ctx.fillStyle = gl; ctx.fillRect(60, 240, 240, 180);
+        ctx.globalAlpha = 0.16; ctx.fillStyle = '#cfe8e0'; for (let i = 0; i < 4; i++) { const x = ((st * 0.3 * (1 + i * 0.25)) + i * 250) % (W + 200) - 100; ctx.beginPath(); ctx.ellipse(x, 345 + i * 8, 130, 14, 0, 0, Math.PI * 2); ctx.fill(); }
+        ctx.restore();
+      }
+    },
     cinzas: {
       name: 'Praça das Cinzas', sub: 'Onde a Brasa vai morrer', palette: ['#2a2724', '#33302c', '#1f1d1a'], music: 'boss', firePos: [480, 400], ash: true, fireLevel: 0.4, dustColor: '#8d8a84',
       build(ctx, rnd) {
@@ -357,5 +450,5 @@ M.stages = (function () {
     }
   }
 
-  return { DEFS, Stage, bandeirinhas, drawFire, order: ['porto', 'ladeira', 'rio', 'sertao', 'terreiro', 'pantanal', 'galpao', 'cinzas'] };
+  return { DEFS, Stage, bandeirinhas, drawFire, order: ['porto', 'ladeira', 'rio', 'sertao', 'terreiro', 'pantanal', 'galpao', 'mata', 'estrada', 'beco', 'parnaiba', 'cinzas'] };
 })();

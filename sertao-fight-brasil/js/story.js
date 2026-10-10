@@ -194,7 +194,98 @@ M.SPEAKERS = {
   juvenal: { name: 'Juvenal Boitatá', color: '#e8712b' },
   bene: { name: 'Bené Sanfona', color: '#c47a4a' },
   vinicius: { name: 'Vinícius Andrey', color: '#2aa9b8' },
+  fulozinha: { name: 'Comadre Fulozinha', color: '#6fb35a' },
+  mula: { name: 'Mula-sem-Cabeça', color: '#4aa3ff' },
+  papafigo: { name: 'Seu Papa-Figo', color: '#c8371d' },
+  cuia: { name: 'Cabeça de Cuia', color: '#c9993a' },
   lourdes: { name: 'Dona Lourdes (na zabumba)', color: '#1f7a4d' }
 };
 
 Object.assign(M.STORY.endings, M.STORY.endingsExtra);
+
+// ============================================================
+// LENDAS DA NOITE — segundo arco: o folclore do Nordeste acorda
+// ============================================================
+M.LEGENDS = {
+  intro: [
+    'Passou o São João, apagou-se\na festa da Vila Brasa,\nmas a Brasa de Zeca Ventania\nainda deita luz na casa.\nE lá no fundo da noite\numa assombração se abraça.',
+    'Dizem que toda fogueira\nchama quem mora no escuro:\na Fulozinha na mata,\no Cuia lá no rio duro,\na Mula na estrada, o Papa-Figo\nno beco, de olho no muro.',
+    'Quatro lendas do Nordeste\nquerem ver o novo guardião.\nNão é rinha de palco aceso:\né rinha de assombração.\nCuidado, Zeca Ventania.\nA noite não dá perdão.'
+  ],
+  fights: [
+    {
+      opp: 'fulozinha', stage: 'mata', title: 'PRIMEIRA LENDA — A MATA BRANCA', retry: 'Voltou? Então deixa o fumo na raiz e tenta de novo.',
+      pre: [
+        { who: 'fulozinha', text: 'Ouvi o assobio da Brasa lá do fundo da mata. Quem é que acende fogo sem pedir licença?' },
+        { who: 'zeca', text: 'Eu só guardo a festa da cidade, dona. Nunca quis mexer na mata.' },
+        { who: 'fulozinha', text: 'Pois a lenha que acende tua festa nasceu aqui. Deixa o fumo e vence a rinha — ou volta pra casa pelos pés errados.' }
+      ],
+      post: [
+        { who: 'fulozinha', text: 'Sabe assoviar, menino. Raro. A mata te dá licença.' },
+        { who: 'fulozinha', text: 'Mas cuidado com o Cabeça de Cuia lá no Parnaíba. Ele perdeu o que a gente não devolve.' }
+      ],
+      patua: true
+    },
+    {
+      opp: 'cuia', stage: 'parnaiba', title: 'SEGUNDA LENDA — O DELTA', retry: 'O rio devolve tudo. Até quem cai. Tenta outra vez.',
+      pre: [
+        { who: 'cuia', text: 'A fumaça da tua Brasa espantou meu cardume, rapaz. Há três luas que o rio não me devolve nada.' },
+        { who: 'zeca', text: 'Mestre Cinzas nunca teve essa intenção. Eu respondo pela Brasa.' },
+        { who: 'cuia', text: 'Então responde com a rinha. A cuia ri de quem foge.' }
+      ],
+      post: [
+        { who: 'cuia', text: 'Hoje o rio me deu uma boa pesca. A Brasa não é de ninguém — e isso é bom.' },
+        { who: 'cuia', text: 'Segue pela estrada. A Mula já sentiu cheiro de fogo e ela não perdoa quem cheira a fumaça.' }
+      ],
+      patua: true
+    },
+    {
+      opp: 'mula', stage: 'estrada', title: 'TERCEIRA LENDA — A ESTRADA', retry: 'Quinta pra sexta, menino. Sempre. Levanta.',
+      pre: [
+        { who: 'mula', text: 'Ouviu a ferradura? É a última coisa que a maioria escuta.' },
+        { who: 'zeca', text: 'Dona Zefa... a chama no teu pescoço — ela responde à Brasa, não é?' },
+        { who: 'mula', text: 'Responde. Eu corro porque dói parar. Se tu me vencer, quem sabe a noite me deixa sentar um pouco.' }
+      ],
+      post: [
+        { who: 'mula', text: 'Pela primeira vez em muito tempo, eu parei. A estrada é tua, guardião.' },
+        { who: 'mula', text: 'O Papa-Figo está no beco da matriz. Ele já sugou a festa inteira de longe. Se ele te pegar, não foge: dança.' }
+      ],
+      patua: true
+    },
+    {
+      opp: 'papafigo', stage: 'beco', title: 'ÚLTIMA LENDA — O BECO DA MATRIZ', boss: false, retry: 'Quietinho... a ceia ainda não terminou.',
+      pre: [
+        { who: 'papafigo', text: 'A Brasa tem vida demais pra um menino só. Dá pra uma ceia, sabe?' },
+        { who: 'zeca', text: 'O senhor suga a vida do povo. Eu guardo a vida do povo.' },
+        { who: 'papafigo', text: 'Fique quietinho. Vai doer só um pouquinho.' }
+      ],
+      post: [
+        { who: 'papafigo', text: '...Faz tanto tempo que alguém não me vence de pé. O saco ficou vazio.' },
+        { who: 'fulozinha', text: 'A mata te perdoa, Figo. Mas não esquece o fumo.' },
+        { who: 'cuia', text: 'O rio também. Volta pro beco, velho.' },
+        { who: 'mula', text: 'Quinta pra sexta, a gente vigia. Você guarda a festa; a gente guarda a noite.' }
+      ]
+    }
+  ],
+  interludes: {
+    1: { title: 'O RIO LEMBROU', pages: [
+      'O Cuia olhou o Parnaíba\ne o rio, enfim, devolveu\no brilho de um peixe antigo\nque o pescador esqueceu.\nA cuia riu de manhã\no riso que não era seu.' ] },
+    2: { title: 'A ÚLTIMA FERRADURA', pages: [
+      'Dona Zefa sentou na pedra\ne a chama no pescoço dormiu.\nO vento, de tão cansado,\nno mato se desfez e sumiu.\nSó o som de uma ferradura\nno silêncio ainda ouviu.' ] }
+  },
+  epilogues: [
+    'FULOZINHA aceitou fumo novo do povo da Vila — e ensinou os meninos a assoviar para a mata.',
+    'CABEÇA DE CUIA voltou a pescar no Parnaíba. Dizem que a cuia agora ri de verdade.',
+    'MULA-SEM-CABEÇA parou numa noite de quinta. Só uma. A chama dela ainda aquece a estrada.',
+    'SEU PAPA-FIGO ficou no beco, guardando o saco vazio. Agora conta histórias pra criança dormir.'
+  ],
+  ending: {
+    title: 'FINAL: A NOITE TEM GUARDIÃO',
+    unlock: '✦ FULOZINHA • MULA-SEM-CABEÇA • PAPA-FIGO • CABEÇA DE CUIA registrados na Rinha<br>✦ LENDAS DA NOITE concluído',
+    cordel: [
+      'Zeca voltou pra praça\ne a Brasa mal se mexeu.\nAtrás dele quatro sombras,\ncada qual com seu fogueu.\nA noite tinha guardiões\ne a Vila Brasa dormiu.',
+      'A Fulozinha na mata,\no Cuia no rio vigia,\na Mula na estrada, o Figo\nno beco, sem covardia.\nQuem tem medo de assombração\nnunca viu o que ela cria.'
+    ]
+  }
+};
+Object.assign(M.STORY.endings, { lendas: M.LEGENDS.ending });

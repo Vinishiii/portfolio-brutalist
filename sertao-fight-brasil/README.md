@@ -40,6 +40,7 @@ Variações: agachado + golpe (baixo), frente + forte (comando), dash + forte (g
 ## Modos
 
 - **História** — a Rinha do Fogo com Zeca Ventania: tutorial, seis rinhas, garrafadas, chefe em duas fases e dois finais.
+- **Lendas da Noite** — segundo arco, liberado ao terminar a História: quatro rinhas contra o folclore do Nordeste (Fulozinha, Cabeça de Cuia, Mula-sem-Cabeça e Papa-Figo), com cordéis, diálogos, garrafadas e um final próprio.
 
 ## Dinâmica
 
@@ -52,7 +53,20 @@ Variações: agachado + golpe (baixo), frente + forte (comando), dash + forte (g
 - **Versus CPU** — você contra a máquina, escolhendo o adversário e a dificuldade.
 - **Versus 2 jogadores** — dois no mesmo teclado.
 - **Treino** — boneco configurável (parado, defende, pula, CPU).
-- **Rinha Livre** — liberado ao terminar a História: a rinha inteira com qualquer lutador.
+- **Rinha Livre** — liberado ao terminar a História: sete adversários sorteados e o Mestre Cinzas, com qualquer lutador.
+
+## Os doze lutadores
+
+Zeca Ventania, Bia Sombrinha, Maré Bacuri, Tião Sertão, Bené Sanfona, Juvenal Boitatá, Vinícius Andrey e Mestre Cinzas (liberado ao fim da História) — mais quatro lendas do folclore nordestino, jogáveis desde o começo:
+
+| Lenda | Estilo | O que a torna diferente |
+| --- | --- | --- |
+| **Comadre Fulozinha** (PI) | Assobio da mata | Pequena e ágil, pulo duplo. Assobio veloz, armadilha de cipó que prende, fumaça do cachimbo que deixa o rival tonto, chute de pés virados que recua atacando. Peia: *Mata Fechada* (redemoinho de folhas). |
+| **Mula-sem-Cabeça** (CE) | Galope de fogo | Cabeça de chama azul, físico pesado e dash rápido. Coice duplo, Ombrada com armadura, Empinada anti-aéreo, Atropelo em várias batidas, ferradura em chamas no chão. Peia: *Madrugada de Sexta* (escurece a rinha). |
+| **Seu Papa-Figo** (PE) | Saco & navalha | Alto, magro, golpes longos que **roubam vida** (navalhada, estocada, agarrão). Saco arremessado, cantiga de ninar que dá sono, contra-golpe vampírico *Capa Negra*. Peia: *Ceia Maldita*. |
+| **Cabeça de Cuia** (PI) | Anzol & tarrafa | Cabeça de cabaça, zoneador. **Fisgada** puxa o oponente pelo anzol, cuiada d'água em arco, poça do Parnaíba, chuva de peixes, mergulho no rio com invencibilidade. Peia: *Maldição do Parnaíba* (redemoinho que suga). |
+
+Cada lenda tem seu cenário: Mata Branca Encantada, Estrada da Meia-Noite, Beco da Matriz e Delta do Parnaíba.
 
 ## Estrutura
 
@@ -63,10 +77,10 @@ sertao-fight-brasil/
   js/util.js           utilitários, paleta, salvamento
   js/audio.js          síntese: zabumba, atabaque, pandeiro, agogô, efeitos, torcida
   js/input.js          teclado, toque, gamepad, dash
-  js/fighters.js       os oito lutadores: stats, visual, frame data
+  js/fighters.js       os doze lutadores: stats, visual, frame data
   js/poses.js          rig esquelético e poses
   js/render.js         desenho xilogravura, projéteis, efeitos
-  js/stages.js         oito cenários, torcida, fogueira
+  js/stages.js         doze cenários, torcida, fogueira
   js/fighter.js        máquina de estados do lutador
   js/ai.js             IA por intenção e personalidade
   js/game.js           partida: rodadas, Energia, colisões, chefe, tutorial, HUD

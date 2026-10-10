@@ -200,6 +200,115 @@
       }
     },
 
+    fulozinha: {
+      id: 'fulozinha', name: 'Comadre Fulozinha', short: 'Fulozinha', alias: 'A Guardiã da Mata', origin: 'Mata Branca, PI', style: 'Assobio da mata',
+      bio: 'Pequena, de cabelo até o chão e pés que parecem virados pro lado errado. Protege a mata de quem entra sem pedir licença — e mata nenhuma entra na rinha sem ela assoviar primeiro. Gosta de fumo de rolo e detesta mentira.',
+      quote: 'Entrou na minha mata? Deixa o fumo e vai embora.', winQuote: 'Passa de volta, e deixa o fumo.',
+      colors: { skin: '#a8754f', torso: '#2f6b3a', arms: '#a8754f', legs: '#6b4a2a', shoes: '#a8754f', accent: '#d9b34a', hair: '#0f0c0a' },
+      hair: 'long', prop: 'pipe', idle: 'sway', idleOver: { na: [40, 100], fa: [25, 85], torso: 4 }, body: { height: 0.84, build: 0.72 }, details: ['leaves', 'necklace'],
+      stats: { hp: 880, speed: 3.9, jumpV: -14.6, weight: 0.78, dashV: 11.5, airSpeed: 4.4, maxJumps: 2 },
+      superName: 'Mata Fechada', superDesc: 'A mata se fecha: um redemoinho de folhas cortantes varre a rinha.',
+      ai: { zone: 0.3, air: 0.55, grab: 0, rush: 0.6, poke: 0.55 },
+      moves: {
+        L: mv({ id: 'L', name: 'Beliscão de cipó', startup: 3, active: 3, recovery: 8, dmg: 40, hitstun: 18, blockstun: 8, kb: 2, hitbox: { x: 20, y: 80, w: 58, h: 30 }, pose: 'jab', cancel: ['L', 'H', 'S'], sfx: 'whoosh' }),
+        cL: mv({ id: 'cL', name: 'Rasteira de raiz', startup: 4, active: 3, recovery: 9, dmg: 34, type: 'low', crouch: true, hitstun: 17, blockstun: 8, kb: 2, hitbox: { x: 16, y: 0, w: 66, h: 28 }, pose: 'cKick', cancel: ['H', 'S'], sfx: 'whoosh' }),
+        aL: mv({ id: 'aL', name: 'Pé de vento', startup: 4, active: 5, recovery: 7, dmg: 42, type: 'high', air: true, hitstun: 13, kb: 3, hitbox: { x: 10, y: 14, w: 62, h: 46 }, pose: 'airKick', sfx: 'whoosh' }),
+        H: mv({ id: 'H', name: 'Chicote de cabelo', startup: 9, active: 4, recovery: 16, dmg: 92, hitstun: 20, blockstun: 11, kb: 5, hitbox: { x: 18, y: 55, w: 135, h: 60 }, pose: 'swing', cancel: ['S'], sfx: 'whooshH', fx: 'arc' }),
+        cH: mv({ id: 'cH', name: 'Raiz que sobe', startup: 8, active: 5, recovery: 17, dmg: 82, type: 'low', crouch: true, knockdown: true, hitstun: 20, blockstun: 11, kb: 3, hitbox: { x: 24, y: 0, w: 96, h: 30 }, pose: 'sweep', sfx: 'whooshH' }),
+        aH: mv({ id: 'aH', name: 'Cambalhota da mata', startup: 7, active: 7, recovery: 9, dmg: 90, type: 'high', air: true, hitstun: 18, kb: 4, hitbox: { x: -6, y: 0, w: 92, h: 84 }, pose: 'airSpin', spin: [0, 360], sfx: 'whooshH', fx: 'arc' }),
+        fH: mv({ id: 'fH', name: 'Carreira de pé virado', startup: 9, active: 5, recovery: 15, dmg: 88, hitstun: 19, blockstun: 11, kb: 5, hitbox: { x: 20, y: 40, w: 72, h: 66 }, pose: 'lunge', move: [{ f: 2, t: 14, vx: 9.5 }], sfx: 'whooshH' }),
+        S: mv({ id: 'S', name: 'Assobio', startup: 9, active: 1, recovery: 16, dmg: 66, hitstun: 16, blockstun: 10, kb: 4, chip: 6, pose: 'whistle', projectile: { kind: 'whistle', vx: 11, vy: 0, w: 46, h: 46, y: 72, life: 52 }, sfx: 'projectile' }),
+        dS: mv({ id: 'dS', name: 'Armadilha de cipó', startup: 12, active: 1, recovery: 18, dmg: 36, hitstun: 54, blockstun: 10, kb: 0, chip: 0, pose: 'trap', trap: { dist: 150, life: 230, w: 70, h: 52, kind: 'vine' }, sfx: 'whooshH' }),
+        aS: mv({ id: 'aS', name: 'Chuva de folhas', startup: 8, active: 1, recovery: 12, dmg: 52, type: 'high', air: true, hitstun: 15, kb: 3, chip: 5, pose: 'castLow', projectile: { kind: 'leaf', vx: 5.5, vy: 5, w: 48, h: 40, y: 30, life: 70 }, sfx: 'whoosh' }),
+        dH: mv({ id: 'dH', name: 'Voadora de saci-pererê', startup: 6, active: 6, recovery: 13, dmg: 88, launch: 9, hitstun: 20, blockstun: 11, kb: 4, hitbox: { x: 10, y: 35, w: 96, h: 80 }, pose: 'airKick', move: [{ f: 0, t: 12, vx: 9 }], sfx: 'whooshH' }),
+        bH: mv({ id: 'bH', name: 'Pés pra trás', startup: 6, active: 6, recovery: 15, dmg: 74, launch: 9, hitstun: 20, blockstun: 11, kb: 3, invuln: [0, 8], hitbox: { x: 0, y: 40, w: 100, h: 90 }, pose: 'riseKick', move: [{ f: 0, t: 14, vx: -6.5 }], sfx: 'dodge' }),
+        fS: mv({ id: 'fS', name: 'Fumaça do cachimbo', startup: 11, active: 1, recovery: 20, dmg: 22, hitstun: 12, blockstun: 8, kb: 0.6, chip: 2, lag: 130, lagText: 'TONTO!', pose: 'cast', projectile: { kind: 'smoke', vx: 1.7, vy: 0, w: 120, h: 96, y: 8, life: 150, hits: 4, hitInterval: 14 }, sfx: 'whooshH' }),
+        M: mv({ id: 'M', name: 'Mata Fechada', super: true, startup: 20, active: 1, recovery: 28, dmg: 66, hitstun: 22, blockstun: 15, kb: 1.5, chip: 14, launch: 12, invuln: [0, 20], pose: 'superCast', projectile: { kind: 'leafstorm', vx: 5.5, vy: 0, w: 150, h: 170, y: 0, life: 200, hits: 5, hitInterval: 8 }, sfx: 'super' })
+      }
+    },
+
+    mula: {
+      id: 'mula', name: 'Mula-sem-Cabeça', alias: 'Dona Zefa, a Galopeira', origin: 'Estrada de Quixeramobim, CE', style: 'Galope de fogo',
+      bio: 'Toda quinta pra sexta, a estrada ouve o tilintar de ferraduras e vê uma chama no lugar da cabeça. A maldição pesou — e Dona Zefa aprendeu a galopar com ela. Não corre de ninguém: corre por cima.',
+      quote: 'Quando a ferradura soar, já é tarde.', winQuote: 'Quinta pra sexta. Sempre.',
+      colors: { skin: '#8a5a3a', torso: '#5a2a6b', arms: '#8a5a3a', legs: '#3a2a24', shoes: '#241812', accent: '#4aa3ff', hair: '#4aa3ff' },
+      hair: 'fireneck', headless: true, prop: null, idle: 'bounce', idleOver: { torso: 12, nl: [8, 4] }, body: { height: 1.06, build: 1.18 }, details: ['hooves', 'shawl'],
+      stats: { hp: 1020, speed: 3.3, jumpV: -12.6, weight: 1.15, dashV: 11.5, airSpeed: 2.8, maxJumps: 1 },
+      superName: 'Madrugada de Sexta', superDesc: 'Escurece a noite e dispara num galope flamejante através da rinha.',
+      ai: { zone: 0.05, air: 0.1, grab: 0, rush: 0.9, poke: 0.2 },
+      moves: {
+        L: mv({ id: 'L', name: 'Coice curto', startup: 4, active: 3, recovery: 9, dmg: 54, hitstun: 18, blockstun: 9, kb: 3, hitbox: { x: 16, y: 40, w: 76, h: 40 }, pose: 'airKick', cancel: ['L', 'H', 'S'], sfx: 'whoosh' }),
+        cL: mv({ id: 'cL', name: 'Pata baixa', startup: 5, active: 3, recovery: 10, dmg: 46, type: 'low', crouch: true, hitstun: 17, blockstun: 8, kb: 2, hitbox: { x: 16, y: 0, w: 76, h: 30 }, pose: 'cKick', cancel: ['H', 'S'], sfx: 'whoosh' }),
+        aL: mv({ id: 'aL', name: 'Casco no ar', startup: 5, active: 5, recovery: 8, dmg: 56, type: 'high', air: true, hitstun: 14, kb: 3, hitbox: { x: 10, y: 14, w: 72, h: 50 }, pose: 'airKick', sfx: 'whoosh' }),
+        H: mv({ id: 'H', name: 'Coice duplo', startup: 9, active: 9, recovery: 16, dmg: 62, hits: 2, hitInterval: 5, hitstun: 20, blockstun: 12, kb: 6, hitbox: { x: 8, y: 40, w: 118, h: 80 }, pose: 'spinKick', cancel: ['S'], sfx: 'whooshH', fx: 'arc' }),
+        cH: mv({ id: 'cH', name: 'Galope rasteiro', startup: 8, active: 4, recovery: 18, dmg: 96, type: 'low', crouch: true, knockdown: true, hitstun: 20, blockstun: 12, kb: 4, hitbox: { x: 10, y: 0, w: 112, h: 30 }, pose: 'sweep', sfx: 'whooshH' }),
+        aH: mv({ id: 'aH', name: 'Pisada de casco', startup: 8, active: 6, recovery: 11, dmg: 110, type: 'high', air: true, knockdown: true, hitstun: 20, kb: 4, hitbox: { x: -8, y: -10, w: 94, h: 84 }, pose: 'slam', sfx: 'whooshH' }),
+        fH: mv({ id: 'fH', name: 'Ombrada', startup: 12, active: 4, recovery: 18, dmg: 118, hitstun: 22, blockstun: 13, kb: 9, armor: [1, 12], hitbox: { x: 10, y: 50, w: 96, h: 90 }, pose: 'charge', move: [{ f: 5, t: 16, vx: 5 }], sfx: 'whooshH' }),
+        S: mv({ id: 'S', name: 'Bafo de fogo azul', startup: 11, active: 1, recovery: 20, dmg: 78, burn: true, hitstun: 16, blockstun: 10, kb: 4, chip: 7, pose: 'cast', projectile: { kind: 'bluefire', vx: 8, vy: 0, w: 52, h: 52, y: 110, life: 70 }, sfx: 'fire' }),
+        dS: mv({ id: 'dS', name: 'Ferradura em chamas', startup: 12, active: 1, recovery: 20, dmg: 64, launch: 12, hitstun: 20, blockstun: 10, kb: 2, chip: 6, pose: 'trap', trap: { dist: 150, life: 210, w: 72, h: 60, kind: 'horseshoe' }, sfx: 'fire' }),
+        aS: mv({ id: 'aS', name: 'Cometa da estrada', startup: 8, active: 1, recovery: 12, dmg: 66, type: 'high', air: true, burn: true, hitstun: 15, kb: 3, chip: 6, pose: 'castLow', projectile: { kind: 'bluefire', vx: 6, vy: 6, w: 46, h: 46, y: 40, life: 70 }, sfx: 'fire' }),
+        dH: mv({ id: 'dH', name: 'Disparada', startup: 7, active: 6, recovery: 15, dmg: 104, armor: [0, 8], hitstun: 21, blockstun: 12, kb: 8, hitbox: { x: 8, y: 30, w: 108, h: 100 }, pose: 'gallop', move: [{ f: 0, t: 13, vx: 10.5 }], sfx: 'whooshH' }),
+        bH: mv({ id: 'bH', name: 'Empinada', startup: 5, active: 8, recovery: 20, dmg: 92, launch: 14, armor: [3, 12], hitstun: 24, blockstun: 13, kb: 2, hitbox: { x: -10, y: 50, w: 100, h: 130 }, pose: 'rear', sfx: 'whooshH' }),
+        fS: mv({ id: 'fS', name: 'Atropelo', startup: 8, active: 22, recovery: 18, dmg: 40, hits: 3, hitInterval: 7, launch: 10, hitstun: 18, blockstun: 11, kb: 1.5, chip: 6, burn: true, hitbox: { x: 6, y: 20, w: 100, h: 120 }, pose: 'gallop', move: [{ f: 0, t: 30, vx: 8.5 }], sfx: 'fire' }),
+        M: mv({ id: 'M', name: 'Madrugada de Sexta', super: true, startup: 14, active: 40, recovery: 22, dmg: 58, hits: 6, hitInterval: 6, launch: 14, hitstun: 22, blockstun: 15, kb: 1.5, chip: 16, burn: true, dark: true, invuln: [0, 16], hitbox: { x: -10, y: 10, w: 140, h: 150 }, pose: 'gallop', move: [{ f: 6, t: 20, vx: 14 }, { f: 20, t: 54, vx: 4 }], sfx: 'super', fx: 'arc' })
+      }
+    },
+
+    papafigo: {
+      id: 'papafigo', name: 'Seu Papa-Figo', short: 'Papa-Figo', alias: 'O Homem do Saco', origin: 'Beco da Matriz, Recife, PE', style: 'Saco & navalha',
+      bio: 'Alto, magro, de casaco comprido mesmo no calor do sertão. Dizem que anda pelas ruas depois do Ângelus e que ninguém nunca viu o rosto dele inteiro. O saco nas costas nunca está vazio — e o que cabe nele sempre dá pra encher de novo.',
+      quote: 'Fique quietinho. Vai doer só um pouquinho.', winQuote: 'Obrigado pela refeição.',
+      colors: { skin: '#c9a483', torso: '#1a1a22', arms: '#1a1a22', legs: '#26242a', shoes: '#0f0e0d', accent: '#8f1d1d', hair: '#141210' },
+      hair: 'fedora', prop: 'sack', idle: 'stance', idleOver: { torso: 14, head: 6, na: [30, 95], fa: [20, 85] }, body: { height: 1.18, build: 0.72 }, details: ['coat', 'redEyes', 'cuffs'],
+      stats: { hp: 960, speed: 2.8, jumpV: -12.4, weight: 0.9, dashV: 8.5, airSpeed: 2.6, maxJumps: 1 },
+      superName: 'Ceia Maldita', superDesc: 'Uma sequência sombria que suga a vida do oponente a cada golpe.',
+      ai: { zone: 0.35, air: 0.1, grab: 0.55, rush: 0.4, poke: 0.5 },
+      moves: {
+        L: mv({ id: 'L', name: 'Tapa de luva', startup: 5, active: 3, recovery: 10, dmg: 46, hitstun: 18, blockstun: 9, kb: 3, hitbox: { x: 26, y: 100, w: 82, h: 32 }, pose: 'lunge', cancel: ['L', 'H', 'S'], sfx: 'whoosh' }),
+        cL: mv({ id: 'cL', name: 'Chute de sapato', startup: 6, active: 3, recovery: 11, dmg: 40, type: 'low', crouch: true, hitstun: 17, blockstun: 8, kb: 2, hitbox: { x: 18, y: 0, w: 82, h: 30 }, pose: 'cKick', cancel: ['H', 'S'], sfx: 'whoosh' }),
+        aL: mv({ id: 'aL', name: 'Pisada de corvo', startup: 5, active: 5, recovery: 8, dmg: 50, type: 'high', air: true, hitstun: 14, kb: 3, hitbox: { x: 10, y: 18, w: 70, h: 50 }, pose: 'airKick', sfx: 'whoosh' }),
+        H: mv({ id: 'H', name: 'Navalhada', startup: 9, active: 4, recovery: 17, dmg: 100, steal: 0.25, hitstun: 20, blockstun: 12, kb: 5, hitbox: { x: 20, y: 60, w: 125, h: 80 }, pose: 'swing', cancel: ['S'], sfx: 'whooshH', fx: 'arc' }),
+        cH: mv({ id: 'cH', name: 'Bengala rasteira', startup: 9, active: 4, recovery: 19, dmg: 88, type: 'low', crouch: true, knockdown: true, hitstun: 20, blockstun: 12, kb: 4, hitbox: { x: 14, y: 0, w: 130, h: 28 }, pose: 'sweep', sfx: 'whooshH' }),
+        aH: mv({ id: 'aH', name: 'Mergulho da capa', startup: 8, active: 6, recovery: 11, dmg: 98, type: 'high', air: true, knockdown: true, hitstun: 19, kb: 4, hitbox: { x: -8, y: -10, w: 100, h: 84 }, pose: 'overhead', sfx: 'whooshH' }),
+        fH: mv({ id: 'fH', name: 'Estocada', startup: 12, active: 4, recovery: 18, dmg: 104, steal: 0.2, hitstun: 20, blockstun: 12, kb: 6, hitbox: { x: 20, y: 70, w: 138, h: 40 }, pose: 'lunge', move: [{ f: 4, t: 14, vx: 5 }], sfx: 'whooshH' }),
+        S: mv({ id: 'S', name: 'Saco no ar', startup: 12, active: 1, recovery: 22, dmg: 56, steal: 0.6, hitstun: 38, blockstun: 10, kb: 0, chip: 4, pose: 'overhead', projectile: { kind: 'sack', vx: 6, vy: -5.2, w: 64, h: 64, y: 100, life: 80, gravity: 0.22 }, sfx: 'whooshH' }),
+        dS: mv({ id: 'dS', name: 'Pra dentro do saco', startup: 9, active: 5, recovery: 26, dmg: 150, steal: 0.5, throw: { range: 82, hold: 24, vx: 8, vy: 11, drain: 0.1 }, hitstun: 20, pose: 'grab', sfx: 'grab' }),
+        aS: mv({ id: 'aS', name: 'Voo do corvo', startup: 7, active: 10, recovery: 10, dmg: 90, type: 'high', air: true, knockdown: true, steal: 0.2, hitstun: 20, kb: 5, chip: 8, hitbox: { x: 8, y: -4, w: 86, h: 64 }, pose: 'dive', move: [{ f: 0, t: 16, vx: 5.5, vy: 6 }], sfx: 'whooshH' }),
+        dH: mv({ id: 'dH', name: 'Passo de sombra', startup: 8, active: 5, recovery: 14, dmg: 96, hitstun: 20, blockstun: 12, kb: 6, hitbox: { x: 20, y: 60, w: 118, h: 50 }, pose: 'lunge', move: [{ f: 0, t: 12, vx: 7.5 }], sfx: 'whooshH' }),
+        bH: mv({ id: 'bH', name: 'Capa negra', startup: 2, active: 22, recovery: 16, dmg: 0, counter: [2, 24], counterMove: 'bH2', pose: 'cloak', sfx: 'armor' }),
+        bH2: mv({ id: 'bH2', name: 'Sangria', startup: 3, active: 5, recovery: 14, dmg: 130, steal: 0.5, launch: 11, hitstun: 24, blockstun: 12, kb: 7, hitbox: { x: 10, y: 60, w: 110, h: 90 }, pose: 'swing', sfx: 'whooshH' }),
+        fS: mv({ id: 'fS', name: 'Cantiga de ninar', startup: 14, active: 1, recovery: 22, dmg: 24, hitstun: 50, blockstun: 8, kb: 0, chip: 0, lagText: 'SONOLENTO!', lag: 90, pose: 'cast', projectile: { kind: 'lullaby', vx: 3.6, vy: 0, w: 70, h: 70, y: 78, life: 110 }, sfx: 'taunt' }),
+        M: mv({ id: 'M', name: 'Ceia Maldita', super: true, startup: 14, active: 34, recovery: 22, dmg: 64, hits: 5, hitInterval: 7, launch: 13, steal: 0.5, hitstun: 22, blockstun: 15, kb: 1.5, chip: 14, invuln: [0, 16], dark: true, hitbox: { x: 0, y: 20, w: 130, h: 140 }, pose: 'superRush', move: [{ f: 4, t: 14, vx: 11 }, { f: 14, t: 48, vx: 2.5 }], sfx: 'super', fx: 'arc' })
+      }
+    },
+
+    cuia: {
+      id: 'cuia', name: 'Cabeça de Cuia', alias: 'O Pescador Amaldiçoado', origin: 'Rio Parnaíba, PI', style: 'Anzol & tarrafa',
+      bio: 'Pescador do Parnaíba que carrega uma cuia no lugar da cabeça — castigo antigo que o rio nunca explicou. Cada vez que lança o anzol, fisga mais um pedaço do que perdeu. Diz que é só lenda. A cuia ri.',
+      quote: 'O rio devolve tudo. Menos o que eu perdi.', winQuote: 'Hoje o rio me deu uma boa pesca.',
+      colors: { skin: '#8a6a46', torso: '#d8c9a0', arms: '#8a6a46', legs: '#4a5a6a', shoes: '#8a6a46', accent: '#2aa9b8', hair: '#c9993a' },
+      hair: 'gourd', prop: 'rod', idle: 'sway', idleOver: { torso: 8, na: [45, 105], fa: [30, 90] }, body: { height: 1.05, build: 0.92 }, details: ['rope', 'cuffs'],
+      stats: { hp: 1000, speed: 3.0, jumpV: -12.8, weight: 1.0, dashV: 9.5, airSpeed: 3.0, maxJumps: 1 },
+      superName: 'Maldição do Parnaíba', superDesc: 'Um redemoinho que suga o oponente e o mantém girando no rio.',
+      ai: { zone: 0.55, air: 0.2, grab: 0, rush: 0.3, poke: 0.7 },
+      moves: {
+        L: mv({ id: 'L', name: 'Tapa de tarrafa', startup: 5, active: 3, recovery: 10, dmg: 48, hitstun: 18, blockstun: 9, kb: 3, hitbox: { x: 22, y: 92, w: 76, h: 34 }, pose: 'jab', cancel: ['L', 'H', 'S'], sfx: 'whoosh' }),
+        cL: mv({ id: 'cL', name: 'Pé na lama', startup: 6, active: 3, recovery: 10, dmg: 42, type: 'low', crouch: true, hitstun: 17, blockstun: 8, kb: 2, hitbox: { x: 18, y: 0, w: 78, h: 30 }, pose: 'cKick', cancel: ['H', 'S'], sfx: 'whoosh' }),
+        aL: mv({ id: 'aL', name: 'Joelhada de pescador', startup: 5, active: 5, recovery: 8, dmg: 50, type: 'high', air: true, hitstun: 14, kb: 3, hitbox: { x: 10, y: 20, w: 68, h: 50 }, pose: 'airKick', sfx: 'whoosh' }),
+        H: mv({ id: 'H', name: 'Varada', startup: 11, active: 4, recovery: 18, dmg: 108, hitstun: 20, blockstun: 12, kb: 7, hitbox: { x: 22, y: 60, w: 128, h: 80 }, pose: 'swing', cancel: ['S'], sfx: 'whooshH' }),
+        cH: mv({ id: 'cH', name: 'Anzol rasteiro', startup: 9, active: 4, recovery: 20, dmg: 90, type: 'low', crouch: true, knockdown: true, hitstun: 20, blockstun: 12, kb: 4, hitbox: { x: 12, y: 0, w: 132, h: 28 }, pose: 'sweep', sfx: 'whooshH' }),
+        aH: mv({ id: 'aH', name: 'Mergulho de cuia', startup: 8, active: 6, recovery: 11, dmg: 104, type: 'high', air: true, knockdown: true, hitstun: 19, kb: 4, hitbox: { x: -8, y: -10, w: 94, h: 84 }, pose: 'slam', sfx: 'whooshH' }),
+        fH: mv({ id: 'fH', name: 'Cuiada', startup: 12, active: 4, recovery: 18, dmg: 112, type: 'high', hitstun: 21, blockstun: 13, kb: 6, hitbox: { x: 20, y: 90, w: 70, h: 56 }, pose: 'headbutt', move: [{ f: 5, t: 15, vx: 6 }], sfx: 'whooshH' }),
+        S: mv({ id: 'S', name: "Cuiada d'água", startup: 11, active: 1, recovery: 20, dmg: 74, hitstun: 16, blockstun: 10, kb: 4, chip: 7, pose: 'cast', projectile: { kind: 'gourd', vx: 7.5, vy: -3, w: 52, h: 46, y: 96, life: 62, gravity: 0.1 }, sfx: 'water' }),
+        dS: mv({ id: 'dS', name: 'Poça do Parnaíba', startup: 13, active: 1, recovery: 20, dmg: 66, launch: 12, hitstun: 20, blockstun: 10, kb: 2, chip: 6, pose: 'trap', trap: { dist: 150, life: 220, w: 78, h: 54, kind: 'puddle' }, sfx: 'water' }),
+        aS: mv({ id: 'aS', name: 'Chuva de peixes', startup: 8, active: 1, recovery: 12, dmg: 58, type: 'high', air: true, hitstun: 15, kb: 3, chip: 5, pose: 'castLow', projectile: { kind: 'fish', vx: 4.8, vy: 5.5, w: 48, h: 26, y: 30, life: 70 }, sfx: 'water' }),
+        dH: mv({ id: 'dH', name: 'Arrastão', startup: 8, active: 6, recovery: 15, dmg: 92, type: 'low', knockdown: true, crouch: true, hitstun: 20, blockstun: 12, kb: 4, hitbox: { x: 10, y: 0, w: 124, h: 32 }, pose: 'sweep', move: [{ f: 0, t: 13, vx: 7.5 }], sfx: 'whooshH' }),
+        bH: mv({ id: 'bH', name: 'Mergulho no rio', startup: 3, active: 1, recovery: 12, dmg: 0, invuln: [0, 16], move: [{ f: 0, t: 14, vx: -9.5 }], pose: 'dodge', sfx: 'dodge' }),
+        fS: mv({ id: 'fS', name: 'Fisgada', startup: 12, active: 1, recovery: 22, dmg: 34, hitstun: 26, blockstun: 10, kb: 0, chip: 3, pull: 70, pose: 'cast', projectile: { kind: 'hook', vx: 13, vy: 0, w: 40, h: 34, y: 94, life: 54 }, sfx: 'whooshH' }),
+        M: mv({ id: 'M', name: 'Maldição do Parnaíba', super: true, startup: 22, active: 1, recovery: 28, dmg: 66, hitstun: 22, blockstun: 16, kb: 1, chip: 18, launch: 12, pull: 40, pullProj: true, invuln: [0, 22], pose: 'superCast', projectile: { kind: 'whirl', vx: 3.2, vy: 0, w: 130, h: 180, y: 0, life: 210, hits: 5, hitInterval: 10 }, sfx: 'super' })
+      }
+    },
+
     cinzas: {
       id: 'cinzas', name: 'Mestre Cinzas', alias: 'O Último da Rinha Velha', origin: 'Vila Brasa, sertão da BA', style: 'Peia antiga',
       bio: 'Mestre de Zeca e guardião da Rinha do Fogo há trinta anos. Perdeu a esposa, Rosa, num incêndio durante uma rinha. Desde então acredita que toda festa cobra um preço — e decidiu encerrar a conta.',
@@ -228,7 +337,7 @@
     }
   };
 
-  M.ROSTER = ['zeca', 'bia', 'mare', 'tiao', 'bene', 'juvenal', 'vinicius', 'cinzas'];
+  M.ROSTER = ['zeca', 'bia', 'mare', 'tiao', 'bene', 'juvenal', 'vinicius', 'fulozinha', 'mula', 'papafigo', 'cuia', 'cinzas'];
   for (const id in M.FIGHTERS) {
     const f = M.FIGHTERS[id];
     // agarrão universal (J + K juntos ou tecla H)

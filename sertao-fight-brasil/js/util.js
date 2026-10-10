@@ -4,7 +4,7 @@
 // ============================================================
 const M = window.M = window.M || {};
 M.W = 960; M.H = 540; M.GROUND = 452;
-M.VERSION = '1.0';
+M.VERSION = '1.1';
 
 M.clamp = (v, a, b) => v < a ? a : v > b ? b : v;
 M.lerp = (a, b, t) => a + (b - a) * t;
@@ -40,8 +40,9 @@ M.store = {
     try { this.data = JSON.parse(localStorage.getItem(this.key)) || {}; } catch (e) { this.data = {}; }
     const d = this.data;
     d.settings = Object.assign({ volume: 0.8, music: true, sfx: true, shake: true, hitboxes: false, difficulty: 'brabo', touch: 'auto', paint: true, post: true }, d.settings || {});
-    d.progress = Object.assign({ storyDone: false, endings: [], cinzas: false, bestTime: null, freeBest: null, wins: 0 }, d.progress || {});
+    d.progress = Object.assign({ storyDone: false, endings: [], cinzas: false, bestTime: null, freeBest: null, wins: 0, legendsDone: false }, d.progress || {});
     d.story = d.story || null;
+    d.legends = d.legends || null;
     return d;
   },
   save() { try { localStorage.setItem(this.key, JSON.stringify(this.data)); } catch (e) { /* sem storage */ } }

@@ -66,11 +66,13 @@ M.ui = (function () {
     M.state = 'menu'; M.match = null; M.audio.music.setMode('menu');
     const d = M.store.data; const cont = d.story && d.story.idx > 0 && d.story.idx < M.STORY.fights.length;
     const free = d.progress.storyDone;
+    const legUnlocked = d.progress.storyDone; const legCont = legUnlocked && d.legends && d.legends.idx > 0 && d.legends.idx < M.LEGENDS.fights.length;
     show(`<div class="screen menu">
       <div class="menu-left"><div class="logo small"><h1>SERTÃO <em>FIGHT BRASIL</em></h1><span class="logo-sub">A RINHA NUNCA PARA</span></div>
         <nav>
           ${cont ? `<button class="mi" data-go="cont">CONTINUAR HISTÓRIA <small>luta ${d.story.idx + 1}/${M.STORY.fights.length}</small></button>` : ''}
           <button class="mi" data-go="story">${cont ? 'NOVA ' : ''}HISTÓRIA <small>a Rinha do Fogo, com Zeca Ventania</small></button>
+          <button class="mi ${legUnlocked ? '' : 'locked'}" data-go="legends">${legCont ? 'CONTINUAR ' : ''}LENDAS DA NOITE <small>${legUnlocked ? (legCont ? `luta ${d.legends.idx + 1}/${M.LEGENDS.fights.length}` : 'o folclore do Nordeste acorda') : 'vença a História para liberar'}</small></button>
           <button class="mi" data-go="cpu">VERSUS CPU <small>você contra a máquina, escolha o adversário</small></button>
           <button class="mi" data-go="versus">VERSUS 2 JOGADORES <small>dois no mesmo teclado</small></button>
           <button class="mi" data-go="training">TREINO <small>pratique golpes e combos</small></button>
@@ -85,17 +87,24 @@ M.ui = (function () {
       </div>
     </div>`, {
       actions: {
-        cont: () => M.flow.continueStory(), story: () => storyStart(), versus: () => charselect({ players: 2, mode: 'versus' }), cpu: () => charselect({ players: 2, mode: 'cpu' }),
+        cont: () => M.flow.continueStory(), story: () => storyStart(), legends: () => { if (!legUnlocked) { M.audio.play('uiBack'); return; } if (legCont) legendsMenu(); else storyStart({ title: 'LENDAS DA NOITE', text: 'Quatro assombrações do Nordeste — Fulozinha, Cabeça de Cuia, Mula-sem-Cabeça e Papa-Figo — esperam o novo guardião da Brasa. Garrafada entre as rinhas. Caiu? Levanta e tenta de novo.', pick: dd => M.flow.newLegends(dd) }); }, versus: () => charselect({ players: 2, mode: 'versus' }), cpu: () => charselect({ players: 2, mode: 'cpu' }),
         training: () => charselect({ players: 1, mode: 'training' }), free: () => { if (free) charselect({ players: 1, mode: 'free' }); else M.audio.play('uiBack'); },
         howto: () => howto(menu), options: () => options(menu), credits: () => credits()
       }
     });
   }
-  function storyStart() {
+  function legendsMenu() {
+    const d = M.store.data;
+    show(`<div class="screen center"><div class="panel"><h2>LENDAS DA NOITE</h2><p>Luta ${d.legends.idx + 1} de ${M.LEGENDS.fights.length} em andamento.</p><nav>
+      <button class="mi" data-go="cont">CONTINUAR</button><button class="mi" data-go="new">COMEÇAR DE NOVO</button><button class="mi back" data-go="back">VOLTAR</button></nav></div></div>`,
+      { onBack: menu, actions: { cont: () => M.flow.continueLegends(), new: () => storyStart({ title: 'LENDAS DA NOITE', text: 'Recomeçar o arco apaga o progresso atual das Lendas.', pick: dd => M.flow.newLegends(dd) }), back: menu } });
+  }
+  function storyStart(o = {}) {
     const cur = M.store.data.settings.difficulty;
+    const pick = o.pick || (dd => M.flow.newStory(dd));
     show(`<div class="screen center"><div class="panel">
-      <h2>A RINHA DO FOGO</h2>
-      <p>Oito rinhas numa noite. Entre cada vitória você escolhe um <b>garrafada</b>. Caiu? Levanta e tenta de novo.</p>
+      <h2>${esc(o.title || 'A RINHA DO FOGO')}</h2>
+      <p>${esc(o.text || 'Oito rinhas numa noite. Entre cada vitória você escolhe um garrafada. Caiu? Levanta e tenta de novo.')}</p>
       <p class="label">Escolha a dificuldade</p>
       <div class="row">
         <button class="mi diff ${cur === 'novato' ? 'sel' : ''}" data-go="novato">NOVATO<small>CPU lenta, bate fraco e erra mais</small></button>
@@ -105,7 +114,7 @@ M.ui = (function () {
       <button class="mi back" data-go="back">VOLTAR</button>
     </div></div>`, {
       idx: ['novato', 'brabo', 'lendario'].indexOf(cur), onBack: menu,
-      actions: { novato: () => M.flow.newStory('novato'), brabo: () => M.flow.newStory('brabo'), lendario: () => M.flow.newStory('lendario'), back: menu }
+      actions: { novato: () => pick('novato'), brabo: () => pick('brabo'), lendario: () => pick('lendario'), back: menu }
     });
   }
 
@@ -177,8 +186,8 @@ M.ui = (function () {
       show(`<div class="screen center"><div class="panel">
         <div class="stamp">FIM</div><h2>${esc(E.title.replace('FINAL: ', ''))}</h2>
         <div class="stats"><span>Tempo total ${M.fmtTime(stats.frames / 60)}</span><span>Garrafadas ${stats.patuas.length}</span><span>Quedas ${stats.deaths}</span><span>Dificuldade ${diffLabel(stats.difficulty)}</span></div>
-        <p class="unlock">✦ MESTRE CINZAS liberado no Versus e no Treino<br>✦ RINHA LIVRE liberada</p>
-        <p class="tiny">${(() => { const e = M.store.data.progress.endings; return e.length >= 3 ? 'Você viu todos os finais. A Brasa é sua, e de todo mundo.' : e.length === 2 ? 'Os dois caminhos foram vistos. Da próxima vez, a praça abre um terceiro.' : 'Existe outro final. A Brasa ainda tem uma escolha pra você.'; })()}</p>
+        <p class="unlock">${E.unlock || '✦ MESTRE CINZAS liberado no Versus e no Treino<br>✦ RINHA LIVRE liberada<br>✦ LENDAS DA NOITE liberado no menu'}</p>
+        <p class="tiny">${E.unlock ? 'As lendas do Nordeste agora vigiam a noite da Vila Brasa.' : (() => { const e = M.store.data.progress.endings; return e.length >= 3 ? 'Você viu todos os finais. A Brasa é sua, e de todo mundo.' : e.length === 2 ? 'Os dois caminhos foram vistos. Da próxima vez, a praça abre um terceiro.' : 'Existe outro final. A Brasa ainda tem uma escolha pra você.'; })()}</p>
         <nav><button class="mi" data-go="credits">CRÉDITOS</button><button class="mi" data-go="menu">VOLTAR AO MENU</button></nav>
       </div></div>`, { actions: { credits: () => credits(), menu: () => onDone() } });
     }, { skip: false });
@@ -196,7 +205,7 @@ M.ui = (function () {
       <div class="cs-head"><span class="stamp">${modeName}</span><span id="csTurn" class="cs-turn"></span><button class="btn ghost" data-go="back">◂ voltar</button></div>
       <div class="cs-main">
         <div class="cs-info" id="csInfo1"></div>
-        <div class="cs-grid" id="csGrid">${roster.map((id, i) => `<div class="cs-card ${id === 'cinzas' && !unlocked ? 'locked' : ''}" data-i="${i}"><div class="cs-port"></div><div class="cs-name">${id === 'cinzas' && !unlocked ? '???' : esc(M.FIGHTERS[id].name)}</div></div>`).join('')}</div>
+        <div class="cs-grid" id="csGrid">${roster.map((id, i) => `<div class="cs-card ${id === 'cinzas' && !unlocked ? 'locked' : ''}" data-i="${i}"><div class="cs-port"></div><div class="cs-name">${id === 'cinzas' && !unlocked ? '???' : esc(M.FIGHTERS[id].short || M.FIGHTERS[id].name)}</div></div>`).join('')}</div>
         <div class="cs-info right" id="csInfo2"></div>
       </div>
       <div class="cs-foot">
@@ -240,7 +249,7 @@ M.ui = (function () {
       grid.querySelectorAll('.cs-card').forEach((el, i) => { el.classList.toggle('c1', i === sel.p1); el.classList.toggle('c2', o.players === 2 && i === sel.p2 && sel.step === 2 || (o.players === 2 && sel.step === 3 && i === sel.p2)); });
       info(document.getElementById('csInfo1'), sel.p1, 'JOGADOR 1');
       const i2 = document.getElementById('csInfo2');
-      if (o.players === 2) info(i2, sel.p2, o.mode === 'cpu' ? 'ADVERSÁRIO (CPU)' : (sel.step >= 2 ? 'JOGADOR 2' : 'JOGADOR 2 (aguardando)')); else i2.innerHTML = `<div class="cs-label">${o.mode === 'free' ? 'A RINHA INTEIRA' : 'BONECO / CPU'}</div><p>${o.mode === 'free' ? 'Você enfrenta os outros cinco em ordem aleatória e o Mestre por último. Garrafada a cada vitória.' : 'No treino, o oponente começa parado. Pause (ESC) para mudar o comportamento do boneco.'}</p>`;
+      if (o.players === 2) info(i2, sel.p2, o.mode === 'cpu' ? 'ADVERSÁRIO (CPU)' : (sel.step >= 2 ? 'JOGADOR 2' : 'JOGADOR 2 (aguardando)')); else i2.innerHTML = `<div class="cs-label">${o.mode === 'free' ? 'A RINHA INTEIRA' : 'BONECO / CPU'}</div><p>${o.mode === 'free' ? 'Você enfrenta sete adversários sorteados e o Mestre por último. Garrafada a cada vitória.' : 'No treino, o oponente começa parado. Pause (ESC) para mudar o comportamento do boneco.'}</p>`;
       document.getElementById('csTurn').textContent = o.players === 2 ? (sel.step === 1 ? (o.mode === 'cpu' ? 'ESCOLHA SEU LUTADOR' : 'JOGADOR 1 ESCOLHE') : sel.step === 2 ? (o.mode === 'cpu' ? 'ESCOLHA O ADVERSÁRIO (CPU)' : 'JOGADOR 2 ESCOLHE') : 'PRONTO!') : '';
       document.getElementById('csStage').textContent = stages[sel.stage] === 'aleatorio' ? 'Aleatório' : M.stages.DEFS[stages[sel.stage]].name;
       const dEl = document.getElementById('csDiff'); if (dEl) dEl.textContent = diffLabel(M.store.data.settings.difficulty);
@@ -364,7 +373,7 @@ M.ui = (function () {
   }
   function credits() {
     const done = M.store.data.progress.storyDone;
-    const epi = done ? `<h3>O QUE FOI FEITO DE CADA UM</h3><p class="credits epi">${M.STORY.epilogues.map(esc).join('<br>')}</p>` : '';
+    const epi = (done ? `<h3>O QUE FOI FEITO DE CADA UM</h3><p class="credits epi">${M.STORY.epilogues.map(esc).join('<br>')}</p>` : '') + (M.store.data.progress.legendsDone ? `<h3>E DAS LENDAS DA NOITE</h3><p class="credits epi">${M.LEGENDS.epilogues.map(esc).join('<br>')}</p>` : '');
     show(`<div class="screen center"><div class="panel wide"><div class="stamp">CRÉDITOS</div>${epi}<p class="credits">${esc(M.STORY.credits).replace(/\n/g, '<br>')}</p><nav><button class="mi back" data-go="back">VOLTAR</button></nav></div></div>`, { onBack: menu, actions: { back: menu } });
   }
 

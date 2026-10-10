@@ -74,13 +74,13 @@ nav { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
 @keyframes blink { 50% { opacity: .2; } }
 
 /* ---------- menu ---------- */
-.menu { flex-direction: row; padding: 40px 50px; gap: 30px; background: linear-gradient(90deg, rgba(20,18,16,.85), rgba(20,18,16,.35)); }
+.menu { flex-direction: row; padding: 26px 50px; gap: 30px; background: linear-gradient(90deg, rgba(20,18,16,.85), rgba(20,18,16,.35)); }
 .menu-left { flex: 1; }
-.menu-left .logo { text-align: left; margin-bottom: 14px; }
+.menu-left .logo { text-align: left; margin-bottom: 8px; }
 .menu-right { width: 300px; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-end; text-align: right; }
 .pitch { font-size: 15px; line-height: 1.5; text-shadow: 1px 1px 0 var(--ink); }
 .pitch b { color: var(--yellow); }
-.menu nav .mi { padding: 5px 12px; font-size: 19px; }
+.menu nav .mi { padding: 3px 12px; font-size: 18px; white-space: nowrap; }
 
 /* ---------- cordel ---------- */
 .cordel-screen { background: rgba(10,8,10,.6); }
@@ -122,11 +122,11 @@ nav { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
 .cs-info .style { font-family: var(--display); font-size: 11px; letter-spacing: 1px; }
 .cs-info .super { background: rgba(20,18,16,.08); padding: 4px 6px; }
 .cs-label { font-family: var(--display); font-size: 11px; letter-spacing: 2px; color: var(--grey); }
-.cs-grid { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-.cs-card { background: var(--paper); border: 3px solid var(--ink); position: relative; cursor: pointer; display: flex; flex-direction: column; align-items: center; overflow: hidden; height: 158px; transition: transform .1s; }
+.cs-grid { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; align-content: center; }
+.cs-card { background: var(--paper); border: 3px solid var(--ink); position: relative; cursor: pointer; display: flex; flex-direction: column; align-items: center; overflow: hidden; height: 108px; transition: transform .1s; }
 .cs-card .cs-port { flex: 1; display: flex; align-items: flex-end; justify-content: center; width: 100%; background: linear-gradient(var(--yellow), #e09a1a); overflow: hidden; }
-.cs-card .cs-port canvas { height: 112px; width: auto; }
-.cs-card .cs-name { font-family: var(--display); font-size: 12px; color: var(--ink); padding: 4px; width: 100%; text-align: center; background: var(--paper); border-top: 3px solid var(--ink); }
+.cs-card .cs-port canvas { height: 76px; width: auto; }
+.cs-card .cs-name { font-family: var(--display); font-size: 10px; white-space: nowrap; color: var(--ink); padding: 4px; width: 100%; text-align: center; background: var(--paper); border-top: 3px solid var(--ink); }
 .cs-card.locked { filter: grayscale(1) brightness(.6); }
 .cs-card.c1 { outline: 5px solid var(--cyan); outline-offset: -5px; transform: scale(1.04); z-index: 2; }
 .cs-card.c2 { outline: 5px solid var(--magenta); outline-offset: -5px; transform: scale(1.04); }
