@@ -4,6 +4,7 @@
 // ============================================================
 M.ui = (function () {
   let root, current = null, items = [], idx = 0, typing = null;
+  let menuMem = 0; // item do menu principal em foco ao voltar de outra tela
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const KEYS_CONFIRM = ['Enter', 'Space', 'KeyJ', 'Numpad1', 'Comma', 'NumpadEnter'];
   const KEYS_BACK = ['Escape', 'KeyK', 'Backspace', 'Numpad2', 'Period'];
@@ -25,7 +26,7 @@ M.ui = (function () {
   function show(html, o = {}) {
     stopTyping();
     root.innerHTML = html; root.classList.add('active');
-    current = o; items = Array.from(root.querySelectorAll('.mi')); idx = o.idx || 0; focus();
+    current = o; items = Array.from(root.querySelectorAll('.mi')); idx = (o.idx || 0) < items.length ? (o.idx || 0) : 0; focus();
     items.forEach((el, i) => { el.addEventListener('mouseenter', () => { idx = i; focus(); }); el.addEventListener('click', () => M.audio.play('ui')); });
     root.querySelectorAll('[data-go]').forEach(el => el.addEventListener('click', () => { const fn = o.actions && o.actions[el.dataset.go]; if (fn) fn(el); }));
     if (o.onBack && o.showBack !== false) {
@@ -93,12 +94,14 @@ M.ui = (function () {
         ${d.progress.bestTime ? `<p class="tiny">Melhor História: ${M.fmtTime(d.progress.bestTime)}${d.progress.bestGrade ? ' • Nota ' + d.progress.bestGrade : ''} • Finais vistos: ${d.progress.endings.length}/3</p>` : ''}
       </div>
     </div>`, {
+      idx: menuMem,
       actions: {
         cont: () => M.flow.continueStory(), story: () => storyStart(), legends: () => { if (!legUnlocked) { M.audio.play('uiBack'); return; } if (legCont) legendsMenu(); else storyStart({ title: 'LENDAS DA NOITE', text: 'Quatro assombrações do Nordeste — Fulozinha, Cabeça de Cuia, Mula-sem-Cabeça e Papa-Figo — esperam o novo guardião da Brasa. Garrafada entre as rinhas. Caiu? Levanta e tenta de novo.', pick: dd => M.flow.newLegends(dd) }); }, versus: () => charselect({ players: 2, mode: 'versus' }), cpu: () => charselect({ players: 2, mode: 'cpu' }),
         training: () => charselect({ players: 1, mode: 'training' }), free: () => { if (free) charselect({ players: 1, mode: 'free' }); else M.audio.play('uiBack'); },
         ach: () => achievements(menu), howto: () => howto(menu), options: () => options(menu), credits: () => credits(), quit: () => M.platform.quit()
       }
     });
+    if (current && current.actions) for (const k of Object.keys(current.actions)) { const f = current.actions[k]; current.actions[k] = el => { menuMem = idx; return f(el); }; }
   }
   function legendsMenu() {
     const d = M.store.data;
