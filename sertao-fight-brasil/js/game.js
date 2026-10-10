@@ -6,13 +6,13 @@
 M.TUTORIAL = [
   { text: 'SPARRING: o Mestre luta de verdade. Use A / D (ou ← →) para andar e chegue perto dele.', check: G => Math.abs(G.p1.x - G.p2.x) < 170, mestre: 'passive' },
   { text: 'W = pular. Pule duas vezes. (Segure pra frente pra pular por cima dele.)', check: G => G.p1.stats.jumps >= 2, mestre: 'passive' },
-  { text: 'J = golpe leve. Acerte o Mestre 3 vezes. Dica: J, J, K vira uma sequência!', check: G => G.p1.stats.hits >= 3, mestre: 'passive' },
+  { text: 'J = golpe leve. Acerte o Mestre 3 vezes. Dica: J, J, J vira uma string de três golpes!', check: G => G.p1.stats.hits >= 3, mestre: 'passive' },
   { text: 'K = golpe forte. Agachado (S + K) é a RASTEIRA, que derruba. Acerte uma.', check: G => (G.p1.stats.landed.cH || 0) >= 1, mestre: 'passive' },
-  { text: 'L = especial. S + L é o MACACO (anti-aéreo). Acerte 2 especiais.', check: G => ((G.p1.stats.landed.S || 0) + (G.p1.stats.landed.dS || 0) + (G.p1.stats.landed.aS || 0)) >= 2, mestre: 'passive' },
+  { text: 'L = especial. S + L é o ANTI-AÉREO. Acerte 2 especiais.', check: G => ((G.p1.stats.landed.S || 0) + (G.p1.stats.landed.dS || 0) + (G.p1.stats.landed.aS || 0)) >= 2, mestre: 'passive' },
   { text: 'Segure PRA TRÁS para DEFENDER. Agache para bloquear golpes baixos. Defenda 3 golpes.', check: G => G.tut.blocks >= 3, mestre: 'attack' },
   { text: 'H (ou J + K juntos) = AGARRÃO. Quebra a defesa de quem só bloqueia. Agarre o Mestre.', check: G => (G.p1.stats.landed.TH || 0) >= 1, mestre: 'guard' },
   { text: 'ESPAÇO = ARREDA (esquiva). Esquive NO MOMENTO do golpe: ESQUIVA PERFEITA.', check: G => G.tut.perfect >= 1, mestre: 'attack' },
-  { text: 'A barra de ENERGIA é o público. Golpes variados, esquivas e acertos NO COMPASSO do berimbau enchem seu lado. Chegue a 70%.', check: G => G.axe >= 0.7, mestre: 'dummy' },
+  { text: 'A barra de ENERGIA é o público. Golpes variados, esquivas e acertos NO COMPASSO da zabumba enchem seu lado. Chegue a 70%.', check: G => G.axe >= 0.7, mestre: 'dummy' },
   { text: 'U = PEIA! Solte sua técnica máxima.', check: G => G.p1.stats.supers >= 1, mestre: 'passive', holdEnergy: true },
   { text: '"Chega por hoje, menino. A rinha escuta quem escuta a rinha." — Mestre Cinzas', check: G => G.tutT > 30, mestre: 'passive', final: true }
 ];
@@ -271,9 +271,9 @@ M.Match = class Match {
         def.grounded = false; def.vy = -v / Math.sqrt(def.def.stats.weight); def.launched = true; def.t = 60; def.crouching = false;
       }
       if (mv.knockdown) def.kdPending = true;
-      if (cornered) { def.t += 16; def.vx = 0; att.vx = -facing * 1.5; this.popup('ENCURRALADO!', def.x, def.y - 215, M.C.orange, 22); this.fx.push({ type: 'lines', x: def.x, y: def.y - 90, r: 70, t: 0, life: 14, rot: 0.3 }); this.shake(7); }
+      if (cornered) { att.stats.cornered = (att.stats.cornered || 0) + 1; def.t += 16; def.vx = 0; att.vx = -facing * 1.5; this.popup('ENCURRALADO!', def.x, def.y - 215, M.C.orange, 22); this.fx.push({ type: 'lines', x: def.x, y: def.y - 90, r: 70, t: 0, life: 14, rot: 0.3 }); this.shake(7); }
       if (finisher) { def.kdPending = true; if (!mv.launch && def.grounded) { def.grounded = false; def.vy = -9; def.launched = true; def.t = 60; } def.vx = 8 * facing / def.def.stats.weight; }
-      att.combo++; att.comboDmg += dmg; att.comboShow = 70;
+      att.combo++; att.comboDmg += dmg; att.comboShow = 70; att.stats.maxCombo = Math.max(att.stats.maxCombo || 0, att.combo);
     } else { this.popup('ARMADURA!', def.x, def.y - 190, M.C.yellow); M.audio.play('armor'); }
     let stop = mv.super ? 10 : Math.round(3 + Math.min(9, dmg / 20)); if (counter) stop += 2; if (isLastHit && mv.hits > 1) stop += 3;
     def.hitstop = stop; if (!src) att.hitstop = stop;
@@ -300,6 +300,7 @@ M.Match = class Match {
     this.crowdExcite = Math.min(1.5, this.crowdExcite + dmg / 250);
     if (att.combo >= 3 && att.combo % 2 === 1) M.audio.cheer(0.4);
     if (finisher) {
+      if (def.hp <= 0) att.stats.finKO = 1;
       this.camTarget = { zoom: 1.32, x: def.x, y: def.y - 80 }; this.camT = def.hp <= 0 ? 70 : 38; this.slow = Math.max(this.slow, def.hp <= 0 ? 44 : 26); this.slowAcc = 0;
       this.shake(15); this.fx.push({ type: 'flash', t: 0, life: 8, color: '#fff8e8', alpha: 0.75 }); this.fx.push({ type: 'ring', x: hx, y: hy, r: 150, t: 0, life: 22, color: att.def.colors.accent });
       this.popup(def.hp <= 0 ? 'ARREMATE FATAL!' : 'ARREMATE!', def.x, def.y - 225, M.C.magenta, 30); M.audio.cheer(0.9);
@@ -608,7 +609,7 @@ M.Match = class Match {
     ctx.beginPath(); ctx.arc(W / 2, ay + ah / 2, 5, 0, Math.PI * 2); ctx.fillStyle = C.red; ctx.fill();
     M.text(ctx, 'ENERGIA', W / 2, ay - 16, { size: 15, color: C.paper, lw: 3 });
     const favName = this.axe > 0.15 ? this.p1.def.name : this.axe < -0.15 ? this.p2.def.name : null;
-    if (favName) M.text(ctx, 'A RINHA TÁ COM ' + favName.toUpperCase(), this.axe > 0 ? ax0 + 6 : ax0 + aw - 6, ay - 16, { size: 12, align: this.axe > 0 ? 'left' : 'right', color: C.yellow, lw: 2.5 });
+    if (favName) M.text(ctx, 'A RINHA TÁ COM ' + favName.toUpperCase(), this.axe > 0 ? ax0 + 6 : ax0 + aw - 6, ay - 16, { size: 12, align: this.axe > 0 ? 'left' : 'right', color: C.yellow, lw: 2.5, maxW: 255 });
     for (const f of this.fighters) {
       const x = f.side === 1 ? ax0 - 10 : ax0 + aw + 10, al = f.side === 1 ? 'right' : 'left';
       if (this.superReady(f) && this.frame % 30 < 20) { const keyHint = f.ctrl === 'human' ? (f.side === 1 ? ' (U)' : ' (Num5)') : ''; const max = Math.abs(this.axe) >= 0.97; M.text(ctx, (max ? 'PEIA BRABA' : 'PEIA PRONTA') + keyHint, x, ay + 9, { size: 15, align: al, color: max ? C.yellow : C.magenta, lw: 3 }); }
@@ -677,6 +678,7 @@ M.Match = class Match {
 };
 function heavyFlag(mv) { return mv.dmg >= 90 || mv.super; }
 function wrapText(ctx, text, x, y, maxW, size, color) {
+  text = M.tr(text);
   ctx.font = `${size}px ${M.FONT_TEXT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = color;
   const words = text.split(' '); const lines = []; let line = '';
   for (const w of words) { const t = line ? line + ' ' + w : w; if (ctx.measureText(t).width > maxW) { lines.push(line); line = w; } else line = t; }

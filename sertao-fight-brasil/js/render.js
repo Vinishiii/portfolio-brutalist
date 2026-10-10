@@ -761,7 +761,7 @@ M.render = (function () {
         break;
       }
       case 'flash': {
-        ctx.globalAlpha = (1 - k) * (e.alpha || 0.8); ctx.fillStyle = e.color || '#fff8e8'; ctx.fillRect(-100, -100, M.W + 200, M.H + 200);
+        ctx.globalAlpha = (1 - k) * (e.alpha || 0.8) * (M.store.data.settings.reduceFlash ? 0.2 : 1); ctx.fillStyle = e.color || '#fff8e8'; ctx.fillRect(-100, -100, M.W + 200, M.H + 200);
         break;
       }
       case 'text': {

@@ -39,6 +39,7 @@ M.ui = (function () {
   function stopTyping() { if (typing) { clearInterval(typing); typing = null; } }
   function typeInto(el, text, speed, done) {
     stopTyping(); let i = 0; el.innerHTML = '';
+    text = M.tr(text);
     const safe = esc(text).replace(/\n/g, '<br>');
     const chunks = safe.split(/(<br>)/);
     const flat = []; for (const c of chunks) { if (c === '<br>') flat.push('<br>'); else for (const ch of c) flat.push(ch); }
@@ -56,9 +57,11 @@ M.ui = (function () {
     show(`<div class="screen title">
       <div class="logo"><span class="logo-top">A RINHA NUNCA PARA</span><h1>SERTÃO<br><em>FIGHT BRASIL</em></h1><span class="logo-sub">UM JOGO DE LUTA EM XILOGRAVURA</span></div>
       <p class="blink">PRESSIONE QUALQUER TECLA • TOQUE NA TELA</p>
+      <div class="langs">${M.i18n.LANGS.map(([c, n]) => `<button class="lang ${M.i18n.lang === c ? 'on' : ''}" data-lang="${c}" data-notr>${n}</button>`).join('')}</div>
       <p class="tiny">v${M.VERSION} • teclado, toque ou controle</p>
     </div>`, { onKey: () => { M.audio.init(); menu(); return true; } });
-    root.querySelector('.screen').addEventListener('pointerdown', () => { M.audio.init(); menu(); });
+    root.querySelectorAll('.lang').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); M.i18n.set(b.dataset.lang, true); M.audio.play('ui'); title(); }));
+    root.querySelector('.screen').addEventListener('pointerdown', e => { if (e.target.closest('.langs')) return; M.audio.init(); menu(); });
   }
 
   // ---------- MENU ----------
@@ -77,6 +80,7 @@ M.ui = (function () {
           <button class="mi" data-go="versus">VERSUS 2 JOGADORES <small>dois no mesmo teclado</small></button>
           <button class="mi" data-go="training">TREINO <small>pratique golpes e combos</small></button>
           <button class="mi ${free ? '' : 'locked'}" data-go="free">RINHA LIVRE <small>${free ? 'enfrente toda a rinha com qualquer lutador' : 'vença a História para liberar'}</small></button>
+          <button class="mi" data-go="ach">CONQUISTAS <small data-notr>${M.ach.count()}/${M.ach.total}</small></button>
           <button class="mi" data-go="howto">COMO JOGAR</button>
           <button class="mi" data-go="options">OPÇÕES</button>
           <button class="mi" data-go="credits">CRÉDITOS</button>
@@ -89,7 +93,7 @@ M.ui = (function () {
       actions: {
         cont: () => M.flow.continueStory(), story: () => storyStart(), legends: () => { if (!legUnlocked) { M.audio.play('uiBack'); return; } if (legCont) legendsMenu(); else storyStart({ title: 'LENDAS DA NOITE', text: 'Quatro assombrações do Nordeste — Fulozinha, Cabeça de Cuia, Mula-sem-Cabeça e Papa-Figo — esperam o novo guardião da Brasa. Garrafada entre as rinhas. Caiu? Levanta e tenta de novo.', pick: dd => M.flow.newLegends(dd) }); }, versus: () => charselect({ players: 2, mode: 'versus' }), cpu: () => charselect({ players: 2, mode: 'cpu' }),
         training: () => charselect({ players: 1, mode: 'training' }), free: () => { if (free) charselect({ players: 1, mode: 'free' }); else M.audio.play('uiBack'); },
-        howto: () => howto(menu), options: () => options(menu), credits: () => credits()
+        ach: () => achievements(menu), howto: () => howto(menu), options: () => options(menu), credits: () => credits()
       }
     });
   }
@@ -123,7 +127,7 @@ M.ui = (function () {
     let page = 0; let finish = null;
     show(`<div class="screen center cordel-screen"><div class="cordel">
       <div class="cordel-title">${esc(title)}</div>
-      <div class="cordel-text" id="cordelText"></div>
+      <div class="cordel-text" id="cordelText" data-notr></div>
       <div class="cordel-foot"><span id="cordelPg"></span><button class="mi" data-go="next">CONTINUAR ▸</button>${opts.skip !== false ? '<button class="btn ghost" data-go="skip">pular</button>' : ''}</div>
     </div></div>`, { actions: { next: () => next(), skip: () => onDone() }, onKey: e => { if (KEYS_CONFIRM.includes(e.code)) { next(); return true; } return false; } });
     function render() { document.getElementById('cordelPg').textContent = `${page + 1} / ${pages.length}`; finish = typeInto(document.getElementById('cordelText'), pages[page], 28, () => { finish = null; }); }
@@ -137,7 +141,7 @@ M.ui = (function () {
     let i = 0, finish = null, choosing = false;
     show(`<div class="screen dialog-screen">
       <div class="dialog-title">${esc(title || '')}</div>
-      <div class="dialog"><div class="dialog-port" id="dPort"></div><div class="dialog-body"><div class="dialog-name" id="dName"></div><div class="dialog-text" id="dText"></div><div class="dialog-hint">ENTER / TOQUE ▸ <button class="btn ghost" data-go="skip">pular</button></div></div></div>
+      <div class="dialog"><div class="dialog-port" id="dPort"></div><div class="dialog-body"><div class="dialog-name" id="dName"></div><div class="dialog-text" id="dText" data-notr></div><div class="dialog-hint">ENTER / TOQUE ▸ <button class="btn ghost" data-go="skip">pular</button></div></div></div>
     </div>`, { actions: { skip: () => onDone() }, onKey: e => { if (choosing) return false; if (KEYS_CONFIRM.includes(e.code)) { next(); return true; } return false; } });
     root.querySelector('.dialog').addEventListener('pointerdown', e => { if (e.target.closest('button')) return; next(); });
     function render() {
@@ -382,33 +386,93 @@ M.ui = (function () {
   // ---------- OPÇÕES ----------
   function options(onBack) {
     const s = M.store.data.settings;
-    const tog = (k, label) => `<button class="mi tog" data-go="${k}">${label} <b>${s[k] ? 'LIGADO' : 'DESLIGADO'}</b></button>`;
-    show(`<div class="screen center overlay"><div class="panel compact">
+    const onoff = v => (v ? 'LIGADO' : 'DESLIGADO');
+    const tog = (k, label) => `<button class="mi tog" data-go="${k}">${label} <b>${onoff(s[k])}</b></button>`;
+    const SPEEDS = [[0.9, 'LENTO'], [1, 'NORMAL'], [1.15, 'TURBO']], QUAL = { auto: 'AUTO', high: 'ALTA', low: 'BAIXA' };
+    show(`<div class="screen center overlay"><div class="panel opts">
       <div class="stamp">OPÇÕES</div>
-      <label class="slider">VOLUME <input type="range" min="0" max="1" step="0.05" value="${s.volume}" id="vol"></label>
-      <nav>
-        ${tog('music', 'MÚSICA')}${tog('sfx', 'EFEITOS')}${tog('shake', 'TREMOR DE TELA')}${tog('hitboxes', 'MOSTRAR HITBOXES')}
-        <button class="mi" data-go="paint">ESTILO VISUAL <b>${s.paint ? 'PINTURA' : 'XILOGRAVURA'}</b></button>
-        <button class="mi" data-go="post">PÓS-PROCESSAMENTO <b>${s.post ? 'LIGADO' : 'DESLIGADO'}</b></button>
-        <button class="mi" data-go="touch">CONTROLES DE TOQUE <b>${{ auto: 'AUTO', on: 'SEMPRE', off: 'NUNCA' }[s.touch]}</b></button>
-        <button class="mi" data-go="diff">DIFICULDADE (CPU) <b>${diffLabel(s.difficulty).toUpperCase()}</b></button>
-        <button class="mi" data-go="reset">APAGAR PROGRESSO</button>
-        <button class="mi back" data-go="back">VOLTAR</button>
-      </nav>
+      <div class="opts-cols">
+        <div class="opts-col">
+          <h4>JOGO</h4>
+          <button class="mi" data-go="lang">IDIOMA <b data-notr>${M.i18n.name()}</b></button>
+          <button class="mi" data-go="diff">DIFICULDADE (CPU) <b>${diffLabel(s.difficulty).toUpperCase()}</b></button>
+          <button class="mi" data-go="speed">VELOCIDADE DO JOGO <b>${(SPEEDS.find(x => x[0] === s.speed) || SPEEDS[1])[1]}</b></button>
+          <button class="mi" data-go="controls">CONTROLES (TECLAS)</button>
+          <button class="mi" data-go="touch">CONTROLES DE TOQUE <b>${{ auto: 'AUTO', on: 'SEMPRE', off: 'NUNCA' }[s.touch]}</b></button>
+          ${tog('hitboxes', 'MOSTRAR HITBOXES')}
+          <h4>ÁUDIO</h4>
+          <label class="slider">VOLUME <input type="range" min="0" max="1" step="0.05" value="${s.volume}" id="vol"></label>
+          ${tog('music', 'MÚSICA')}${tog('sfx', 'EFEITOS')}
+        </div>
+        <div class="opts-col">
+          <h4>VÍDEO</h4>
+          <button class="mi" data-go="paint">ESTILO VISUAL <b>${s.paint ? 'PINTURA' : 'XILOGRAVURA'}</b></button>
+          <button class="mi" data-go="post">PÓS-PROCESSAMENTO <b>${onoff(s.post)}</b></button>
+          <button class="mi" data-go="quality">QUALIDADE GRÁFICA <b>${QUAL[s.quality || 'auto']}</b></button>
+          <button class="mi" data-go="fullscreen">TELA CHEIA <b>${document.fullscreenElement ? 'LIGADO' : 'DESLIGADO'}</b></button>
+          <h4>ACESSIBILIDADE</h4>
+          ${tog('shake', 'TREMOR DE TELA')}${tog('reduceFlash', 'REDUZIR FLASHES')}
+          <h4>DADOS</h4>
+          <button class="mi" data-go="reset">APAGAR PROGRESSO</button>
+          <button class="mi back" data-go="back">VOLTAR</button>
+        </div>
+      </div>
     </div></div>`, {
       onBack, idx: 0,
       actions: {
         music: () => { s.music = !s.music; save(); }, sfx: () => { s.sfx = !s.sfx; save(); }, shake: () => { s.shake = !s.shake; save(); }, hitboxes: () => { s.hitboxes = !s.hitboxes; save(); },
+        reduceFlash: () => { s.reduceFlash = !s.reduceFlash; save(); M.paint.apply(); },
         touch: () => { s.touch = { auto: 'on', on: 'off', off: 'auto' }[s.touch]; save(); M.flow.updateTouch(); },
         paint: () => { s.paint = !s.paint; save(); M.paint.apply(); }, post: () => { s.post = !s.post; save(); M.paint.apply(); },
+        quality: () => { s.quality = { auto: 'high', high: 'low', low: 'auto' }[s.quality || 'auto']; M.paint.P.autoLow = false; save(); M.paint.apply(); },
+        speed: () => { const i = SPEEDS.findIndex(x => x[0] === s.speed); s.speed = SPEEDS[(i + 1) % SPEEDS.length][0]; save(); },
+        fullscreen: () => { const d = document.documentElement; if (!document.fullscreenElement) { (d.requestFullscreen || d.webkitRequestFullscreen).call(d); } else document.exitFullscreen(); setTimeout(() => { const i = idx; options(onBack); idx = i; focus(); }, 250); },
+        controls: () => controls(() => options(onBack)),
+        lang: () => { M.i18n.cycle(); options(onBack); },
         diff: () => { const L = ['novato', 'brabo', 'lendario']; s.difficulty = L[(L.indexOf(s.difficulty) + 1) % 3]; save(); },
-        reset: () => { if (confirm('Apagar todo o progresso salvo?')) { localStorage.removeItem(M.store.key); M.store.load(); save(); } },
+        reset: () => { if (confirm(M.tr('Apagar todo o progresso salvo?'))) { const lang = s.lang; localStorage.removeItem(M.store.key); M.store.load(); M.store.data.settings.lang = lang; M.store.save(); M.ui.menu(); } },
         back: onBack
       }
     });
     function save() { M.store.save(); M.audio.A.settings.volume = s.volume; M.audio.A.settings.music = s.music; M.audio.A.settings.sfx = s.sfx; M.audio.applySettings(); const i = idx; options(onBack); idx = i; focus(); }
     document.getElementById('vol').addEventListener('input', e => { s.volume = parseFloat(e.target.value); M.store.save(); M.audio.A.settings.volume = s.volume; M.audio.applySettings(); });
     document.getElementById('vol').addEventListener('change', () => M.audio.play('ui'));
+  }
+
+  // ---------- CONTROLES (remapeamento) ----------
+  const ACT_LABEL = { up: 'Cima', down: 'Baixo', left: 'Esquerda', right: 'Direita', light: 'Golpe leve', heavy: 'Golpe forte', special: 'Especial', ginga: 'Arreda (esquiva)', mandinga: 'Peia (super)', taunt: 'Provocar', throw: 'Agarrão' };
+  const KN = { ArrowLeft: '←', ArrowRight: '→', ArrowUp: '↑', ArrowDown: '↓', Space: 'ESPAÇO', Escape: 'ESC', ShiftRight: 'Shift dir.', ShiftLeft: 'Shift esq.', Comma: ',', Period: '.', Slash: '/', Semicolon: ';', Quote: "'", BracketRight: ']', Enter: 'ENTER' };
+  const keyName = c => M.tr(KN[c] || (c || '').replace(/^Key|^Digit/, '').replace('Numpad', 'Num '));
+  function controls(onBack) {
+    const K = M.input.KEYMAP; let waiting = null;
+    const row = a => `<div class="ctl-row"><span>${ACT_LABEL[a]}</span>${['p1', 'p2'].map(p => `<button class="mi ctl" data-p="${p}" data-a="${a}" data-notr>${esc(keyName(K[p][a][0]))}</button>`).join('')}</div>`;
+    show(`<div class="screen center overlay"><div class="panel opts">
+      <div class="stamp">CONTROLES (TECLAS)</div>
+      <p class="tiny">Clique numa tecla e pressione a nova. ESC cancela. Gamepad: veja COMO JOGAR.</p>
+      <div class="ctl-head"><span></span><b>P1</b><b>P2</b></div>
+      ${M.input.ACTIONS.map(row).join('')}
+      <nav class="ctl-nav"><button class="mi" data-go="reset">RESTAURAR PADRÃO</button><button class="mi back" data-go="back">VOLTAR</button></nav>
+    </div></div>`, { onBack, actions: { back: onBack, reset: () => { M.input.resetKeys(); M.store.data.settings.keys = null; M.store.save(); controls(onBack); } } });
+    root.querySelectorAll('.ctl').forEach(b => b.addEventListener('click', () => {
+      if (waiting) { M.input.cancelCapture(); waiting.textContent = waiting.dataset.old; waiting.classList.remove('wait'); }
+      waiting = b; b.dataset.old = b.textContent; b.textContent = '…'; b.classList.add('wait');
+      M.input.capture(code => {
+        b.classList.remove('wait'); waiting = null;
+        if (code !== 'Escape') { M.input.setKey(b.dataset.p, b.dataset.a, code); M.store.data.settings.keys = JSON.parse(JSON.stringify(K)); M.store.save(); M.audio.play('ui'); }
+        const i = idx; controls(onBack); idx = i; focus();
+      });
+    }));
+  }
+
+  // ---------- CONQUISTAS ----------
+  function achievements(onBack) {
+    const A = M.ach;
+    show(`<div class="screen center"><div class="panel wide">
+      <div class="stamp">CONQUISTAS</div>
+      <p class="tiny"><b data-notr>${A.count()} / ${A.total}</b></p>
+      <div class="ach-grid">${A.LIST.map(a => `<div class="ach ${A.has(a.id) ? 'got' : ''}"><div class="ach-ico">${A.has(a.id) ? a.icon : '?'}</div><div><b>${esc(a.name)}</b><small>${esc(a.desc)}</small></div></div>`).join('')}</div>
+      <nav><button class="mi back" data-go="back">VOLTAR</button></nav>
+    </div></div>`, { onBack, actions: { back: onBack } });
   }
 
   // ---------- COMO JOGAR ----------
@@ -463,5 +527,5 @@ M.ui = (function () {
     show(`<div class="screen center"><div class="panel wide"><div class="stamp">CRÉDITOS</div>${epi}<p class="credits">${esc(M.STORY.credits).replace(/\n/g, '<br>')}</p><p class="credits-author">Criado por <b>Vinícius Andrey</b> — 2026</p><nav><button class="mi back" data-go="back">VOLTAR</button></nav></div></div>`, { onBack: menu, actions: { back: menu } });
   }
 
-  return { init, show, hide, title, menu, storyStart, cordel, dialogue, camp, versusCard, nightMap, fightReport, patua, choice, results, ending, charselect, pause, options, howto, credits, portrait };
+  return { init, show, hide, controls, achievements, title, menu, storyStart, cordel, dialogue, camp, versusCard, nightMap, fightReport, patua, choice, results, ending, charselect, pause, options, howto, credits, portrait };
 })();

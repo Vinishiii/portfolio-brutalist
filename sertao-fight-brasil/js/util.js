@@ -39,7 +39,7 @@ M.store = {
   load() {
     try { this.data = JSON.parse(localStorage.getItem(this.key)) || {}; } catch (e) { this.data = {}; }
     const d = this.data;
-    d.settings = Object.assign({ volume: 0.8, music: true, sfx: true, shake: true, hitboxes: false, difficulty: 'brabo', touch: 'auto', paint: true, post: true }, d.settings || {});
+    d.settings = Object.assign({ volume: 0.8, music: true, sfx: true, shake: true, hitboxes: false, difficulty: 'brabo', touch: 'auto', paint: true, post: true, lang: null, speed: 1, reduceFlash: false, quality: 'auto', keys: null }, d.settings || {});
     d.progress = Object.assign({ storyDone: false, endings: [], cinzas: false, bestTime: null, freeBest: null, wins: 0, legendsDone: false, bestGrade: null, bonds: {} }, d.progress || {});
     d.story = d.story || null;
     d.legends = d.legends || null;
@@ -50,9 +50,11 @@ M.store = {
 
 // Texto com contorno (estilo xilo) no canvas
 M.text = (ctx, str, x, y, o = {}) => {
-  const size = o.size || 24, font = o.font || M.FONT_DISPLAY;
+  str = M.tr ? M.tr(String(str)) : str;
+  let size = o.size || 24; const font = o.font || M.FONT_DISPLAY;
   ctx.save();
   ctx.font = `${o.weight || ''} ${size}px ${font}`.trim();
+  if (o.maxW) { const w = ctx.measureText(str).width; if (w > o.maxW) { size = Math.max(8, size * o.maxW / w); ctx.font = `${o.weight || ''} ${size}px ${font}`.trim(); } }
   ctx.textAlign = o.align || 'center';
   ctx.textBaseline = o.base || 'middle';
   if (o.alpha !== undefined) ctx.globalAlpha = o.alpha;

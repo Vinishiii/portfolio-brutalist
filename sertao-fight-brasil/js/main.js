@@ -30,16 +30,35 @@
 
   // ---------- loop ----------
   let last = performance.now(), acc = 0; const STEP = 1000 / 60;
+  // qualidade automática: se a média de quadros passar de ~24ms por 3s, desliga o pós-processamento (e depois a pintura)
+  const perf = { sum: 0, n: 0, level: 0 };
+  function watchPerf(dt) {
+    const s = M.store.data.settings; if (s.quality !== 'auto' && s.quality !== undefined) return;
+    if (M.state !== 'fight') { perf.sum = 0; perf.n = 0; return; }
+    perf.sum += Math.min(dt, 200); perf.n++;
+    if (perf.n >= 180) {
+      const avg = perf.sum / perf.n; perf.sum = 0; perf.n = 0;
+      if (avg > 24 && perf.level < 2) {
+        perf.level++;
+        if (perf.level === 1) { M.paint.P.autoLow = true; M.paint.apply(); } else { M.paint.P.enabled = false; M.render.style.paint = false; if (M.paint.P.postCanvas) M.paint.P.postCanvas.style.display = 'none'; if (M.paint.P.gameCanvas) M.paint.P.gameCanvas.style.opacity = '1'; }
+      }
+    }
+  }
   function frame(now) {
-    acc += Math.min(120, now - last); last = now;
+    const speed = M.store.data.settings.speed || 1;
+    watchPerf(now - last);
+    acc += Math.min(120, now - last) * speed; last = now;
     let n = 0;
     while (acc >= STEP && n < 4) { tick(); acc -= STEP; n++; }
     if (acc >= STEP) acc = 0;
     render();
     requestAnimationFrame(frame);
   }
+  const PAD_KEY = { up: 'ArrowUp', down: 'ArrowDown', left: 'ArrowLeft', right: 'ArrowRight', ginga: 'Enter', light: 'Enter', special: 'Escape', heavy: 'Escape', mandinga: 'Enter', taunt: 'Enter', throw: 'Enter' };
   function tick() {
     M.input.update();
+    if (M.state !== 'fight') for (const a of M.input.takePadEdges()) { const code = PAD_KEY[a]; if (code) { window.dispatchEvent(new KeyboardEvent('keydown', { code })); window.dispatchEvent(new KeyboardEvent('keyup', { code })); } }
+    else M.input.takePadEdges();
     if (M.state === 'fight' && M.match) {
       if (M.input.pausePressed()) { openPause(); return; }
       M.match.update();
@@ -69,6 +88,7 @@
   const flow = M.flow = {
     story: null,
     startMatch(o) {
+      const done = o.onEnd; o.onEnd = r => { try { M.ach.matchEnd(r, o); } catch (e) { /* ignora */ } if (done) done(r); };
       M.ui.hide(); M.state = 'fight'; M.input.clear();
       M.match = new M.Match(o);
       flow.updateTouch();
@@ -101,7 +121,7 @@
       if (r.winnerSide !== 1) { F.deaths++; M.ui.results({ result: r, defeat: true, buttons: [{ id: 'retry', label: 'TENTAR DE NOVO', fn: () => flow.freeFight() }, { id: 'menu', label: 'DESISTIR', fn: () => M.ui.menu() }] }); return; }
       F.idx++;
       if (F.idx >= F.order.length) {
-        const p = M.store.data.progress; if (!p.freeBest || F.frames < p.freeBest) p.freeBest = F.frames; p.wins++; M.store.save();
+        const p = M.store.data.progress; if (!p.freeBest || F.frames < p.freeBest) p.freeBest = F.frames; p.wins++; M.store.save(); M.ach.unlock('free_done');
         M.ui.results({ result: r, buttons: [{ id: 'menu', label: `VENCEU A RINHA INTEIRA! (${M.fmtTime(F.frames / 60)}) — MENU`, fn: () => M.ui.menu() }] });
         return;
       }
@@ -203,6 +223,7 @@
       if (!p.bestGrade || M.GRADE_VAL[grade] > M.GRADE_VAL[p.bestGrade]) p.bestGrade = grade;
       p.bonds = p.bonds || {}; for (const b of S.bonds) p.bonds[b] = true;
       p.wins++; M.store.data.story = null; M.store.save();
+      M.ach.storyEnd(S, id, grade);
       M.audio.music.setMode('ending');
       ambient = makeAmbient(id === 'acender' ? 'ladeira' : 'cinzas', ['zeca', 'cinzas']);
       if (id === 'acender') ambient.crowdExcite = 1.2;
@@ -256,7 +277,7 @@
     },
     legendsEnding() {
       const S = flow.legends; const p = M.store.data.progress;
-      p.legendsDone = true; p.wins++; M.store.data.legends = null; M.store.save();
+      p.legendsDone = true; M.ach.unlock('legends_done'); p.wins++; M.store.data.legends = null; M.store.save();
       M.audio.music.setMode('ending');
       ambient = makeAmbient('mata', ['zeca', 'fulozinha']);
       M.ui.ending('lendas', { frames: S.frames, patuas: S.patuas, deaths: S.deaths, difficulty: S.difficulty }, () => M.ui.menu());
@@ -285,6 +306,9 @@
   // ---------- boot ----------
   function boot() {
     M.store.load();
+    if (!M.store.data.settings.lang) { M.store.data.settings.lang = M.i18n.detect(); M.store.save(); }
+    M.i18n.set(M.store.data.settings.lang);
+    M.input.applyKeys(M.store.data.settings.keys);
     const s = M.store.data.settings; M.audio.A.settings.volume = s.volume; M.audio.A.settings.music = s.music; M.audio.A.settings.sfx = s.sfx;
     M.ui.init();
     M.paint.init(canvas, document.getElementById('post'));
@@ -298,6 +322,7 @@
     let st = 'title';
     Object.defineProperty(M, 'state', { get: () => st, set: v => { st = v; flow.updateTouch(); } });
     void origState;
+    M.i18n.init();
     M.ui.title();
     requestAnimationFrame(frame);
   }

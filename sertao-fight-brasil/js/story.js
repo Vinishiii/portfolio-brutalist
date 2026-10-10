@@ -282,7 +282,7 @@ M.overallGrade = grades => { const v = Object.values(grades); if (!v.length) ret
     ]
   });
   // acampamentos: depois das lutas 3 e 5
-  M.STORY.camps = { 3: { title: 'A FOGUEIRA DA MADRUGADA', text: 'A rinha deu um respiro. Dona Lourdes acende uma fogueira pequena e a Vila se junta em volta. Escolha como passar a pausa — vale só para a próxima rinha.' }, 5: { title: 'A ÚLTIMA FOGUEIRA', text: 'Falta só a praça. O povo se espalha pelo terreiro, em silêncio. Uma última pausa antes do Mestre.' } };
+  M.STORY.camps = { 3: { title: 'A FOGUEIRA DA MADRUGADA', text: 'A rinha deu um respiro. Dona Lourdes acende uma fogueira pequena e a Vila se junta em volta. Escolha como passar a pausa — vale só para a próxima rinha.' }, 5: { title: 'A ÚLTIMA FOGUEIRA', text: 'Falta só a praça. O povo se espalha pelo largo, em silêncio. Uma última pausa antes do Mestre.' } };
   // laços na reta final
   F[7].preBond = [
     { who: 'bia', text: 'Você não tá sozinho, menino. A ladeira inteira veio pra ver.', needBonds: 4 },

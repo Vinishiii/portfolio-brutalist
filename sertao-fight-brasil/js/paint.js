@@ -162,7 +162,7 @@ M.paint = (function () {
     P.t++;
     const st = G.stage, prof = profileOf(st); ensureStage(st);
     // eventos visuais lidos do estado (impact frames)
-    for (const e of G.fx) { if (!P.seenFx.has(e)) { P.seenFx.add(e); if (e.type === 'star' && e.r >= 42) { P.impact = 3; P.impactAt = [e.x, e.y]; } if (e.type === 'flash' && e.alpha >= 0.9) { P.impact = 4; } } }
+    for (const e of G.fx) { if (!P.seenFx.has(e)) { P.seenFx.add(e); if (e.type === 'star' && e.r >= 42) { P.impact = 3; P.impactAt = [e.x, e.y]; } if (e.type === 'flash' && e.alpha >= 0.9 && !M.store.data.settings.reduceFlash) { P.impact = 4; } } }
     // câmera dinâmica (enquadramento entre os lutadores)
     const [a, b] = G.fighters; const mid = (a.x + b.x) / 2, dist = Math.abs(a.x - b.x);
     const tz = M.clamp(1.14 - dist / 1400, 1, 1.12), tx = M.clamp(mid, W / 2 - (W / 2) * (1 - 1 / tz), W / 2 + (W / 2) * (1 - 1 / tz)), ty = H / 2 + 14 * (tz - 1) / 0.12;
@@ -292,7 +292,7 @@ M.paint = (function () {
     apply();
   }
   function apply() {
-    const s = M.store.data.settings; P.enabled = s.paint !== false; P.post = s.post !== false;
+    const s = M.store.data.settings; P.enabled = s.paint !== false; P.post = s.post !== false && s.quality !== 'low' && !P.autoLow;
     M.render.style.paint = P.enabled;
     const usePost = P.enabled && P.post && P.glOk;
     if (P.postCanvas) { P.postCanvas.style.display = usePost ? 'block' : 'none'; }
