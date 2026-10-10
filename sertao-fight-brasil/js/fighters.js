@@ -156,18 +156,18 @@
       superName: 'Baião de Dois', superDesc: 'Acelera o fole: uma sequência em que todo golpe cai no compasso.',
       ai: { zone: 0.1, air: 0.25, grab: 0.1, rush: 0.65, poke: 0.6 },
       moves: {
-        L: mv({ id: 'L', name: 'Tapa de fole', startup: 5, active: 8, recovery: 10, dmg: 28, hits: 2, hitInterval: 4, hitstun: 18, blockstun: 9, kb: 3, hitbox: { x: 24, y: 85, w: 86, h: 36 }, pose: 'lunge', cancel: ['L', 'H', 'S'], sfx: 'whoosh' }),
+        L: mv({ id: 'L', name: 'Tapa de fole', startup: 4, active: 8, recovery: 8, dmg: 32, hits: 2, hitInterval: 4, hitstun: 18, blockstun: 9, kb: 3, hitbox: { x: 24, y: 85, w: 86, h: 36 }, pose: 'lunge', cancel: ['L', 'H', 'S'], sfx: 'whoosh' }),
         cL: mv({ id: 'cL', name: 'Pisada de forró', startup: 6, active: 3, recovery: 11, dmg: 42, type: 'low', crouch: true, hitstun: 17, blockstun: 8, kb: 2, hitbox: { x: 20, y: 0, w: 95, h: 30 }, pose: 'castLow', cancel: ['H', 'S'], sfx: 'whoosh' }),
         aL: mv({ id: 'aL', name: 'Chapa de frente', startup: 5, active: 5, recovery: 8, dmg: 50, type: 'high', air: true, hitstun: 14, kb: 3, hitbox: { x: 10, y: 20, w: 70, h: 50 }, pose: 'airKick', sfx: 'whoosh' }),
-        H: mv({ id: 'H', name: 'Sanfonada', startup: 10, active: 4, recovery: 17, dmg: 108, hitstun: 20, blockstun: 12, kb: 7, hitbox: { x: 16, y: 60, w: 116, h: 90 }, pose: 'swing', cancel: ['S'], sfx: 'whooshH' }),
+        H: mv({ id: 'H', name: 'Sanfonada', startup: 8, active: 4, recovery: 13, dmg: 108, hitstun: 20, blockstun: 12, kb: 7, hitbox: { x: 16, y: 60, w: 116, h: 90 }, pose: 'swing', cancel: ['S'], sfx: 'whooshH' }),
         cH: mv({ id: 'cH', name: 'Rasteira de xaxado', startup: 8, active: 4, recovery: 19, dmg: 90, type: 'low', crouch: true, knockdown: true, hitstun: 20, blockstun: 12, kb: 4, hitbox: { x: 10, y: 0, w: 125, h: 30 }, pose: 'sweep', sfx: 'whooshH' }),
         aH: mv({ id: 'aH', name: 'Queda de fole', startup: 8, active: 5, recovery: 10, dmg: 100, type: 'high', air: true, hitstun: 18, kb: 4, hitbox: { x: 0, y: -10, w: 100, h: 90 }, pose: 'overhead', sfx: 'whooshH' }),
-        fH: mv({ id: 'fH', name: 'Baixo do fole', startup: 13, active: 3, recovery: 19, dmg: 100, type: 'high', hitstun: 28, blockstun: 12, kb: 2, hitbox: { x: 20, y: 70, w: 110, h: 90 }, pose: 'overhead', sfx: 'whooshH' }),
-        S: mv({ id: 'S', name: 'Toque de Baião', startup: 8, active: 1, recovery: 24, dmg: 0, pose: 'play', buff: 300, axe: 0.05, sfx: 'taunt' }),
+        fH: mv({ id: 'fH', name: 'Baixo do fole', startup: 10, active: 3, recovery: 14, dmg: 100, type: 'high', hitstun: 28, blockstun: 12, kb: 2, hitbox: { x: 20, y: 70, w: 110, h: 90 }, pose: 'overhead', sfx: 'whooshH' }),
+        S: mv({ id: 'S', name: 'Toque de Baião', startup: 6, active: 1, recovery: 14, dmg: 0, pose: 'play', buff: 300, axe: 0.05, sfx: 'taunt' }),
         dS: mv({ id: 'dS', name: 'Meia-lua pulada', startup: 6, active: 7, recovery: 20, dmg: 100, launch: 12, hitstun: 22, blockstun: 12, kb: 3, chip: 10, invuln: [0, 8], hitbox: { x: -10, y: 60, w: 90, h: 120 }, pose: 'riseKick', sfx: 'whooshH' }),
         aS: mv({ id: 'aS', name: 'Tesoura', startup: 6, active: 10, recovery: 10, dmg: 90, type: 'high', air: true, knockdown: true, hitstun: 20, kb: 5, chip: 8, hitbox: { x: 10, y: 0, w: 90, h: 60 }, pose: 'dive', move: [{ f: 0, t: 16, vx: 5, vy: 6 }], sfx: 'whooshH' }),
         dH: mv({ id: 'dH', name: 'Arrasta-pé corrido', startup: 7, active: 6, recovery: 14, dmg: 90, type: 'low', knockdown: true, crouch: true, hitstun: 20, blockstun: 12, kb: 4, hitbox: { x: 10, y: 0, w: 110, h: 34 }, pose: 'sweep', move: [{ f: 0, t: 13, vx: 8 }], sfx: 'whooshH' }),
-        bH: mv({ id: 'bH', name: 'Acorde', startup: 10, active: 6, recovery: 18, dmg: 70, hitstun: 18, blockstun: 10, kb: 13, chip: 6, axe: 0.06, hitbox: { x: -10, y: 30, w: 150, h: 130 }, pose: 'play', fx: 'wave', sfx: 'taunt' }),
+        bH: mv({ id: 'bH', name: 'Acorde', startup: 8, active: 6, recovery: 14, dmg: 70, hitstun: 18, blockstun: 10, kb: 13, chip: 6, axe: 0.06, hitbox: { x: -10, y: 30, w: 150, h: 130 }, pose: 'play', fx: 'wave', sfx: 'taunt' }),
         fS: mv({ id: 'fS', name: 'Fole aberto', startup: 8, active: 24, recovery: 16, dmg: 30, hits: 4, hitInterval: 6, launch: 9, hitstun: 14, blockstun: 9, kb: 1.5, chip: 4, hitbox: { x: 10, y: 50, w: 100, h: 90 }, pose: 'swing', sfx: 'whooshH' }),
         M: mv({ id: 'M', name: 'Baião de Dois', super: true, startup: 14, active: 36, recovery: 20, dmg: 62, hits: 6, hitInterval: 6, launch: 13, hitstun: 22, blockstun: 15, kb: 1.5, chip: 15, onBeatAlways: true, invuln: [0, 16], hitbox: { x: 0, y: 30, w: 140, h: 130 }, pose: 'superRush', move: [{ f: 4, t: 14, vx: 12 }, { f: 14, t: 50, vx: 2.5 }], sfx: 'super', fx: 'arc' })
       }
