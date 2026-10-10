@@ -125,6 +125,7 @@ sertao-fight-brasil/
   js/lang/*.js         pacotes de tradução [pt, en, es]
   js/achievements.js   conquistas e ponte com a plataforma (Steam)
   js/paint.js          camada de pintura e pós-processamento (opcional)
+  js/logo.js           logo do jogo em canvas (título, menu e arte de loja)
   js/main.js           loop fixo a 60fps e fluxo de modos
   fonts/               Alfa Slab One e Special Elite (embutidas)
   desktop/             app Electron + Steamworks

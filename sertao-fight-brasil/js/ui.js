@@ -56,11 +56,12 @@ M.ui = (function () {
   // ---------- TÍTULO ----------
   function title() {
     show(`<div class="screen title">
-      <div class="logo"><span class="logo-top">A RINHA NUNCA PARA</span><h1>SERTÃO<br><em>FIGHT BRASIL</em></h1><span class="logo-sub">UM JOGO DE LUTA EM XILOGRAVURA</span></div>
+      <div class="logo"><h1 class="sr" data-notr>SERTÃO FIGHT BRASIL</h1><div class="logo-slot"></div><span class="logo-tag">A RINHA NUNCA PARA</span><span class="logo-sub">UM JOGO DE LUTA EM XILOGRAVURA</span></div>
       <p class="blink">PRESSIONE QUALQUER TECLA • TOQUE NA TELA</p>
       <div class="langs">${M.i18n.LANGS.map(([c, n]) => `<button class="lang ${M.i18n.lang === c ? 'on' : ''}" data-lang="${c}" data-notr>${n}</button>`).join('')}</div>
       <p class="tiny">v${M.VERSION} • teclado, toque ou controle</p>
     </div>`, { onKey: () => { M.audio.init(); menu(); return true; } });
+    M.logo.mount(root.querySelector('.logo-slot'), { width: 600, animate: true, glow: true });
     root.querySelectorAll('.lang').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); M.i18n.set(b.dataset.lang, true); M.audio.play('ui'); title(); }));
     root.querySelector('.screen').addEventListener('pointerdown', e => { if (e.target.closest('.langs')) return; M.audio.init(); menu(); });
   }
@@ -72,7 +73,7 @@ M.ui = (function () {
     const free = d.progress.storyDone;
     const legUnlocked = d.progress.storyDone; const legCont = legUnlocked && d.legends && d.legends.idx > 0 && d.legends.idx < M.LEGENDS.fights.length;
     show(`<div class="screen menu">
-      <div class="menu-left"><div class="logo small"><h1>SERTÃO <em>FIGHT BRASIL</em></h1><span class="logo-sub">A RINHA NUNCA PARA</span></div>
+      <div class="menu-left"><div class="logo small"><h1 class="sr" data-notr>SERTÃO FIGHT BRASIL</h1><div class="logo-slot"></div></div>
         <nav>
           ${cont ? `<button class="mi" data-go="cont">CONTINUAR HISTÓRIA <small>luta ${d.story.idx + 1}/${M.STORY.fights.length}</small></button>` : ''}
           <button class="mi" data-go="story">${cont ? 'NOVA ' : ''}HISTÓRIA <small>a Rinha do Fogo, com Zeca Ventania</small></button>
@@ -102,6 +103,7 @@ M.ui = (function () {
       }
     });
     if (current && current.actions) for (const k of Object.keys(current.actions)) { const f = current.actions[k]; current.actions[k] = el => { menuMem = idx; return f(el); }; }
+    M.logo.mount(root.querySelector('.logo-slot'), { width: 300, animate: false, glow: false });
   }
   function legendsMenu() {
     const d = M.store.data;
