@@ -2,7 +2,7 @@
 
 Guia de ponta a ponta para levar o jogo à Steam (e também ao itch.io / web). O jogo já vem com tudo do lado do código: app de desktop (Electron), ponte com a Steamworks, 26 conquistas, idioma automático (PT / EN / ES), save em arquivo para o Steam Cloud, arte de loja pronta e build web.
 
-> **Estado honesto:** o código do jogo foi testado no navegador (Chromium). O app de desktop (`desktop/`) e a integração com a Steamworks foram escritos conforme a documentação do Electron e do `steamworks.js`, mas **não puderam ser executados aqui** (sem Steam, sem Electron instalado). Faça o teste da seção 3 antes de enviar o build.
+> **Estado honesto:** o jogo foi testado no navegador (Chromium) e o app de desktop foi **empacotado e executado no Linux** (Electron 33 + electron-builder, sob Xvfb): abre a janela, detecta o idioma do sistema, grava o save em arquivo, relê o progresso na abertura seguinte e fecha pelo menu "SAIR DO JOGO". **Não foi possível testar aqui:** as chamadas reais da Steamworks (conquistas, overlay, idioma da Steam — precisam do cliente Steam e de um AppID), os builds de Windows e macOS, o Steam Deck e o Steam Cloud. Faça o teste da seção 3 antes de enviar o build.
 
 ## 1. O que você precisa fora do código
 
@@ -211,23 +211,23 @@ São **26**. O jogo chama `ACH_<ID EM MAIÚSCULAS>`; cadastre exatamente estes *
 
 ## 5. Steam Cloud (Auto-Cloud)
 
-O save é um único arquivo JSON, gravado pelo app em `userData/save.json` (Windows: `%APPDATA%/Sertão Fight Brasil/`, Linux: `~/.config/Sertão Fight Brasil/`, macOS: `~/Library/Application Support/Sertão Fight Brasil/`).
+O save é um único arquivo JSON, gravado pelo app em `userData/save.json` (Windows: `%APPDATA%\SertaoFightBrasil\`, Linux: `~/.config/SertaoFightBrasil/`, macOS: `~/Library/Application Support/SertaoFightBrasil/`; a pasta é fixada em ASCII em `desktop/main.js` porque o Electron no Linux ignora nomes com acento).
 
 No painel: *Application ▸ Steam Cloud* → habilite, e em **Steam Auto-Cloud** adicione uma regra:
 
 | Campo | Valor |
 | --- | --- |
 | Root | `WinAppDataRoaming` (Windows) · `LinuxXdgConfigHome` (Linux) · `MacAppSupport` (macOS) |
-| Subdirectory | `Sertão Fight Brasil` |
+| Subdirectory | `SertaoFightBrasil` |
 | Pattern | `save.json` |
 
-Cota sugerida: 1 MB, 1 arquivo. Confira o nome real da pasta com `app.getPath('userData')` do build final (o Electron usa `productName`).
+Cota sugerida: 1 MB, 1 arquivo.
 
 ## 6. Depots e envio do build
 
 1. *Steamworks ▸ SteamPipe ▸ Depots*: um depot por sistema (Windows, Linux, macOS) ou só Windows + Linux.
 2. Baixe o SDK da Steamworks, use o `steamcmd` com um script `app_build_<AppID>.vdf` apontando `ContentRoot` para `desktop/dist/<sistema>-unpacked`.
-3. Em *Installation ▸ General*: executável de lançamento (`Sertão Fight Brasil.exe` / `sertao-fight-brasil`), sistema operacional correspondente.
+3. Em *Installation ▸ General*: executável de lançamento (`SertaoFightBrasil.exe` no Windows, `sertao-fight-brasil` no Linux, `SertaoFightBrasil.app` no macOS), sistema operacional correspondente.
 4. Suba para um branch `default`/`beta`, teste instalando pelo cliente, e só então promova.
 
 ## 7. Steam Deck e controle

@@ -64,7 +64,7 @@ M.i18n.add([
   ['◂ VOLTAR', '◂ BACK', '◂ VOLVER'],
   ['◂ CONTINUAR', '◂ CONTINUE', '◂ CONTINUAR'],
   ['◂ voltar', '◂ back', '◂ volver'],
-  ['v1.4 • teclado, toque ou controle', 'v1.4 • keyboard, touch or gamepad', 'v1.4 • teclado, táctil o mando'],
+  ['teclado, toque ou controle', 'keyboard, touch or gamepad', 'teclado, táctil o mando'],
 
   // ---------- opções ----------
   ['VOLUME', 'VOLUME', 'VOLUMEN'],
@@ -137,6 +137,7 @@ M.i18n.add([
   ['PROVOCAR', 'TAUNT', 'PROVOCAR'],
   ['dá Energia — se ninguém te bater antes. Risco e recompensa.', 'gives Energy — if nobody hits you first. Risk and reward.', 'da Energía, si nadie te golpea antes. Riesgo y recompensa.'],
   ['AGARRÃO', 'GRAB', 'AGARRE'],
+  ['SAIR', 'QUIT', 'SALIR'], ['ENTRADAS', 'INPUTS', 'ENTRADAS'], ['ESP', 'SPEC', 'ESP'],
   ['(H ou J+K): ignora defesa.', '(H or J+K): ignores guard.', '(H o J+K): ignora la defensa.'],
   ['ESCAPAR', 'ESCAPE', 'ESCAPAR'],
   [': em um combo de 3+ golpes, aperte ARREDA gastando 30% de Energia.', ': in a combo of 3+ hits, press DODGE at the cost of 30% Energy.', ': en un combo de 3+ golpes, pulsa ESQUIVA gastando 30% de Energía.'],
@@ -415,10 +416,11 @@ M.i18n.add([
 (function () {
   const I = M.i18n, tr = M.tr;
   I.pat(/^RINHA (\d+)$/, 'BRAWL $1', 'RIÑA $1');
+  I.pat(/^COMBO (\d+) • DANO (\d+) • RECORDE (\d+) \/ (\d+)$/, 'COMBO $1 • DAMAGE $2 • BEST $3 / $4', 'COMBO $1 • DAÑO $2 • RÉCORD $3 / $4');
   I.pat(/^"(.+)"$/, (t) => '"' + tr(t) + '"', (t) => '"' + tr(t) + '"');
   I.pat(/^([^\p{L}\d\s"(]) (.+)$/u, (i, t) => i + ' ' + tr(t), (i, t) => i + ' ' + tr(t));
   I.pat(/^luta (\d+)\/(\d+)$/, 'fight $1/$2', 'lucha $1/$2');
-  I.pat(/^Melhor História: (\S+)(?: • Nota (\w))? • Finais vistos: (\d)\/2$/, (t, g, n) => 'Best Story: ' + t + (g ? ' • Grade ' + g : '') + ' • Endings seen: ' + n + '/2', (t, g, n) => 'Mejor Historia: ' + t + (g ? ' • Nota ' + g : '') + ' • Finales vistos: ' + n + '/2');
+  I.pat(/^Melhor História: (\S+)(?: • Nota (\w))? • Finais vistos: (\d)\/3$/, (t, g, n) => 'Best Story: ' + t + (g ? ' • Grade ' + g : '') + ' • Endings seen: ' + n + '/3', (t, g, n) => 'Mejor Historia: ' + t + (g ? ' • Nota ' + g : '') + ' • Finales vistos: ' + n + '/3');
   I.pat(/^Luta (\d+) de (\d+) em andamento\.$/, 'Fight $1 of $2 in progress.', 'Lucha $1 de $2 en curso.');
   I.pat(/^(\d+) GOLPES$/, '$1 HITS', '$1 GOLPES');
   I.pat(/^(\d+) GOLPE$/, '$1 HIT', '$1 GOLPE');

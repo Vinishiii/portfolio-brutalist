@@ -10,6 +10,8 @@ const { app, BrowserWindow, Menu, ipcMain, globalShortcut, shell } = require('el
 const path = require('path');
 const fs = require('fs');
 
+// pasta de dados em ASCII: o Electron, no Linux, ignora o nome com acento ("Sertão") e cairia em ~/.config solto
+app.setPath('userData', path.join(app.getPath('appData'), 'SertaoFightBrasil'));
 const gameDir = app.isPackaged ? path.join(process.resourcesPath, 'game') : path.join(__dirname, '..');
 const savePath = () => path.join(app.getPath('userData'), 'save.json');
 const APP_ID = parseInt(process.env.STEAM_APP_ID || '480', 10); // 480 = Spacewar (teste). Troque pelo AppID real.

@@ -81,14 +81,16 @@ M.ui = (function () {
           <button class="mi" data-go="training">TREINO <small>pratique golpes e combos</small></button>
           <button class="mi ${free ? '' : 'locked'}" data-go="free">RINHA LIVRE <small>${free ? 'enfrente toda a rinha com qualquer lutador' : 'vença a História para liberar'}</small></button>
           <button class="mi" data-go="ach">CONQUISTAS <small data-notr>${M.ach.count()}/${M.ach.total}</small></button>
+        </nav>
+        <div class="mi-foot">
           <button class="mi" data-go="howto">COMO JOGAR</button>
           <button class="mi" data-go="options">OPÇÕES</button>
           <button class="mi" data-go="credits">CRÉDITOS</button>
-          ${M.platform.desktop ? '<button class="mi" data-go="quit">SAIR DO JOGO</button>' : ''}
-        </nav></div>
+          ${M.platform.desktop ? '<button class="mi" data-go="quit">SAIR</button>' : ''}
+        </div></div>
       <div class="menu-right"><div class="stamp">${free ? 'GUARDIÃO DA BRASA' : 'VILA BRASA, SERTÃO'}</div>
         <p class="pitch">Quem tem <b>Energia</b> manda na rinha.<br>O público é a barra de poder — e ele escolhe quem merece a Peia.</p>
-        ${d.progress.bestTime ? `<p class="tiny">Melhor História: ${M.fmtTime(d.progress.bestTime)}${d.progress.bestGrade ? ' • Nota ' + d.progress.bestGrade : ''} • Finais vistos: ${d.progress.endings.length}/2</p>` : ''}
+        ${d.progress.bestTime ? `<p class="tiny">Melhor História: ${M.fmtTime(d.progress.bestTime)}${d.progress.bestGrade ? ' • Nota ' + d.progress.bestGrade : ''} • Finais vistos: ${d.progress.endings.length}/3</p>` : ''}
       </div>
     </div>`, {
       actions: {

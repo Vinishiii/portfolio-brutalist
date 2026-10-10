@@ -61,7 +61,7 @@ Variações: agachado + golpe (baixo), frente + forte (comando), dash + forte (g
 - **No Compasso**: acertar na batida da zabumba dobra a Energia. Bené Sanfona toca para alargar sua própria janela.
 - **Versus CPU** — você contra a máquina, escolhendo o adversário e a dificuldade.
 - **Versus 2 jogadores** — dois no mesmo teclado.
-- **Treino** — boneco configurável (parado, defende, pula, CPU).
+- **Treino** — boneco configurável (parado, defende, pula, CPU), **histórico de entradas** (setas e botões com a duração em quadros) e leitura do último combo (golpes, dano e recorde).
 - **Rinha Livre** — liberado ao terminar a História: sete adversários sorteados e o Mestre Cinzas, com qualquer lutador.
 
 ## Os doze lutadores

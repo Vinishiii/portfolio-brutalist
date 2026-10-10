@@ -45,7 +45,7 @@ M.i18n = (function () {
   const SKIP = new Set(['SCRIPT', 'STYLE', 'CANVAS']);
   function xlateText(node) {
     const par = node.parentNode;
-    if (par && par.closest && par.closest('[data-notr]')) return;
+    if (par && (SKIP.has(par.tagName) || (par.closest && par.closest('[data-notr]')))) return;
     const cur = node.nodeValue;
     const src = (node.__out !== undefined && node.__out === cur) ? node.__src : cur;
     const out = tr(src);

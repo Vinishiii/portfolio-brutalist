@@ -69,7 +69,7 @@ const save = (rel, dataUrl) => { const p = path.join(ROOT, rel); fs.mkdirSync(pa
 
   console.log('capturas de tela (1920x1080)');
   const snap = async (name, setup, wait = 900) => { await page.evaluate(setup); await page.waitForTimeout(wait); await page.screenshot({ path: path.join(ROOT, 'store', name) }); console.log('   store/' + name); };
-  const fightSetup = (a, b, stage, frames, fn) => `(() => { M.ui.hide(); const blank = () => M.AI.blank(); M.input.get = () => blank(); const m = new M.Match({ mode: 'versus', p1: { id: '${a}', ctrl: 'cpu' }, p2: { id: '${b}', ctrl: 'cpu' }, stage: '${stage}', rounds: 2, timer: 99, difficulty: 'lendario', onEnd: () => {} }); M.match = m; M.state = 'fight'; for (let i = 0; i < ${frames}; i++) m.update(); ${fn || ''} })()`;
+  const fightSetup = (a, b, stage, frames, fn) => `(() => { M.ui.hide(); const blank = () => M.AI.blank(); M.input.get = () => blank(); const m = new M.Match({ mode: 'versus', p1: { id: '${a}', ctrl: 'cpu' }, p2: { id: '${b}', ctrl: 'cpu' }, stage: '${stage}', rounds: 2, timer: 99, difficulty: 'lendario', onEnd: () => {} }); M.match = m; M.state = 'fight'; for (let i = 0; i < ${frames}; i++) m.update(); const good = () => { const [x, y] = m.fighters; return m.phase === 'fight' && x.x > 280 && x.x < 680 && y.x > 280 && y.x < 680 && Math.max(x.combo, y.combo) >= 3; }; for (let i = 0; i < 4000 && !good(); i++) m.update(); M.state = 'shot'; ${fn || ''} })()`;
   await page.evaluate(() => { const p = M.store.data.progress; p.storyDone = true; p.cinzas = true; M.store.save(); });
   await snap('screenshot-1-title.png', () => { M.ui.title(); });
   await snap('screenshot-2-select.png', () => { M.ui.charselect({ players: 2, mode: 'cpu' }); }, 1200);

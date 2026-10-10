@@ -40,6 +40,7 @@ M.Match = class Match {
     this.slow = 0; this.slowAcc = 0; this.shakeAmt = 0; this.cam = { zoom: 1, x: W / 2, y: M.H / 2 }; this.camTarget = null; this.camT = 0;
     this.crowdExcite = 0.2; this.fireScale = 1; this.banner = null; this.bigText = null; this.freeze = 0;
     this.phase2 = false; this.phase2T = 0; this.tut = { blocks: 0, perfect: 0, step: 0 }; this.tutT = 0; this.dummyMode = o.dummy || 'stand';
+    this.inHist = []; this.tr = { n: 0, dmg: 0, best: 0, bestDmg: 0 };
     this.beatHits = 0; this.totalFrames = 0; this.result = null; this.done = false; this.lastShake = 0;
     this.stageDarkTarget = 0;
     if (this.boss) this.fireScale = 0.4;
@@ -120,9 +121,50 @@ M.Match = class Match {
     if (t === 75) { this.bigText = { text: 'RINHA!', t: 0, life: 40, size: 72, color: M.C.yellow }; M.audio.play('roundStart'); }
     if (t === 112) { this.bigText = { text: 'VAI!', t: 0, life: 36, size: 80, color: M.C.red }; this.phase = 'fight'; this.phaseT = 0; for (const f of this.fighters) f.state = 'idle'; M.input.clear(); }
   }
+  // ---- treino: histórico de entradas e leitura do combo ----
+  trainRecord(hf, inp) {
+    const h = inp.held, p = inp.pressed;
+    const dx = (h.right ? 1 : 0) - (h.left ? 1 : 0), dy = (h.down ? 1 : 0) - (h.up ? 1 : 0);
+    const btn = ['light', 'heavy', 'special', 'ginga', 'mandinga', 'throw', 'taunt'].filter(k => p[k]);
+    const H = this.inHist, last = H[H.length - 1];
+    if (last && last.dx === dx && last.dy === dy && !btn.length) { last.f = Math.min(99, last.f + 1); }
+    else if (last || dx || dy || btn.length) { H.push({ dx, dy, btn, f: 1 }); if (H.length > 10) H.shift(); }
+    const t = this.tr;
+    if (hf.combo >= 2) { t.n = hf.combo; t.dmg = Math.round(hf.comboDmg); if (t.n > t.best) t.best = t.n; if (t.dmg > t.bestDmg) t.bestDmg = t.dmg; }
+  }
+  trainingHud(ctx) {
+    const C = M.C, W = M.W, t = this.tr;
+    M.text(ctx, 'COMBO ' + t.n + ' • DANO ' + t.dmg + ' • RECORDE ' + t.best + ' / ' + t.bestDmg, W / 2, 112, { size: 13, color: t.n >= 2 ? C.yellow : C.paper, lw: 2.5 });
+    const H = this.inHist, x0 = 18, y0 = 196, rh = 21;
+    ctx.save();
+    ctx.globalAlpha = 0.55; ctx.fillStyle = C.ink; ctx.fillRect(x0 - 8, y0 - 24, 176, 24 + rh * 10 + 6);
+    ctx.globalAlpha = 1;
+    M.text(ctx, 'ENTRADAS', x0, y0 - 8, { size: 11, align: 'left', color: C.paper, stroke: false });
+    const BT = { light: ['LEVE', C.yellow], heavy: ['FORTE', C.red], special: ['ESP', C.cyan], ginga: ['ARREDA', C.green], mandinga: ['PEIA', C.magenta], throw: ['AGARRÃO', C.orange], taunt: ['O', C.paper] };
+    for (let i = 0; i < H.length; i++) {
+      const e = H[H.length - 1 - i], y = y0 + 10 + i * rh;
+      ctx.globalAlpha = Math.max(0.3, 1 - i * 0.08);
+      const cx = x0 + 10;
+      if (!e.dx && !e.dy) { ctx.fillStyle = C.paper; ctx.beginPath(); ctx.arc(cx, y, 2.5, 0, 6.3); ctx.fill(); }
+      else {
+        ctx.save(); ctx.translate(cx, y); ctx.rotate(Math.atan2(e.dy, e.dx)); ctx.fillStyle = C.paper; ctx.strokeStyle = C.ink; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(8, 0); ctx.lineTo(-2, -7); ctx.lineTo(-2, -3); ctx.lineTo(-8, -3); ctx.lineTo(-8, 3); ctx.lineTo(-2, 3); ctx.lineTo(-2, 7); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.restore();
+      }
+      let bx = x0 + 28;
+      for (const k of e.btn) {
+        const [lab, col] = BT[k], w = k === 'taunt' ? 18 : 12 + M.tr(lab).length * 6.2;
+        ctx.fillStyle = col; ctx.fillRect(bx, y - 8, w, 16); ctx.strokeStyle = C.ink; ctx.lineWidth = 1.5; ctx.strokeRect(bx, y - 8, w, 16);
+        M.text(ctx, lab, bx + w / 2, y + 0.5, { size: 9, color: C.ink, stroke: false });
+        bx += w + 3;
+      }
+      M.text(ctx, String(e.f), x0 + 150, y + 0.5, { size: 10, align: 'right', color: '#b8b2a4', stroke: false });
+    }
+    ctx.restore();
+  }
   updateFight() {
     const [a, b] = this.fighters;
     const ia = this.inputFor(a, b), ib = this.inputFor(b, a);
+    if (this.mode === 'training') { if (a.ctrl === 'human') this.trainRecord(a, ia); else if (b.ctrl === 'human') this.trainRecord(b, ib); }
     a.update(ia, b, this); b.update(ib, a, this);
     this.separate(a, b);
     this.resolveHits(a, b); this.resolveHits(b, a);
@@ -705,7 +747,7 @@ M.Match = class Match {
         wrapText(ctx, step.text, W / 2, 440, W - 300, 17, C.ink);
       }
     }
-    if (this.mode === 'training' && this.phase === 'fight') { const lbl = { stand: 'PARADO', block: 'DEFENDE', jump: 'PULA', cpu: 'LUTA (CPU)' }[this.dummyMode] || this.dummyMode; M.text(ctx, 'TREINO — BONECO: ' + lbl + '  (ESC pra mudar)', W / 2, 92, { size: 13, color: this.dummyMode === 'stand' && this.frame % 60 < 40 ? C.yellow : C.paper, lw: 2.5 }); }
+    if (this.mode === 'training' && this.phase === 'fight') { const lbl = { stand: 'PARADO', block: 'DEFENDE', jump: 'PULA', cpu: 'LUTA (CPU)' }[this.dummyMode] || this.dummyMode; M.text(ctx, 'TREINO — BONECO: ' + lbl + '  (ESC pra mudar)', W / 2, 92, { size: 13, color: this.dummyMode === 'stand' && this.frame % 60 < 40 ? C.yellow : C.paper, lw: 2.5 });  this.trainingHud(ctx); }
     if (this.phase === 'fight' && this.frame < 240 && this.mode !== 'training' && !this.tutorial && this.p1.ctrl === 'human') { }
   }
 };
