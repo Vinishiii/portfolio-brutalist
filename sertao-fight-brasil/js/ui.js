@@ -21,7 +21,7 @@ M.ui = (function () {
     });
   }
   function move(d) { if (!items.length) return; idx = (idx + d + items.length) % items.length; focus(); M.audio.play('uiMove'); }
-  function focus() { items.forEach((el, i) => el.classList.toggle('sel', i === idx)); }
+  function focus() { items.forEach((el, i) => el.classList.toggle('sel', i === idx)); const el = items[idx]; if (el && el.scrollIntoView) { try { el.scrollIntoView({ block: 'nearest' }); } catch (e) { /* ignora */ } } }
   function show(html, o = {}) {
     stopTyping();
     root.innerHTML = html; root.classList.add('active');

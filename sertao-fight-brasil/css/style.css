@@ -269,3 +269,21 @@ body.touch-on #fs { top: 12px; }
 .toast small { display: block; font-size: 12px; opacity: .8; }
 @keyframes toastIn { from { transform: translateX(120%) rotate(4deg); opacity: 0; } to { transform: none; opacity: 1; } }
 @keyframes toastOut { to { transform: translateX(120%); opacity: 0; } }
+
+/* ---------- acabamento: papel, transições, foco ---------- */
+.panel, .cs-info, .cordel, .toast, .dialog { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' seed='4' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .25  0 0 0 0 .15  0 0 0 0 .08  0 0 0 .16 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"); }
+.panel.dark { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n' x='0' y='0' width='100%25' height='100%25'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' seed='9' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 .9  0 0 0 0 .75  0 0 0 .07 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"); }
+.screen { animation: scrIn .26s ease-out both; }
+@keyframes scrIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.mi { position: relative; }
+.mi.sel::before { content: '▶'; position: absolute; left: -22px; top: 50%; transform: translateY(-50%); color: var(--yellow); font-size: 16px; text-shadow: 2px 2px 0 var(--ink); animation: arrowBob .6s infinite alternate; }
+.opts .mi.sel::before, .ctl-row .mi.sel::before, .cards .mi.sel::before, .row .mi.sel::before, .dialog-choices .mi.sel::before, .ctl-nav .mi.sel::before { display: none; }
+@keyframes arrowBob { from { transform: translate(0, -50%); } to { transform: translate(5px, -50%); } }
+.logo h1 { animation: logoFloat 4s ease-in-out infinite; }
+@keyframes logoFloat { 0%, 100% { transform: translateY(0) rotate(-.4deg); } 50% { transform: translateY(-5px) rotate(.4deg); } }
+button:focus-visible { outline: 3px dashed var(--yellow); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .screen, .logo h1, .mi.sel::before, .toast { animation: none !important; } }
+.ctl-row .mi.sel, .ctl-row .mi:hover { background: var(--ink); color: var(--paper); }
+.ctl-row { padding: 0; font-size: 13px; }
+.ctl-row .mi { padding: 2px 8px; font-size: 13px; }
+.panel.opts { padding: 14px 24px; }

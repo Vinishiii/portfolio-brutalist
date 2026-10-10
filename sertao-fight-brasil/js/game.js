@@ -571,23 +571,56 @@ M.Match = class Match {
   }
   drawHUD(ctx) {
     const W = M.W, C = M.C;
-    const bw = 380, bh = 22, y = 26;
+    const bw = 360, bh = 24, y = 24, sl = 14;
     const bar = (f, right) => {
-      const x0 = right ? W - 40 - bw : 40;
-      ctx.fillStyle = C.ink; ctx.fillRect(x0 - 4, y - 4, bw + 8, bh + 8);
-      ctx.fillStyle = '#3a2a1e'; ctx.fillRect(x0, y, bw, bh);
+      const x0 = right ? W - 84 - bw : 84, mx = right ? W - 44 : 44, my = y + bh / 2 + 6;
       const pct = M.clamp(f.hp / f.maxHp, 0, 1), trail = M.clamp(f.dmgTrail / f.maxHp, 0, 1);
-      const w1 = bw * pct, w2 = bw * trail;
-      ctx.fillStyle = C.red; ctx.fillRect(right ? x0 + bw - w2 : x0, y, w2, bh);
-      ctx.fillStyle = pct > 0.5 ? C.green : pct > 0.25 ? C.yellow : C.orange; ctx.fillRect(right ? x0 + bw - w1 : x0, y, w1, bh);
-      ctx.fillStyle = 'rgba(255,248,232,0.25)'; ctx.fillRect(right ? x0 + bw - w1 : x0, y, w1, 6);
-      ctx.strokeStyle = C.ink; ctx.lineWidth = 2; for (let i = 1; i < 10; i++) { const px = x0 + bw * i / 10; ctx.beginPath(); ctx.moveTo(px, y); ctx.lineTo(px, y + bh); ctx.stroke(); }
-      M.text(ctx, Math.ceil(pct * 100) + '%', right ? x0 + 8 : x0 + bw - 8, y + bh / 2 + 1, { size: 13, align: right ? 'left' : 'right', color: C.paper, lw: 2.5 });
-      if (f.hp < f.maxHp && this.frame - (f.lastHurt || -999) < 30 && this.frame % 6 < 3) { ctx.fillStyle = 'rgba(255,248,232,0.35)'; ctx.fillRect(right ? x0 + bw - w2 : x0, y, w2, bh); }
-      M.text(ctx, f.def.name.toUpperCase(), right ? x0 + bw : x0, y + bh + 16, { size: 17, align: right ? 'right' : 'left', color: C.paper, lw: 3 });
-      if (f.ctrl === 'cpu') M.text(ctx, 'CPU • ' + ({ novato: 'NOVATO', brabo: 'BRABO', lendario: 'LENDÁRIO' }[this.o.difficulty] || 'BRABO'), right ? x0 : x0 + bw, y + bh + 16, { size: 12, align: right ? 'left' : 'right', color: '#8d8a84', lw: 2 });
-      for (let i = 0; i < (this.winsNeeded <= 3 ? this.winsNeeded : 0); i++) { const sx = right ? x0 + bw - 14 - i * 26 : x0 + 14 + i * 26; M.star(ctx, sx, y + bh + 40, 9, 4, 5, -Math.PI / 2); ctx.fillStyle = i < this.wins[f.side - 1] ? C.yellow : '#3a2a1e'; ctx.fill(); ctx.lineWidth = 2.5; ctx.strokeStyle = C.ink; ctx.stroke(); }
-      if (f.burn > 0 && this.frame % 20 < 14) M.text(ctx, 'QUEIMANDO', right ? x0 : x0 + bw, y + bh + 40, { size: 12, align: right ? 'left' : 'right', color: C.orange, lw: 2.5 });
+      const low = pct < 0.25 && pct > 0, pulse = low ? (Math.sin(this.frame * 0.35) + 1) / 2 : 0;
+      const shape = (xa, wa) => { // paralelogramo com a ponta de dentro inclinada
+        ctx.beginPath();
+        if (!right) { ctx.moveTo(xa, y); ctx.lineTo(xa + wa, y); ctx.lineTo(xa + wa - sl * (wa / bw > 0.02 ? 1 : 0), y + bh); ctx.lineTo(xa, y + bh); }
+        else { ctx.moveTo(xa + wa, y); ctx.lineTo(xa, y); ctx.lineTo(xa + sl * (wa / bw > 0.02 ? 1 : 0), y + bh); ctx.lineTo(xa + wa, y + bh); }
+        ctx.closePath();
+      };
+      // moldura e fundo
+      ctx.save(); ctx.translate(3, 3); shape(x0, bw); ctx.fillStyle = 'rgba(20,18,16,0.55)'; ctx.fill(); ctx.restore();
+      shape(x0 - 3, bw + 6); ctx.fillStyle = C.ink; ctx.fill();
+      shape(x0, bw); ctx.fillStyle = '#2a1f17'; ctx.fill();
+      ctx.save(); shape(x0, bw); ctx.clip();
+      const wTrail = bw * trail, wHp = bw * pct;
+      const px = w => (right ? x0 + bw - w : x0);
+      ctx.fillStyle = '#e8d9a8'; ctx.fillRect(px(wTrail), y, wTrail, bh);
+      const g = ctx.createLinearGradient(0, y, 0, y + bh);
+      const base = pct > 0.5 ? ['#46c47a', '#1f7a4d'] : pct > 0.25 ? ['#ffd24a', '#d9980c'] : ['#ff7a3a', '#c8371d'];
+      g.addColorStop(0, base[0]); g.addColorStop(1, base[1]);
+      ctx.fillStyle = g; ctx.fillRect(px(wHp), y, wHp, bh);
+      ctx.fillStyle = 'rgba(255,248,232,0.32)'; ctx.fillRect(px(wHp), y + 2, wHp, 5);
+      if (low) { ctx.fillStyle = `rgba(255,60,30,${0.15 + pulse * 0.25})`; ctx.fillRect(x0, y, bw, bh); }
+      ctx.strokeStyle = 'rgba(20,18,16,0.7)'; ctx.lineWidth = 2; for (let i = 1; i < 10; i++) { const gx = x0 + bw * i / 10; ctx.beginPath(); ctx.moveTo(gx, y); ctx.lineTo(gx, y + bh); ctx.stroke(); }
+      if (f.hp < f.maxHp && this.frame - (f.lastHurt || -999) < 30 && this.frame % 6 < 3) { ctx.fillStyle = 'rgba(255,248,232,0.4)'; ctx.fillRect(px(wTrail), y, wTrail, bh); }
+      ctx.restore();
+      shape(x0, bw); ctx.lineWidth = 2.5; ctx.strokeStyle = C.paper; ctx.globalAlpha = 0.35; ctx.stroke(); ctx.globalAlpha = 1;
+      M.text(ctx, Math.ceil(pct * 100) + '%', right ? x0 + 12 : x0 + bw - 12, y + bh / 2 + 1, { size: 13, align: right ? 'left' : 'right', color: C.paper, lw: 2.5 });
+      // medalhão com o rosto
+      const fc = M._faces = M._faces || {};
+      if (!fc[f.def.id]) { const c = document.createElement('canvas'); c.width = 72; c.height = 72; const g2 = c.getContext('2d'); g2.beginPath(); g2.arc(36, 36, 35, 0, Math.PI * 2); g2.clip(); const bg = g2.createLinearGradient(0, 0, 0, 72); bg.addColorStop(0, '#f2b70c'); bg.addColorStop(1, f.def.colors.accent || '#c8371d'); g2.fillStyle = bg; g2.fillRect(0, 0, 72, 72); const rig = M.render.computeRig(M.poses.idlePose(f.def.idle, 0.6, f.def.idleOver), f.def); g2.translate(36, 40); g2.scale(2.1, 2.1); g2.translate(-rig.head[0], -(rig.head[1] + rig.shift)); M.render.drawRig(g2, rig, f.def, { happy: true }); fc[f.def.id] = c; }
+      const ready = this.superReady(f), shk = low ? Math.sin(this.frame * 0.9) * 1.2 : 0;
+      ctx.save(); ctx.translate(mx + shk, my);
+      ctx.beginPath(); ctx.arc(2, 3, 35, 0, Math.PI * 2); ctx.fillStyle = 'rgba(20,18,16,0.55)'; ctx.fill();
+      ctx.beginPath(); ctx.arc(0, 0, 36, 0, Math.PI * 2); ctx.fillStyle = C.ink; ctx.fill();
+      ctx.drawImage(fc[f.def.id], -33, -33, 66, 66);
+      ctx.beginPath(); ctx.arc(0, 0, 33.5, 0, Math.PI * 2); ctx.lineWidth = 4; ctx.strokeStyle = ready ? (this.frame % 10 < 5 ? C.magenta : C.yellow) : (low ? `rgba(255,${90 + pulse * 100},60,1)` : C.paper); ctx.stroke();
+      if (ready) { ctx.globalAlpha = 0.35 + 0.25 * Math.sin(this.frame * 0.3); ctx.beginPath(); ctx.arc(0, 0, 40, 0, Math.PI * 2); ctx.lineWidth = 3; ctx.strokeStyle = C.magenta; ctx.stroke(); ctx.globalAlpha = 1; }
+      ctx.restore();
+      // placa do nome
+      const nm = f.def.name.toUpperCase();
+      ctx.save(); const ny = y + bh + 6, nw = 200, nx = right ? x0 + bw - nw : x0;
+      ctx.beginPath(); if (!right) { ctx.moveTo(nx, ny); ctx.lineTo(nx + nw, ny); ctx.lineTo(nx + nw - 10, ny + 20); ctx.lineTo(nx, ny + 20); } else { ctx.moveTo(nx + nw, ny); ctx.lineTo(nx, ny); ctx.lineTo(nx + 10, ny + 20); ctx.lineTo(nx + nw, ny + 20); }
+      ctx.closePath(); ctx.fillStyle = C.ink; ctx.fill(); ctx.fillStyle = f.def.colors.accent || C.yellow; ctx.fillRect(right ? nx + nw - 5 : nx, ny, 5, 20); ctx.restore();
+      M.text(ctx, nm, right ? x0 + bw - 12 : x0 + 12, y + bh + 17, { size: 14, align: right ? 'right' : 'left', color: C.paper, stroke: false, maxW: 176 });
+      if (f.ctrl === 'cpu') M.text(ctx, 'CPU • ' + ({ novato: 'NOVATO', brabo: 'BRABO', lendario: 'LENDÁRIO' }[this.o.difficulty] || 'BRABO'), right ? x0 : x0 + bw, y + bh + 17, { size: 11, align: right ? 'left' : 'right', color: '#b8b2a4', lw: 2 });
+      for (let i = 0; i < (this.winsNeeded <= 3 ? this.winsNeeded : 0); i++) { const sx = right ? x0 + bw - 12 - i * 22 : x0 + 12 + i * 22; M.star(ctx, sx, y + bh + 44, 9, 4, 5, -Math.PI / 2); ctx.fillStyle = i < this.wins[f.side - 1] ? C.yellow : '#3a2a1e'; ctx.fill(); ctx.lineWidth = 2.5; ctx.strokeStyle = C.ink; ctx.stroke(); }
+      if (f.burn > 0 && this.frame % 20 < 14) M.text(ctx, 'QUEIMANDO', right ? x0 : x0 + bw, y + bh + 44, { size: 12, align: right ? 'left' : 'right', color: C.orange, lw: 2.5 });
     };
     bar(this.p1, false); bar(this.p2, true);
     // relógio
@@ -609,7 +642,7 @@ M.Match = class Match {
     ctx.beginPath(); ctx.arc(W / 2, ay + ah / 2, 5, 0, Math.PI * 2); ctx.fillStyle = C.red; ctx.fill();
     M.text(ctx, 'ENERGIA', W / 2, ay - 16, { size: 15, color: C.paper, lw: 3 });
     const favName = this.axe > 0.15 ? this.p1.def.name : this.axe < -0.15 ? this.p2.def.name : null;
-    if (favName) M.text(ctx, 'A RINHA TÁ COM ' + favName.toUpperCase(), this.axe > 0 ? ax0 + 6 : ax0 + aw - 6, ay - 16, { size: 12, align: this.axe > 0 ? 'left' : 'right', color: C.yellow, lw: 2.5, maxW: 255 });
+    if (favName) M.text(ctx, 'A RINHA TÁ COM ' + favName.toUpperCase(), this.axe > 0 ? ax0 + 6 : ax0 + aw - 6, ay - 16, { size: 12, align: this.axe > 0 ? 'left' : 'right', color: C.yellow, lw: 2.5, maxW: 190 });
     for (const f of this.fighters) {
       const x = f.side === 1 ? ax0 - 10 : ax0 + aw + 10, al = f.side === 1 ? 'right' : 'left';
       if (this.superReady(f) && this.frame % 30 < 20) { const keyHint = f.ctrl === 'human' ? (f.side === 1 ? ' (U)' : ' (Num5)') : ''; const max = Math.abs(this.axe) >= 0.97; M.text(ctx, (max ? 'PEIA BRABA' : 'PEIA PRONTA') + keyHint, x, ay + 9, { size: 15, align: al, color: max ? C.yellow : C.magenta, lw: 3 }); }
