@@ -13,6 +13,8 @@ M.ui = (function () {
     root = document.getElementById('ui');
     window.addEventListener('keydown', e => {
       if (!current) return;
+      const tg = e.target && e.target.tagName;
+      if (tg === 'INPUT' || tg === 'TEXTAREA') { if (e.code === 'Escape' || (e.code === 'Enter' && tg === 'INPUT')) { e.preventDefault(); e.target.blur(); } return; } // digitando: o menu não mexe
       if (current.onKey && current.onKey(e) === true) { e.preventDefault(); return; }
       if (!items.length) return;
       const horiz = ['ArrowLeft', 'KeyA', 'ArrowRight', 'KeyD'].includes(e.code);
@@ -88,6 +90,7 @@ M.ui = (function () {
     L.push(['cpu', 'VERSUS CPU', '', 'você contra a máquina, escolha o adversário']);
     L.push(['versus', 'VERSUS 2 JOGADORES', '', 'dois no mesmo teclado']);
     L.push(['training', 'TREINO', '', 'pratique golpes e combos']);
+    R.push(['comp', 'COMPETITIVO', d.progress.comp ? M.tr(M.comp.rank(d.progress.comp.pr).tier.name.split(' ')[0]) : '', 'ranqueada, torneio local, replays e dados de quadros']);
     R.push(['free', 'RINHA LIVRE', '', free ? 'enfrente toda a rinha com qualquer lutador' : 'vença a História para liberar', !free]);
     R.push(['survival', 'MARATONA', d.progress.surv && d.progress.surv.bestWave ? `onda ${d.progress.surv.bestWave}` : '', 'ondas sem fim, cada uma mais brava; a vida passa de luta em luta']);
     R.push(['daily', 'DESAFIO DO DIA', dayDone ? '✔' : '', 'um duelo novo todo dia, com regras malucas e um objetivo bônus']);
@@ -116,7 +119,7 @@ M.ui = (function () {
       actions: {
         cont: () => M.flow.continueStory(), story: () => storyStart(), legends: () => { if (!legUnlocked) { M.audio.play('uiBack'); return; } if (legCont) legendsMenu(); else storyStart({ title: 'LENDAS DA NOITE', text: 'Quatro assombrações do Nordeste — Fulozinha, Cabeça de Cuia, Mula-sem-Cabeça e Papa-Figo — esperam o novo guardião da Brasa. Garrafada entre as rinhas. Caiu? Levanta e tenta de novo.', pick: dd => M.flow.newLegends(dd) }); }, versus: () => charselect({ players: 2, mode: 'versus' }), cpu: () => charselect({ players: 2, mode: 'cpu' }),
         training: () => charselect({ players: 1, mode: 'training' }), free: () => { if (free) charselect({ players: 1, mode: 'free' }); else M.audio.play('uiBack'); },
-        survival: () => charselect({ players: 1, mode: 'survival' }), daily: () => M.ui2.daily(), extras: () => M.ui2.extras(),
+        survival: () => charselect({ players: 1, mode: 'survival' }), comp: () => M.ui3.hub(), daily: () => M.ui2.daily(), extras: () => M.ui2.extras(),
         ach: () => achievements(menu), howto: () => howto(menu), options: () => options(menu), credits: () => credits(), quit: () => M.platform.quit()
       }
     });
@@ -311,9 +314,16 @@ M.ui = (function () {
     const unlocked = M.store.data.progress.cinzas;
     const roster = M.ROSTER;
     const sel = o.keep || { p1: 0, p2: 1, stage: 0, step: 1, pal1: 0, pal2: 0, palFor: null };
+    const lock = o.lock || {}, tourney = o.mode === 'tourney', names = o.names || ['JOGADOR 1', 'JOGADOR 2'];
+    const cancel = () => (o.onCancel ? o.onCancel() : menu());
+    if (!o.keep) {
+      if (lock.p1 !== undefined) sel.p1 = roster.indexOf(lock.p1);
+      if (lock.p2 !== undefined) sel.p2 = roster.indexOf(lock.p2);
+      if (o.players === 2 && lock.p1 !== undefined) sel.step = 2;
+    }
     const setPal = () => { const id = roster[sel.p1]; if (sel.palFor !== id) { sel.palFor = id; sel.pal1 = ((M.store.data.settings.pals || {})[id]) | 0; } const id2 = roster[sel.p2]; if (sel.palFor2 !== id2) { sel.palFor2 = id2; sel.pal2 = 0; } };
     const stages = ['aleatorio'].concat(M.stages.order);
-    const modeName = { versus: 'VERSUS 2P', cpu: 'VERSUS CPU', training: 'TREINO', free: 'RINHA LIVRE', survival: 'MARATONA' }[o.mode];
+    const modeName = { versus: 'VERSUS 2P', cpu: 'VERSUS CPU', training: 'TREINO', free: 'RINHA LIVRE', survival: 'MARATONA', ranked: 'RANQUEADA', tourney: 'TORNEIO' }[o.mode];
     const hasRules = o.mode === 'cpu' || o.mode === 'versus';
     show(`<div class="screen cs">
       <div class="cs-head"><span class="stamp">${modeName}</span><span id="csTurn" class="cs-turn"></span><button class="btn ghost" data-go="back">◂ voltar</button></div>
@@ -323,22 +333,22 @@ M.ui = (function () {
         <div class="cs-info right" id="csInfo2"></div>
       </div>
       <div class="cs-foot">
-        <div class="cs-stage"><span>CENÁRIO</span><button class="btn small" data-go="stPrev">◂</button><b id="csStage"></b><button class="btn small" data-go="stNext">▸</button></div>
-        ${o.mode !== 'versus' ? `<div class="cs-stage"><span>DIFICULDADE</span><button class="btn small" data-go="dfPrev">◂</button><b id="csDiff"></b><button class="btn small" data-go="dfNext">▸</button></div>` : ''}
+        ${tourney ? '' : `<div class="cs-stage"><span>CENÁRIO</span><button class="btn small" data-go="stPrev">◂</button><b id="csStage"></b><button class="btn small" data-go="stNext">▸</button></div>`}
+        ${o.mode !== 'versus' && !tourney ? `<div class="cs-stage"><span>DIFICULDADE</span><button class="btn small" data-go="dfPrev">◂</button><b id="csDiff"></b><button class="btn small" data-go="dfNext">▸</button></div>` : ''}
         ${hasRules ? `<div class="cs-stage"><span>REGRAS</span><button class="btn small" data-go="rules" id="csRules"></button></div>` : ''}
         <div class="cs-hint">P1: WASD + J confirma • K volta • L muda a cor${o.players === 2 && o.mode !== 'cpu' ? ' • P2: setas + Num1 ou vírgula' : ''}</div>
-        <button class="btn primary" data-go="go" id="csGo">LUTAR!</button>
+        <button class="btn primary" data-go="go" id="csGo">${tourney ? 'CONFIRMAR' : 'LUTAR!'}</button>
       </div>
     </div>`, {
-      showBack: false, onBack: () => { if (sel.step === 2) { sel.step = 1; refresh(); } else menu(); },
-      actions: { back: () => menu(), rules: () => M.ui2.rules({ onBack: () => charselect(Object.assign({}, o, { keep: sel })) }), stPrev: () => { sel.stage = (sel.stage + stages.length - 1) % stages.length; refresh(); }, stNext: () => { sel.stage = (sel.stage + 1) % stages.length; refresh(); }, dfPrev: () => cycleDiff(-1), dfNext: () => cycleDiff(1), go: () => go() },
+      showBack: false, onBack: () => { if (sel.step === 2 && lock.p1 === undefined) { sel.step = 1; refresh(); } else cancel(); },
+      actions: { back: () => cancel(), rules: () => M.ui2.rules({ onBack: () => charselect(Object.assign({}, o, { keep: sel })) }), stPrev: () => { sel.stage = (sel.stage + stages.length - 1) % stages.length; refresh(); }, stNext: () => { sel.stage = (sel.stage + 1) % stages.length; refresh(); }, dfPrev: () => cycleDiff(-1), dfNext: () => cycleDiff(1), go: () => go() },
       onKey: e => {
         const c = e.code;
         const who = (o.players === 2 && sel.step === 2) ? 'p2' : 'p1';
         const isP1 = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyJ', 'KeyK', 'KeyL', 'Enter', 'Space'].includes(c);
         const isP2 = ['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight', 'Numpad1', 'Comma', 'Numpad2', 'Period', 'Numpad3', 'Slash'].includes(c);
         if (!isP1 && !isP2 && c !== 'Escape') return false;
-        if (c === 'Escape') { if (sel.step === 2) { sel.step = 1; refresh(); } else menu(); return true; }
+        if (c === 'Escape') { if (sel.step === 2 && lock.p1 === undefined) { sel.step = 1; refresh(); } else cancel(); return true; }
         if (['KeyL', 'Numpad3', 'Slash'].includes(c)) { cyclePal(who === 'p2' ? 2 : 1, 1); return true; }
         const key = who === 'p2' ? sel.p2 : sel.p1;
         let n = key;
@@ -348,7 +358,7 @@ M.ui = (function () {
         else if (['KeyW', 'ArrowUp'].includes(c)) n = (key + N - COLS + N) % N;
         else if (['KeyS', 'ArrowDown'].includes(c)) n = (key + COLS) % N;
         else if (['KeyJ', 'Enter', 'Space', 'Numpad1', 'Comma'].includes(c)) { confirm(); return true; }
-        else if (['KeyK', 'Numpad2', 'Period'].includes(c)) { if (sel.step === 2) { sel.step = 1; refresh(); } else menu(); return true; }
+        else if (['KeyK', 'Numpad2', 'Period'].includes(c)) { if (sel.step === 2 && lock.p1 === undefined) { sel.step = 1; refresh(); } else cancel(); return true; }
         if (n !== key) { if (who === 'p2') sel.p2 = n; else sel.p1 = n; M.audio.play('uiMove'); refresh(); }
         return true;
       }
@@ -386,11 +396,12 @@ M.ui = (function () {
     function refresh() {
       grid.querySelectorAll('.cs-card').forEach((el, i) => { el.classList.toggle('c1', i === sel.p1); el.classList.toggle('c2', o.players === 2 && i === sel.p2 && sel.step === 2 || (o.players === 2 && sel.step === 3 && i === sel.p2)); });
       setPal();
-      info(document.getElementById('csInfo1'), sel.p1, 'JOGADOR 1', 1);
+      info(document.getElementById('csInfo1'), sel.p1, tourney ? names[0] : 'JOGADOR 1', 1);
       const i2 = document.getElementById('csInfo2');
-      if (o.players === 2) info(i2, sel.p2, o.mode === 'cpu' ? 'ADVERSÁRIO (CPU)' : (sel.step >= 2 ? 'JOGADOR 2' : 'JOGADOR 2 (aguardando)'), 2); else i2.innerHTML = `<div class="cs-label">${o.mode === 'free' ? 'A RINHA INTEIRA' : o.mode === 'survival' ? 'A MARATONA' : 'BONECO / CPU'}</div><p>${o.mode === 'free' ? 'Você enfrenta sete adversários sorteados e o Mestre por último. Garrafada a cada vitória.' : o.mode === 'survival' ? 'Adversários sem fim, cada onda mais brava. Sua vida passa de uma luta para a outra (com um respiro entre elas) e a cada três ondas você ganha uma garrafada. Quanto você aguenta?' : 'No treino, o oponente começa parado. Pause (ESC) para mudar o comportamento do boneco.'}</p>`;
-      document.getElementById('csTurn').textContent = o.players === 2 ? (sel.step === 1 ? (o.mode === 'cpu' ? 'ESCOLHA SEU LUTADOR' : 'JOGADOR 1 ESCOLHE') : sel.step === 2 ? (o.mode === 'cpu' ? 'ESCOLHA O ADVERSÁRIO (CPU)' : 'JOGADOR 2 ESCOLHE') : 'PRONTO!') : '';
-      document.getElementById('csStage').textContent = stages[sel.stage] === 'aleatorio' ? 'Aleatório' : M.stages.DEFS[stages[sel.stage]].name;
+      if (o.players === 2) info(i2, sel.p2, o.mode === 'cpu' ? 'ADVERSÁRIO (CPU)' : (tourney ? names[1] : (sel.step >= 2 ? 'JOGADOR 2' : 'JOGADOR 2 (aguardando)')), 2); else i2.innerHTML = tourney ? `<div class="cs-label">${names[1]}</div><p>A CPU escolhe o lutador dela sozinha.</p>` : `<div class="cs-label">${o.mode === 'free' ? 'A RINHA INTEIRA' : o.mode === 'survival' ? 'A MARATONA' : o.mode === 'ranked' ? 'PARTIDA RANQUEADA' : 'BONECO / CPU'}</div><p>${o.mode === 'free' ? 'Você enfrenta sete adversários sorteados e o Mestre por último. Garrafada a cada vitória.' : o.mode === 'survival' ? 'Adversários sem fim, cada onda mais brava. Sua vida passa de uma luta para a outra (com um respiro entre elas) e a cada três ondas você ganha uma garrafada. Quanto você aguenta?' : o.mode === 'ranked' ? 'Melhor de 3 rodadas, 99 segundos, sem modificadores. A CPU é sorteada e ajustada ao seu nível: vença para subir de divisão, perca e a pontuação cai.' : 'No treino, o oponente começa parado. Pause (ESC) para mudar o comportamento do boneco.'}</p>`;
+      document.getElementById('csTurn').toggleAttribute('data-notr', !!tourney);
+      document.getElementById('csTurn').textContent = tourney ? (o.players === 2 ? (sel.step === 1 ? names[0] : names[1]) + ' ' + M.tr('ESCOLHE') : names[0] + ' ' + M.tr('ESCOLHE')) : o.players === 2 ? (sel.step === 1 ? (o.mode === 'cpu' ? 'ESCOLHA SEU LUTADOR' : 'JOGADOR 1 ESCOLHE') : sel.step === 2 ? (o.mode === 'cpu' ? 'ESCOLHA O ADVERSÁRIO (CPU)' : 'JOGADOR 2 ESCOLHE') : 'PRONTO!') : '';
+      const sEl = document.getElementById('csStage'); if (sEl) sEl.textContent = stages[sel.stage] === 'aleatorio' ? 'Aleatório' : M.stages.DEFS[stages[sel.stage]].name;
       const rEl = document.getElementById('csRules'); if (rEl) { const R = M.rules.get(); rEl.setAttribute('data-notr', ''); rEl.textContent = R.rounds + ' • ' + (R.timer || '∞') + (R.timer ? 's' : '') + (R.mut.length ? ' • ' + R.mut.map(id => M.mutById(id).icon).join('') : ''); }
       const dEl = document.getElementById('csDiff'); if (dEl) dEl.textContent = diffLabel(M.store.data.settings.difficulty);
     }
@@ -398,17 +409,19 @@ M.ui = (function () {
       const cur = (o.players === 2 && sel.step === 2) ? sel.p2 : sel.p1;
       if (roster[cur] === 'cinzas' && !unlocked) { M.audio.play('uiBack'); return; }
       M.audio.play('ui');
-      if (o.players === 2 && sel.step === 1) { sel.step = 2; refresh(); return; }
+      if (o.players === 2 && sel.step === 1) { if (lock.p2 !== undefined) go(); else { sel.step = 2; refresh(); } return; }
       go();
     }
     function go() {
-      if (o.players === 2 && sel.step === 1) { sel.step = 2; refresh(); return; }
+      if (o.players === 2 && sel.step === 1 && lock.p2 === undefined) { sel.step = 2; refresh(); return; }
+      if (o.onPick) { o.onPick({ p1: roster[sel.p1], p2: roster[sel.p2], pal1: sel.pal1, pal2: sel.pal2 }); return; }
       const stage = stages[sel.stage] === 'aleatorio' ? M.choice(M.stages.order) : stages[sel.stage];
       let p2 = roster[sel.p2];
       if (o.players === 1) { const pool = roster.filter(id => id !== roster[sel.p1] && (id !== 'cinzas' || unlocked)); p2 = M.choice(pool); }
       M.flow.startFromSelect({ mode: o.mode, p1: roster[sel.p1], p2, stage, pal1: sel.pal1, pal2: o.players === 2 ? sel.pal2 : 0 });
     }
     refresh();
+    if (o.onPick && ((o.players === 1 && lock.p1 !== undefined) || (o.players === 2 && lock.p1 !== undefined && lock.p2 !== undefined))) setTimeout(go, 30);
   }
 
   // ---------- PAUSA ----------
@@ -422,7 +435,7 @@ M.ui = (function () {
         <button class="mi" data-go="resume">CONTINUAR</button>
         ${tr ? `<button class="mi" data-go="dummy">BONECO: <b id="dummyLbl">${dummies.find(d => d[0] === M.match.dummyMode)[1]}</b></button>` : ''}
         ${M.match && M.match.tutorial ? `<button class="mi" data-go="skipTut">PULAR O TREINO</button>` : ''}
-        <button class="mi" data-go="restart">REINICIAR LUTA</button>
+        <button class="mi" data-go="restart">${opts.replay ? 'REINICIAR REPLAY' : 'REINICIAR LUTA'}</button>
         <button class="mi" data-go="options">OPÇÕES</button>
         <button class="mi" data-go="quit">SAIR PRO MENU</button>
       </nav>
@@ -462,6 +475,7 @@ M.ui = (function () {
           <button class="mi" data-go="paint">ESTILO VISUAL <b>${s.paint ? 'PINTURA' : 'XILOGRAVURA'}</b></button>
           <button class="mi" data-go="post">PÓS-PROCESSAMENTO <b>${onoff(s.post)}</b></button>
           <button class="mi" data-go="quality">QUALIDADE GRÁFICA <b>${QUAL[s.quality || 'auto']}</b></button>
+          <button class="mi" data-go="broadcast">MODO TRANSMISSÃO <b>${onoff(s.broadcast)}</b></button>
           <button class="mi" data-go="fullscreen">TELA CHEIA <b>${document.fullscreenElement ? 'LIGADO' : 'DESLIGADO'}</b></button>
           <h4>ACESSIBILIDADE</h4>
           ${tog('shake', 'TREMOR DE TELA')}${tog('reduceFlash', 'REDUZIR FLASHES')}
@@ -475,6 +489,7 @@ M.ui = (function () {
       actions: {
         music: () => { s.music = !s.music; save(); }, sfx: () => { s.sfx = !s.sfx; save(); }, shake: () => { s.shake = !s.shake; save(); }, hitboxes: () => { s.hitboxes = !s.hitboxes; save(); },
         reduceFlash: () => { s.reduceFlash = !s.reduceFlash; save(); M.paint.apply(); },
+        broadcast: () => { s.broadcast = !s.broadcast; save(); M.flow.updateTouch(); },
         touch: () => { s.touch = { auto: 'on', on: 'off', off: 'auto' }[s.touch]; save(); M.flow.updateTouch(); },
         paint: () => { s.paint = !s.paint; save(); M.paint.apply(); }, post: () => { s.post = !s.post; save(); M.paint.apply(); },
         quality: () => { s.quality = { auto: 'high', high: 'low', low: 'auto' }[s.quality || 'auto']; M.paint.P.autoLow = false; save(); M.paint.apply(); },
@@ -552,7 +567,8 @@ M.ui = (function () {
           <tr><td>Pulo na parede</td><td colspan="2">cima encostado na borda</td></tr>
           <tr><td>Rolar ao levantar</td><td colspan="2">← ou → no chão</td></tr>
           <tr><td>Fôlego (especial EX)</td><td colspan="2">K + L juntos (gasta 25% de Energia)</td></tr>
-          <tr><td>Pausa</td><td colspan="2">ESC</td></tr></table>
+          <tr><td>Pausa</td><td colspan="2">ESC</td></tr>
+          <tr><td>Esconder o painel (vídeos e prints)</td><td colspan="2">F9</td></tr></table>
           <p class="tiny">Controle (gamepad) também funciona: analógico/d-pad, X leve, Y forte, B especial, A arreda, RB peia, LB provocar, LT agarrão, Start pausa.</p>
         </div>
         <div><h3>A RINHA</h3>

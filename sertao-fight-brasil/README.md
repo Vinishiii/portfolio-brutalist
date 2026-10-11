@@ -77,13 +77,24 @@ Zeca Ventania, Bia Sombrinha, Maré Bacuri, Tião Sertão, Bené Sanfona, Juvena
 
 Cada lenda tem seu cenário: Mata Branca Encantada, Estrada da Meia-Noite, Beco da Matriz e Delta do Parnaíba.
 
+## Competitivo
+
+Menu ▸ **COMPETITIVO**: **ranqueada** contra uma CPU que se ajusta ao seu nível (PR, 7 níveis, divisões, colocação), **torneio local** (3–16 jogadores, eliminação simples ou dupla, séries MD1/3/5, banimento de cenário, vencedor mantém o lutador, CPUs simuladas), **replays** (gravação automática, velocidade, código para compartilhar), **dados de quadros** de todos os golpes e **modo transmissão** (placar, tags, entradas dos jogadores, F9 esconde o painel). Detalhes, limites e plano para o online em **[COMPETITIVO.md](COMPETITIVO.md)**. O jogo **não tem partidas online**.
+
+## Modos extras
+
+- **Maratona**: ondas sem fim, vida que passa de luta em luta, garrafada a cada três ondas, chefe a cada dez.
+- **Desafio do Dia**: um duelo novo por dia (mesmo para todo mundo), com modificadores e objetivo bônus, sequência de dias.
+- **Regras da rinha**: rodadas, tempo e 6 modificadores (dano dobrado, vida curta, turbo, gravidade da Lua, torcida eufórica, sangue quente) no Versus.
+- **Cores alternativas** para todos os lutadores (tecla L na seleção), **estatísticas** completas e **jukebox** com as músicas de cada cenário.
+
 ## Idiomas
 
 **Português (Brasil), English e Español** — interface, diálogos, cordéis, nomes de golpes, tutorial e conquistas. O idioma inicial segue o do sistema/Steam; troque na tela inicial ou em Opções. O português é a fonte de verdade: `js/i18n.js` traduz na hora de exibir usando os pacotes de `js/lang/` (linhas `[pt, en, es]`). `index.html?lang=en` força um idioma na sessão; `M.i18n.misses` no console lista textos ainda sem tradução.
 
 ## Conquistas e opções
 
-- **26 conquistas** (primeira vitória, combos, esquivas perfeitas, finais, nota S, nível Lendário...), com aviso na tela e integração com a Steam (`ACH_<ID>`, ver `STEAM.md`).
+- **45 conquistas** (primeira vitória, combos, esquivas perfeitas, finais, nota S, nível Lendário...), com aviso na tela e integração com a Steam (`ACH_<ID>`, ver `STEAM.md`).
 - Opções: volume, música/efeitos, tremor de tela, idioma, **velocidade do jogo**, **reduzir flashes**, **qualidade** (auto / alta / baixa), estilo visual (Pintura / Xilogravura), controles de toque e remapeamento de teclas.
 - **Qualidade automática**: se os quadros caem, o jogo desliga primeiro o pós-processamento e depois a camada de pintura.
 - Fontes embutidas (funciona offline), salvamento automático (arquivo no desktop, `localStorage` no navegador).
@@ -121,6 +132,14 @@ sertao-fight-brasil/
   js/game.js           partida: rodadas, Energia, colisões, chefe, tutorial, HUD
   js/story.js          cordéis, diálogos, garrafadas, finais
   js/ui.js             telas em DOM
+  js/ui2.js            regras, Maratona, Desafio do Dia, estatísticas, jukebox
+  js/ui3.js            competitivo: central, ranqueada, replays, dados de quadros
+  js/ui4.js            torneio local: montagem, chaves, séries, campeão
+  js/modes.js          modificadores, regras, cores alternativas, estatísticas, Maratona, Desafio do Dia
+  js/comp.js           perfil competitivo e ranqueada (PR, níveis, histórico)
+  js/tourney.js        motor de chaves do torneio
+  js/replay.js         gravação e reprodução de lutas (determinístico)
+  js/framedata.js      dados de quadros e vantagem no treino
   js/i18n.js           tradução PT/EN/ES (dicionário, padrões, DOM)
   js/lang/*.js         pacotes de tradução [pt, en, es]
   js/achievements.js   conquistas e ponte com a plataforma (Steam)

@@ -27,6 +27,7 @@ M.input = (function () {
 
   window.addEventListener('keydown', e => {
     if (captureCb) { e.preventDefault(); e.stopImmediatePropagation(); const cb = captureCb; captureCb = null; cb(e.code); return; }
+    if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return; // digitando em um campo de texto
     if (e.repeat) return;
     if (!keys[e.code]) { keys[e.code] = true; queue.push(e.code); anyFlag = true; }
     if (PAUSE_KEYS.includes(e.code)) pauseFlag = true;

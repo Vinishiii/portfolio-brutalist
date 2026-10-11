@@ -61,7 +61,7 @@
     else M.input.takePadEdges();
     if (M.state === 'fight' && M.match) {
       if (M.input.pausePressed()) { openPause(); return; }
-      M.match.update(); M.stats.tick();
+      if (M.match.o.replay) M.replay.tick(M.match); else { M.match.update(); M.stats.tick(); }
     } else {
       M.input.pausePressed();
       if (ambient && !M.match) updateAmbient();
@@ -79,8 +79,9 @@
     M.ui.pause({
       training: m.mode === 'training',
       resume: () => { M.ui.hide(); M.state = 'fight'; M.input.clear(); },
-      restart: () => { M.ui.hide(); const o = m.o; M.match = new M.Match(o); M.state = 'fight'; },
-      quit: () => { M.match = null; M.ui.menu(); }
+      replay: !!m.o.replay,
+      restart: () => { if (m.o.replay) { M.replay.start(m.o.replay, m.o.onEnd); return; } M.ui.hide(); const o = m.o; M.match = new M.Match(o); M.state = 'fight'; },
+      quit: () => { if (m.o.mode === 'ranked') { M.comp.forfeit(); return; } if (m.o.mode === 'tourney' && M.tourney) { M.tourney.abortGame(); return; } M.match = null; M.ui.menu(); }
     });
   }
 
@@ -88,7 +89,7 @@
   const flow = M.flow = {
     story: null,
     startMatch(o) {
-      const done = o.onEnd; o.onEnd = r => { try { M.stats.record(r, o); M.ach.matchEnd(r, o); } catch (e) { /* ignora */ } if (done) done(r); };
+      const done = o.onEnd; o.onEnd = r => { try { M.stats.record(r, o); M.ach.matchEnd(r, o); if (r.replay && (o.keepReplay !== undefined ? o.keepReplay : ['versus', 'daily', 'ranked', 'tourney'].includes(o.mode))) r.replayId = M.replay.keep(r.replay, { title: o.label || '', p1: o.p1.id, p2: o.p2.id }); } catch (e) { /* ignora */ } if (done) done(r); };
       M.ui.hide(); M.state = 'fight'; M.input.clear();
       M.match = new M.Match(o);
       flow.updateTouch();
@@ -107,6 +108,8 @@
         flow.freeFight();
       } else if (sel.mode === 'survival') {
         M.survival.start(sel.p1, sel.pal1 | 0);
+      } else if (sel.mode === 'ranked') {
+        M.comp.play(sel.p1, sel.pal1 | 0);
       }
     },
     // ---- desafio do dia ----
@@ -296,7 +299,7 @@
       const s = M.store.data.settings.touch;
       const hasTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
       const el = document.getElementById('touch');
-      const on = s === 'on' || (s === 'auto' && hasTouch);
+      const on = (s === 'on' || (s === 'auto' && hasTouch)) && !M.store.data.settings.broadcast;
       el.classList.toggle('show', on && M.state === 'fight');
       document.body.classList.toggle('touch-on', on);
     }
@@ -311,6 +314,7 @@
     document.getElementById('rotate').classList.toggle('show', vh > vw && (('ontouchstart' in window) || navigator.maxTouchPoints > 0));
   }
   window.addEventListener('resize', resize);
+  window.addEventListener('keydown', e => { if (e.code === 'F9') { M.hudHidden = !M.hudHidden; e.preventDefault(); } });
 
   // ---------- boot ----------
   function boot() {

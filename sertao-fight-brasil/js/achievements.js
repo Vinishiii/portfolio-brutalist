@@ -48,7 +48,17 @@ M.ach = (function () {
     { id: 'daily_star', icon: '✧', name: 'Estrela do Dia', desc: 'Cumpra o objetivo bônus de um Desafio do Dia.' },
     { id: 'mut_win', icon: '✺', name: 'Rinha Maluca', desc: 'Vença a CPU com dois modificadores ligados.' },
     { id: 'palette', icon: '◐', name: 'Cara Nova', desc: 'Vença uma luta com uma cor alternativa.' },
-    { id: 'jukebox', icon: '♫', name: 'Ouvido Absoluto', desc: 'Ouça todas as faixas do Jukebox.' }
+    { id: 'jukebox', icon: '♫', name: 'Ouvido Absoluto', desc: 'Ouça todas as faixas do Jukebox.' },
+    { id: 'comp_place', icon: '⚖', name: 'Medindo Forças', desc: 'Termine as cinco partidas de colocação da Ranqueada.' },
+    { id: 'rank_ouro', icon: '🥇', name: 'Cabra de Ouro', desc: 'Chegue ao nível Ouro na Ranqueada.' },
+    { id: 'rank_mestre', icon: '♜', name: 'Mestre da Rinha', desc: 'Chegue ao nível Mestre na Ranqueada.' },
+    { id: 'rank_lenda', icon: '♛', name: 'Lenda da Brasa', desc: 'Chegue ao nível Lenda da Brasa na Ranqueada.' },
+    { id: 'rank_streak5', icon: '⛓', name: 'Invicto', desc: 'Vença cinco partidas ranqueadas seguidas.' },
+    { id: 'tourney_done', icon: '⚑', name: 'Organizador', desc: 'Complete um Torneio Local.' },
+    { id: 'tourney_champ', icon: '🏆', name: 'Campeão da Praça', desc: 'Seja campeão de um Torneio Local.' },
+    { id: 'replay_watch', icon: '▶', name: 'Cinema da Rinha', desc: 'Assista a um replay.' },
+    { id: 'replay_share', icon: '✉', name: 'Compartilha Essa', desc: 'Gere o código de um replay para compartilhar.' },
+    { id: 'framedata', icon: '☷', name: 'Rato de Planilha', desc: 'Abra os Dados de Quadros.' }
   ];
   const byId = Object.fromEntries(LIST.map(a => [a.id, a]));
   const store = () => (M.store.data.progress.ach || (M.store.data.progress.ach = {}));
@@ -57,6 +67,7 @@ M.ach = (function () {
   let queue = [], showing = false;
 
   function toast(a) {
+    if (M.store.data.settings.broadcast) return; // transmissão: sem avisos na tela (a conquista é registrada igual)
     queue.push(a); if (!showing) next();
   }
   function next() {
@@ -64,7 +75,7 @@ M.ach = (function () {
     showing = true;
     let box = document.getElementById('toasts');
     if (!box) { box = document.createElement('div'); box.id = 'toasts'; document.body.appendChild(box); }
-    const el = document.createElement('div'); el.className = 'toast';
+    const el = document.createElement('div'); el.className = 'toast'; el.setAttribute('data-notr', '');
     el.innerHTML = `<div class="toast-ico">${a.icon}</div><div><b>${M.tr('CONQUISTA DESBLOQUEADA')}</b><span>${M.tr(a.name)}</span><small>${M.tr(a.desc)}</small></div>`;
     box.appendChild(el);
     if (M.audio && M.audio.play) M.audio.play('patua');
@@ -102,6 +113,11 @@ M.ach = (function () {
     if ((st.counters || 0) >= 3) unlock('counter3');
     if ((st.cornered || 0) >= 3) unlock('corner3');
   }
+  function rankEvent(d, after, before) {
+    if (d.games >= 5) unlock('comp_place');
+    if (after.ti >= 2) unlock('rank_ouro'); if (after.ti >= 5) unlock('rank_mestre'); if (after.ti >= 6) unlock('rank_lenda');
+    if (d.streak >= 5) unlock('rank_streak5');
+  }
   function storyEnd(S, endingId, grade) {
     unlock('story_done');
     const p = M.store.data.progress;
@@ -113,5 +129,5 @@ M.ach = (function () {
     if (S.bonds.length >= 6) unlock('bonds6');
     if (S.fama >= 7) unlock('fama7');
   }
-  return { LIST, byId, has, count, unlock, matchEnd, storyEnd, total: LIST.length };
+  return { LIST, byId, has, count, unlock, matchEnd, storyEnd, rankEvent, total: LIST.length };
 })();

@@ -19,6 +19,14 @@ M.TUTORIAL = [
 
 M.Match = class Match {
   constructor(o) {
+    // cada luta tem sua semente: tudo que é sorteado na simulação vem dela (a IA tem a sua), então a luta se repete igualzinha no replay
+    this.seed = (o.replay ? o.replay.seed : (o.seed !== undefined ? o.seed : Math.floor(Math.random() * 4294967296))) >>> 0;
+    this.aiSeed = (o.replay ? o.replay.aiSeed : (this.seed ^ 0x9e3779b9)) >>> 0;
+    this.rng = M.rng32(this.seed); this.aiRng = M.rng32(this.aiSeed);
+    const prev = Math.random; Math.random = this.rng;
+    try { this.init(o); } finally { Math.random = prev; }
+  }
+  init(o) {
     this.o = o;
     const W = M.W;
     // paleta alternativa (opcional); se os dois são o mesmo lutador na mesma cor, o 2 troca de roupa
@@ -45,9 +53,12 @@ M.Match = class Match {
     this.slow = 0; this.slowAcc = 0; this.shakeAmt = 0; this.cam = { zoom: 1, x: W / 2, y: M.H / 2 }; this.camTarget = null; this.camT = 0;
     this.crowdExcite = 0.2; this.fireScale = 1; this.banner = null; this.bigText = null; this.freeze = 0;
     this.phase2 = false; this.phase2T = 0; this.tut = { blocks: 0, perfect: 0, step: 0 }; this.tutT = 0; this.dummyMode = o.dummy || 'stand';
-    this.inHist = []; this.tr = { n: 0, dmg: 0, best: 0, bestDmg: 0 };
+    this.inHist = []; this.tr = { n: 0, dmg: 0, best: 0, bestDmg: 0, adv: null }; this.advW = null; this.advSeen = null; this.bH = [[], []];
     this.beatHits = 0; this.totalFrames = 0; this.result = null; this.done = false; this.lastShake = 0;
     this.stageDarkTarget = 0;
+    this.simTick = 0; this.bclk = { p0: 0, itv: 0.6, f0: 0 }; this.bevI = 0; this.rIdx = 0; this.rRun = 0; this.rTail = 0;
+    this.rec = (!o.replay && o.record !== false && !o.tutorial && o.mode !== 'training') ? { runs: [], n: 0, beat: [] } : null;
+    this.beatEv = o.replay ? o.replay.beat : this.rec ? this.rec.beat : [];
     if (this.boss) this.fireScale = 0.4;
     this.startRound();
   }
@@ -72,22 +83,42 @@ M.Match = class Match {
   }
 
   // ---------------- entrada ----------------
+  aiInput(f, opp) { const cur = Math.random; Math.random = this.aiRng; try { return M.AI.inputFor(f, opp, this, f.ai); } finally { Math.random = cur; } }
   inputFor(f, opp) {
     if (this.phase !== 'fight' || this.freeze > 0) return M.AI.blank();
     if (f.ctrl === 'human') return M.input.get(f.side === 1 ? 'p1' : 'p2');
-    if (f.ctrl === 'cpu') return M.AI.inputFor(f, opp, this, f.ai);
+    if (f.ctrl === 'cpu') return this.aiInput(f, opp);
     const inp = M.AI.blank();
     if (this.dummyMode === 'block') {
       const threat = (opp.state === 'attack' && opp.move && opp.move.hitbox) || this.projectiles.some(p => p.owner === opp && Math.abs(p.x - f.x) < 200);
       if (threat) { inp.held[f.facing === 1 ? 'left' : 'right'] = true; const mv = opp.move; inp.held.down = !!(mv && mv.type === 'low') || (!mv && this.frame % 60 < 30) || (mv && mv.type === 'mid' && this.frame % 60 < 30); if (mv && mv.type === 'high') inp.held.down = false; }
     }
-    else if (this.dummyMode === 'cpu') { if (!f.ai) f.ai = M.AI.make(this.o.difficulty || 'brabo', f.def); return M.AI.inputFor(f, opp, this, f.ai); }
+    else if (this.dummyMode === 'cpu') { if (!f.ai) f.ai = M.AI.make(this.o.difficulty || 'brabo', f.def); return this.aiInput(f, opp); }
     else if (this.dummyMode === 'jump') { if (this.frame % 70 === 0) inp.pressed.up = true; }
     return inp;
   }
 
   // ---------------- atualização ----------------
   update() {
+    const prev = Math.random; Math.random = this.rng;
+    try { this._update(); } finally { Math.random = prev; }
+  }
+  // compasso da simulação: contado em quadros e ressincronizado com a música a cada 5 s (os pontos de sincronia vão no replay)
+  syncBeat() {
+    const t = this.simTick;
+    if (this.o.replay) { const ev = this.beatEv[this.bevI]; if (ev && ev[0] === t) { this.bevI++; this.bclk = { p0: ev[1], itv: ev[2], f0: t }; } return; }
+    const b = M.audio.music.beat();
+    if (t % 300 === 0 || Math.abs(b.interval - this.bclk.itv) > 2e-4) {
+      const ev = [t, Math.round(b.phase * 1e4) / 1e4, Math.round(b.interval * 1e5) / 1e5];
+      this.bclk = { p0: ev[1], itv: ev[2], f0: t }; if (this.rec) this.rec.beat.push(ev);
+    }
+  }
+  beatNow() {
+    const c = this.bclk, ph = (((c.p0 + (this.simTick - c.f0) * (1000 / 60) / (c.itv * 1000)) % 1) + 1) % 1;
+    return { phase: ph, interval: c.itv, dist: Math.min(ph, 1 - ph) * c.itv };
+  }
+  _update() {
+    this.syncBeat(); this.simTick++;
     this.frame++; this.totalFrames++;
     this.phaseT++;
     this.updateCosmetics();
@@ -138,9 +169,42 @@ M.Match = class Match {
     const t = this.tr;
     if (hf.combo >= 2) { t.n = hf.combo; t.dmg = Math.round(hf.comboDmg); if (t.n > t.best) t.best = t.n; if (t.dmg > t.bestDmg) t.bestDmg = t.dmg; }
   }
+  // ---- transmissão: entradas dos dois jogadores e placar grande ----
+  bcastRecord(side, inp) {
+    const h = inp.held, p = inp.pressed, H = this.bH[side];
+    const dx = (h.right ? 1 : 0) - (h.left ? 1 : 0), dy = (h.down ? 1 : 0) - (h.up ? 1 : 0);
+    const btn = ['light', 'heavy', 'special', 'ginga', 'mandinga', 'throw', 'taunt'].filter(k => p[k]), last = H[H.length - 1];
+    if (last && last.dx === dx && last.dy === dy && !btn.length) last.f = Math.min(99, last.f + 1);
+    else if (last || dx || dy || btn.length) { H.push({ dx, dy, btn, f: 1 }); if (H.length > 8) H.shift(); }
+  }
+  bcastHud(ctx) {
+    const C = M.C, W = M.W, [a, b] = this.fighters, o = this.o;
+    const nameOf = f => (o.tags && o.tags[f.side - 1]) ? String(o.tags[f.side - 1]).toUpperCase() : (f.def.short || f.def.name).toUpperCase();
+    // placar
+    ctx.save(); ctx.fillStyle = 'rgba(20,18,16,0.78)'; ctx.fillRect(W / 2 - 190, 106, 380, 34); ctx.strokeStyle = C.yellow; ctx.lineWidth = 2; ctx.strokeRect(W / 2 - 190, 106, 380, 34); ctx.restore();
+    M.text(ctx, nameOf(a), W / 2 - 62, 123, { size: 14, align: 'right', color: C.paper, stroke: false, maxW: 118 });
+    M.text(ctx, this.wins[0] + ' – ' + this.wins[1], W / 2, 124, { size: 24, color: C.yellow, lw: 3 });
+    M.text(ctx, nameOf(b), W / 2 + 62, 123, { size: 14, align: 'left', color: C.paper, stroke: false, maxW: 118 });
+    // entradas: faixa horizontal nos cantos de baixo (o mais novo à direita), fora da área de luta
+    const n = 8, cw = 26, BT = { light: ['●', C.yellow], heavy: ['■', C.red], special: ['★', C.cyan], ginga: ['◆', '#46c47a'], mandinga: ['✦', C.magenta], throw: ['✋', C.orange], taunt: ['o', C.paper] };
+    for (let side = 0; side < 2; side++) {
+      const H = this.bH[side]; if (!H.length || this.fighters[side].ctrl !== 'human') continue;
+      const x0 = side === 0 ? 14 : W - 14 - cw * n, y0 = 488;
+      ctx.save(); ctx.globalAlpha = 0.6; ctx.fillStyle = C.ink; ctx.fillRect(x0 - 4, y0 - 6, cw * n + 8, 48); ctx.restore();
+      for (let i = 0; i < H.length; i++) {
+        const e = H[i], j = n - H.length + i, x = x0 + j * cw + cw / 2; ctx.globalAlpha = 0.45 + 0.55 * ((i + 1) / H.length);
+        if (!e.dx && !e.dy) { ctx.fillStyle = C.paper; ctx.beginPath(); ctx.arc(x, y0 + 10, 2, 0, 6.3); ctx.fill(); }
+        else { ctx.save(); ctx.translate(x, y0 + 10); ctx.rotate(Math.atan2(e.dy, e.dx)); ctx.fillStyle = C.paper; ctx.beginPath(); ctx.moveTo(8, 0); ctx.lineTo(-1, -7); ctx.lineTo(-1, -3); ctx.lineTo(-7, -3); ctx.lineTo(-7, 3); ctx.lineTo(-1, 3); ctx.lineTo(-1, 7); ctx.closePath(); ctx.fill(); ctx.restore(); }
+        e.btn.slice(0, 2).forEach((k, q) => M.text(ctx, BT[k][0], x + (e.btn.length > 1 ? (q ? 6 : -6) : 0), y0 + 30, { size: 12, color: BT[k][1], lw: 2 }));
+      }
+      ctx.globalAlpha = 1;
+    }
+  }
   trainingHud(ctx) {
     const C = M.C, W = M.W, t = this.tr;
     M.text(ctx, 'COMBO ' + t.n + ' • DANO ' + t.dmg + ' • RECORDE ' + t.best + ' / ' + t.bestDmg, W / 2, 112, { size: 13, color: t.n >= 2 ? C.yellow : C.paper, lw: 2.5 });
+    const ad = t.adv;
+    if (ad) M.text(ctx, 'VANTAGEM ' + (ad.kind === 'hit' ? 'NO ACERTO' : 'NA DEFESA') + ' ' + (ad.v > 0 ? '+' : '') + ad.v + ' • ' + ad.name, W / 2, 130, { size: 13, color: ad.v > 0 ? '#46c47a' : ad.v < 0 ? C.red : C.yellow, lw: 2.5 });
     const H = this.inHist, x0 = 18, y0 = 196, rh = 21;
     ctx.save();
     ctx.globalAlpha = 0.55; ctx.fillStyle = C.ink; ctx.fillRect(x0 - 8, y0 - 24, 176, 24 + rh * 10 + 6);
@@ -169,11 +233,15 @@ M.Match = class Match {
   }
   updateFight() {
     const [a, b] = this.fighters;
-    const ia = this.inputFor(a, b), ib = this.inputFor(b, a);
+    let ia, ib;
+    if (this.o.replay) { const r = M.replay.next(this); ia = r[0]; ib = r[1]; }
+    else { ia = this.inputFor(a, b); ib = this.inputFor(b, a); if (this.rec) M.replay.record(this, ia, ib); }
     if (this.mode === 'training') { if (a.ctrl === 'human') this.trainRecord(a, ia); else if (b.ctrl === 'human') this.trainRecord(b, ib); }
+    else if (M.store.data.settings.broadcast) { if (a.ctrl === 'human') this.bcastRecord(0, ia); if (b.ctrl === 'human') this.bcastRecord(1, ib); }
     a.update(ia, b, this); b.update(ib, a, this);
     this.separate(a, b);
     this.resolveHits(a, b); this.resolveHits(b, a);
+    if (this.mode === 'training') { const hf = a.ctrl === 'human' ? a : b.ctrl === 'human' ? b : null; if (hf) M.frameData.watch(this, hf, this.other(hf)); }
     this.updateProjectiles(); this.updateTraps();
     for (const [x, y] of [[a, b], [b, a]]) {
       if ((y.neutral || y.state === 'jump' || y.state === 'getup' || y.state === 'dodge') && x.combo > 0) { if (x.combo >= 2) x.comboShow = 70; x.combo = 0; x.comboDmg = 0; }
@@ -216,6 +284,7 @@ M.Match = class Match {
   finish() {
     const w = this.roundWinner;
     this.result = { winner: w, loser: this.other(w), winnerSide: w.side, frames: this.totalFrames, wins: this.wins.slice(), stats: { p1: this.p1.stats, p2: this.p2.stats }, beatHits: this.beatHits };
+    if (this.rec) this.result.replay = M.replay.pack(this);
     if (this.o.onEnd) this.o.onEnd(this.result);
   }
   timeOver() {
@@ -289,7 +358,7 @@ M.Match = class Match {
     let dmg = mv.dmg * att.mods.dmg;
     if (cornered) dmg *= 1.1;
     if (finisher) dmg *= 1.2;
-    const beat = M.audio.music.beat(); const onBeat = !!mv.onBeatAlways || beat.dist < 0.075 * att.mods.beat * (att.ritmo > 0 ? 2.5 : 1);
+    const beat = this.beatNow(); const onBeat = !!mv.onBeatAlways || beat.dist < 0.075 * att.mods.beat * (att.ritmo > 0 ? 2.5 : 1);
     if (onBeat) dmg *= att.mods.beatDmg * (att.ritmo > 0 ? 1.15 : 1);
     if (counter) dmg *= 1.25;
     if (att.ritmo > 0) dmg *= 1.1;
@@ -611,7 +680,7 @@ M.Match = class Match {
     ctx.restore();
     for (const e of this.fx) if (e.type === 'flash') M.render.drawFx(ctx, e);
     ctx.globalAlpha = 0.07; ctx.drawImage(M.grain(), 0, 0, W, H); ctx.globalAlpha = 1;
-    this.drawHUD(ctx);
+    if (!M.hudHidden) this.drawHUD(ctx);
   }
   drawBoxes(ctx) {
     ctx.lineWidth = 2;
@@ -666,8 +735,10 @@ M.Match = class Match {
       ctx.save(); const ny = y + bh + 6, nw = 200, nx = right ? x0 + bw - nw : x0;
       ctx.beginPath(); if (!right) { ctx.moveTo(nx, ny); ctx.lineTo(nx + nw, ny); ctx.lineTo(nx + nw - 10, ny + 20); ctx.lineTo(nx, ny + 20); } else { ctx.moveTo(nx + nw, ny); ctx.lineTo(nx, ny); ctx.lineTo(nx + 10, ny + 20); ctx.lineTo(nx + nw, ny + 20); }
       ctx.closePath(); ctx.fillStyle = C.ink; ctx.fill(); ctx.fillStyle = f.def.colors.accent || C.yellow; ctx.fillRect(right ? nx + nw - 5 : nx, ny, 5, 20); ctx.restore();
-      M.text(ctx, nm, right ? x0 + bw - 12 : x0 + 12, y + bh + 17, { size: 14, align: right ? 'right' : 'left', color: C.paper, stroke: false, maxW: 176 });
-      if (f.ctrl === 'cpu') M.text(ctx, 'CPU • ' + ({ novato: 'NOVATO', brabo: 'BRABO', lendario: 'LENDÁRIO' }[this.o.difficulty] || 'BRABO'), right ? x0 : x0 + bw, y + bh + 17, { size: 11, align: right ? 'left' : 'right', color: '#b8b2a4', lw: 2 });
+      const tg = this.o.tags && this.o.tags[f.side - 1];
+      M.text(ctx, tg ? String(tg).toUpperCase() : nm, right ? x0 + bw - 12 : x0 + 12, y + bh + 17, { size: tg ? 15 : 14, align: right ? 'right' : 'left', color: tg ? C.yellow : C.paper, stroke: false, maxW: 176 });
+      if (tg) M.text(ctx, f.def.short || f.def.name, right ? x0 : x0 + bw, y + bh + 17, { size: 11, align: right ? 'left' : 'right', color: '#b8b2a4', lw: 2 });
+      else if (f.ctrl === 'cpu') M.text(ctx, 'CPU • ' + ({ novato: 'NOVATO', brabo: 'BRABO', lendario: 'LENDÁRIO' }[this.o.difficulty] || 'BRABO'), right ? x0 : x0 + bw, y + bh + 17, { size: 11, align: right ? 'left' : 'right', color: '#b8b2a4', lw: 2 });
       for (let i = 0; i < (this.winsNeeded <= 3 ? this.winsNeeded : 0); i++) { const sx = right ? x0 + bw - 12 - i * 22 : x0 + 12 + i * 22; M.star(ctx, sx, y + bh + 44, 9, 4, 5, -Math.PI / 2); ctx.fillStyle = i < this.wins[f.side - 1] ? C.yellow : '#3a2a1e'; ctx.fill(); ctx.lineWidth = 2.5; ctx.strokeStyle = C.ink; ctx.stroke(); }
       if (f.burn > 0 && this.frame % 20 < 14) M.text(ctx, 'QUEIMANDO', right ? x0 : x0 + bw, y + bh + 44, { size: 12, align: right ? 'left' : 'right', color: C.orange, lw: 2.5 });
     };
@@ -676,7 +747,10 @@ M.Match = class Match {
     ctx.beginPath(); ctx.arc(W / 2, 40, 30, 0, Math.PI * 2); ctx.fillStyle = C.paper; ctx.fill(); ctx.lineWidth = 4; ctx.strokeStyle = C.ink; ctx.stroke();
     const secs = Math.ceil(this.timeF / 60);
     M.text(ctx, this.timerOn ? String(secs) : '∞', W / 2, 42, { size: this.timerOn ? 28 : 34, color: this.timerOn && secs <= 10 ? C.red : C.ink, stroke: false });
+    if (M.store.data.settings.broadcast && this.mode !== 'training') this.bcastHud(ctx);
+    if (this.o.replay) M.replay.hud(ctx, this);
     // onda da Maratona e modificadores ligados
+    if (this.o.label && !this.o.replay) M.text(ctx, this.o.label, W / 2, 84, { size: 12, color: C.yellow, lw: 3 });
     if (this.o.survival) M.text(ctx, 'ONDA ' + this.o.survival.wave, W / 2, 84, { size: 14, color: C.yellow, lw: 3 });
     if (this.mutators.length) M.text(ctx, this.mutators.map(m => m.icon).join(' '), W / 2, this.o.survival ? 102 : 84, { size: 15, color: C.paper, lw: 3 });
     // AXÉ

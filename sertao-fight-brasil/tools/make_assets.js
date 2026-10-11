@@ -75,6 +75,8 @@ const save = (rel, dataUrl) => { const p = path.join(ROOT, rel); fs.mkdirSync(pa
   await snap('screenshot-5-fight-juvenal-bene.png', fightSetup('juvenal', 'bene', 'pantanal', 600), 1200);
   await snap('screenshot-6-story-vs.png', () => { M.ui.versusCard({ p1: 'zeca', p2: 'bia', title: 'FIRST BRAWL — THE HILL', stageName: M.tr('Ladeira do Forró'), difficulty: 'brabo', challenge: 'fast' }, () => { }); }, 1400);
   await snap('screenshot-7-map.png', () => { M.ui.nightMap({ idx: 3, grades: { 1: 'S', 2: 'A' }, challenges: { 1: true }, patuas: ['vento'], licoes: ['l_passo'], bonds: ['bia', 'mare'], fama: 1, deaths: 0 }, () => { }); }, 1200);
+  await snap('screenshot-9-competitive.png', () => { const c = M.comp.data(); c.tag = 'VINÍCIUS'; c.pr = 1340; c.games = 14; c.wins = 9; c.losses = 5; c.streak = 3; c.peak = 1380; M.ui3.hub(); }, 1800);
+  await snap('screenshot-10-bracket.png', () => { M.store.data.tourney = null; const t = M.tourney.create({ name: 'COPA DA PRAÇA', fmt: 'de', bo: 3, shuffle: false, players: ['VINÍCIUS', 'ANA', 'BETO', 'CIDA', 'DAVI', 'EDU', 'FÁBIO', 'GABI'].map((n, i) => ({ n, cpu: i > 5 ? 'brabo' : null })) }); for (let i = 0; i < 6; i++) { const m = M.tourney.next(t); if (!m) break; M.tourney.report(t, m, i % 3 === 2 ? m.pb : m.pa, i % 3 === 2 ? [1, 2] : [2, 0], []); } M.ui4.bracket(); }, 1200);
   await snap('screenshot-8-dialogue.png', () => { M.ui.dialogue(M.STORY.fights[7].pre, M.STORY.fights[7].title, () => { }); }, 2500);
   await browser.close();
 })().catch(e => { console.error(e); process.exit(1); });

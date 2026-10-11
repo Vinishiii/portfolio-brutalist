@@ -1,6 +1,6 @@
 # Publicando na Steam — Sertão Fight Brasil
 
-Guia de ponta a ponta para levar o jogo à Steam (e também ao itch.io / web). O jogo já vem com tudo do lado do código: app de desktop (Electron), ponte com a Steamworks, 26 conquistas, idioma automático (PT / EN / ES), save em arquivo para o Steam Cloud, arte de loja pronta e build web.
+Guia de ponta a ponta para levar o jogo à Steam (e também ao itch.io / web). O jogo já vem com tudo do lado do código: app de desktop (Electron), ponte com a Steamworks, 45 conquistas, idioma automático (PT / EN / ES), save em arquivo para o Steam Cloud, arte de loja pronta e build web.
 
 > **Estado honesto:** o jogo foi testado no navegador (Chromium) e o app de desktop foi **empacotado e executado no Linux** (Electron 33 + electron-builder, sob Xvfb): abre a janela, detecta o idioma do sistema, grava o save em arquivo, relê o progresso na abertura seguinte e fecha pelo menu "SAIR DO JOGO". **Não foi possível testar aqui:** as chamadas reais da Steamworks (conquistas, overlay, idioma da Steam — precisam do cliente Steam e de um AppID), os builds de Windows e macOS, o Steam Deck e o Steam Cloud. Faça o teste da seção 3 antes de enviar o build.
 
@@ -45,7 +45,7 @@ npm run dist:win                  # ou dist:mac / dist:linux → desktop/dist/
 
 ## 4. Conquistas (Steamworks ▸ Stats & Achievements)
 
-São **26**. O jogo chama `ACH_<ID EM MAIÚSCULAS>`; cadastre exatamente estes **API Names**. Os textos nos três idiomas estão abaixo para colar nas traduções (a Steam mostra no idioma do jogador). Ícones (256×256, colorido e cinza): gere do `icons/icon-256.png` + glifo da conquista, ou encomende 26 ícones — a Steam exige uma imagem para cada.
+São **45**. O jogo chama `ACH_<ID EM MAIÚSCULAS>`; cadastre exatamente estes **API Names**. Os textos nos três idiomas estão abaixo para colar nas traduções (a Steam mostra no idioma do jogador). Ícones (256×256, colorido e cinza): gere do `icons/icon-256.png` + glifo da conquista, ou encomende 26 ícones — a Steam exige uma imagem para cada.
 
 | API Name | PT | EN | ES |
 | --- | --- | --- | --- |
@@ -75,6 +75,25 @@ São **26**. O jogo chama `ACH_<ID EM MAIÚSCULAS>`; cadastre exatamente estes *
 | `ACH_FAMA7` | Fama Total | Total Fame | Fama Total |
 | `ACH_LEGENDS_DONE` | A Noite Tem Guardião | The Night Has a Keeper | La Noche Tiene Guardián |
 | `ACH_FREE_DONE` | Rinha Inteira | The Whole Brawl | Riña Entera |
+| `ACH_SURV5` | Maratonista | Marathoner | Maratonista |
+| `ACH_SURV10` | Fôlego de Boi | Ox Lungs | Aliento de Buey |
+| `ACH_SURV20` | Lenda da Maratona | Marathon Legend | Leyenda de la Maratón |
+| `ACH_DAILY1` | Desafio Aceito | Challenge Accepted | Desafío Aceptado |
+| `ACH_DAILY3` | Três Dias Seguidos | Three Days in a Row | Tres Días Seguidos |
+| `ACH_DAILY_STAR` | Estrela do Dia | Star of the Day | Estrella del Día |
+| `ACH_MUT_WIN` | Rinha Maluca | Crazy Brawl | Riña Loca |
+| `ACH_PALETTE` | Cara Nova | New Look | Cara Nueva |
+| `ACH_JUKEBOX` | Ouvido Absoluto | Perfect Pitch | Oído Absoluto |
+| `ACH_COMP_PLACE` | Medindo Forças | Sizing Each Other Up | Midiendo Fuerzas |
+| `ACH_RANK_OURO` | Cabra de Ouro | Golden Goat | Cabra de Oro |
+| `ACH_RANK_MESTRE` | Mestre da Rinha | Brawl Master | Maestro de la Riña |
+| `ACH_RANK_LENDA` | Lenda da Brasa | Ember Legend | Leyenda de la Brasa |
+| `ACH_RANK_STREAK5` | Invicto | Undefeated | Invicto |
+| `ACH_TOURNEY_DONE` | Organizador | Organizer | Organizador |
+| `ACH_TOURNEY_CHAMP` | Campeão da Praça | Town Square Champion | Campeón de la Plaza |
+| `ACH_REPLAY_WATCH` | Cinema da Rinha | Brawl Cinema | Cine de la Riña |
+| `ACH_REPLAY_SHARE` | Compartilha Essa | Share This One | Comparte Esta |
+| `ACH_FRAMEDATA` | Rato de Planilha | Spreadsheet Rat | Rata de Planilla |
 
 ### Textos por idioma
 
@@ -208,6 +227,100 @@ São **26**. O jogo chama `ACH_<ID EM MAIÚSCULAS>`; cadastre exatamente estes *
 - EN: The Whole Brawl — Win the complete Free Brawl.
 - ES: Riña Entera — Gana la Riña Libre completa.
 
+**ACH_SURV5**
+- PT: Maratonista — Chegue à onda 5 da Maratona.
+- EN: Marathoner — Reach wave 5 of the Marathon.
+- ES: Maratonista — Llega a la oleada 5 de la Maratón.
+
+**ACH_SURV10**
+- PT: Fôlego de Boi — Chegue à onda 10 da Maratona.
+- EN: Ox Lungs — Reach wave 10 of the Marathon.
+- ES: Aliento de Buey — Llega a la oleada 10 de la Maratón.
+
+**ACH_SURV20**
+- PT: Lenda da Maratona — Chegue à onda 20 da Maratona.
+- EN: Marathon Legend — Reach wave 20 of the Marathon.
+- ES: Leyenda de la Maratón — Llega a la oleada 20 de la Maratón.
+
+**ACH_DAILY1**
+- PT: Desafio Aceito — Vença um Desafio do Dia.
+- EN: Challenge Accepted — Win a Daily Challenge.
+- ES: Desafío Aceptado — Gana un Desafío del Día.
+
+**ACH_DAILY3**
+- PT: Três Dias Seguidos — Vença o Desafio do Dia em três dias seguidos.
+- EN: Three Days in a Row — Win the Daily Challenge three days in a row.
+- ES: Tres Días Seguidos — Gana el Desafío del Día tres días seguidos.
+
+**ACH_DAILY_STAR**
+- PT: Estrela do Dia — Cumpra o objetivo bônus de um Desafio do Dia.
+- EN: Star of the Day — Complete the bonus goal of a Daily Challenge.
+- ES: Estrella del Día — Cumple el objetivo extra de un Desafío del Día.
+
+**ACH_MUT_WIN**
+- PT: Rinha Maluca — Vença a CPU com dois modificadores ligados.
+- EN: Crazy Brawl — Beat the CPU with two modifiers on.
+- ES: Riña Loca — Vence a la CPU con dos modificadores activados.
+
+**ACH_PALETTE**
+- PT: Cara Nova — Vença uma luta com uma cor alternativa.
+- EN: New Look — Win a fight with an alternate color.
+- ES: Cara Nueva — Gana una pelea con un color alternativo.
+
+**ACH_JUKEBOX**
+- PT: Ouvido Absoluto — Ouça todas as faixas do Jukebox.
+- EN: Perfect Pitch — Listen to every Jukebox track.
+- ES: Oído Absoluto — Escucha todas las pistas del Jukebox.
+
+**ACH_COMP_PLACE**
+- PT: Medindo Forças — Termine as cinco partidas de colocação da Ranqueada.
+- EN: Sizing Each Other Up — Finish the five placement matches of Ranked.
+- ES: Midiendo Fuerzas — Termina las cinco partidas de colocación de la Clasificatoria.
+
+**ACH_RANK_OURO**
+- PT: Cabra de Ouro — Chegue ao nível Ouro na Ranqueada.
+- EN: Golden Goat — Reach the Gold tier in Ranked.
+- ES: Cabra de Oro — Llega al nivel Oro en la Clasificatoria.
+
+**ACH_RANK_MESTRE**
+- PT: Mestre da Rinha — Chegue ao nível Mestre na Ranqueada.
+- EN: Brawl Master — Reach the Master tier in Ranked.
+- ES: Maestro de la Riña — Llega al nivel Maestro en la Clasificatoria.
+
+**ACH_RANK_LENDA**
+- PT: Lenda da Brasa — Chegue ao nível Lenda da Brasa na Ranqueada.
+- EN: Ember Legend — Reach the Ember Legend tier in Ranked.
+- ES: Leyenda de la Brasa — Llega al nivel Leyenda de la Brasa en la Clasificatoria.
+
+**ACH_RANK_STREAK5**
+- PT: Invicto — Vença cinco partidas ranqueadas seguidas.
+- EN: Undefeated — Win five ranked matches in a row.
+- ES: Invicto — Gana cinco partidas clasificatorias seguidas.
+
+**ACH_TOURNEY_DONE**
+- PT: Organizador — Complete um Torneio Local.
+- EN: Organizer — Complete a Local Tournament.
+- ES: Organizador — Completa un Torneo Local.
+
+**ACH_TOURNEY_CHAMP**
+- PT: Campeão da Praça — Seja campeão de um Torneio Local.
+- EN: Town Square Champion — Win a Local Tournament.
+- ES: Campeón de la Plaza — Sé campeón de un Torneo Local.
+
+**ACH_REPLAY_WATCH**
+- PT: Cinema da Rinha — Assista a um replay.
+- EN: Brawl Cinema — Watch a replay.
+- ES: Cine de la Riña — Mira una repetición.
+
+**ACH_REPLAY_SHARE**
+- PT: Compartilha Essa — Gere o código de um replay para compartilhar.
+- EN: Share This One — Generate a replay code to share.
+- ES: Comparte Esta — Genera el código de una repetición para compartir.
+
+**ACH_FRAMEDATA**
+- PT: Rato de Planilha — Abra os Dados de Quadros.
+- EN: Spreadsheet Rat — Open the Frame Data.
+- ES: Rata de Planilla — Abre los Datos de Cuadros.
 
 ## 5. Steam Cloud (Auto-Cloud)
 
@@ -273,7 +386,7 @@ Tudo em `store/`, gerado do próprio jogo por `tools/make_assets.js` (Playwright
 ## 11. Antes de apertar "Publicar"
 
 - [ ] AppID real configurado (`STEAM_APP_ID` ou a constante em `desktop/main.js`).
-- [ ] 26 conquistas cadastradas com os API Names acima + ícones.
+- [ ] 45 conquistas cadastradas com os API Names acima + ícones.
 - [ ] Auto-Cloud configurado e testado em duas máquinas.
 - [ ] Textos e capturas da loja revisados nos 3 idiomas (`store/STORE_PAGE.md`).
 - [ ] Classificação etária preenchida.

@@ -11,7 +11,7 @@ Textos prontos para colar no painel da Steamworks (e itch.io). Imagens em `store
 | Desenvolvedor / Editor | Vinícius Andrey |
 | Gênero | Ação · Luta · Indie |
 | Tags sugeridas | Fighting · 2D Fighter · Local Multiplayer · Story Rich · Hand-drawn · Colorful · Folklore · Great Soundtrack · Controller · Singleplayer · Brazil · Stylized · Arcade · Retro |
-| Modos | Um jogador · Versus local (2 jogadores, mesma tela) · Controle suportado |
+| Modos | Um jogador · Versus local (2 jogadores, mesma tela) · Torneio local (até 16) · Controle suportado — **sem multijogador online** |
 | Idiomas (interface) | Português (Brasil) · English · Español |
 | Dublagem | Nenhuma (vozes de esforço sintetizadas) |
 | Plataformas | Windows · Linux · macOS · Navegador (itch.io) |
@@ -35,7 +35,9 @@ Em Vila Brasa, toda noite de São João a festa acende a Brasa na praça — e s
 - **Modo História** com mapa da noite, desafios opcionais por luta, nota de S a C, laços com os rivais, bênçãos na fogueira, chefe em duas fases e **três finais**, um deles secreto.
 - **Lendas da Noite**: segundo arco contra o folclore do Nordeste, com cordéis, diálogos e final próprios.
 - **Versus local**, **Rinha Livre** (sete adversários e o chefe), **Treino** com boneco configurável e três níveis de CPU — do Novato ao Lendário.
-- **26 conquistas**, controle e teclado com teclas **remapeáveis**, opções de acessibilidade (reduzir flashes, velocidade do jogo, qualidade automática).
+- **Modo competitivo**: **ranqueada** contra uma CPU que se ajusta ao seu nível (7 níveis, de Bronze a Lenda da Brasa), **torneio local** com chaves de eliminação simples ou dupla para até 16 jogadores, **replays** com código para compartilhar, **dados de quadros** de todos os golpes e **modo transmissão** para streamers.
+- **Mais modos**: **Maratona** de ondas sem fim, **Desafio do Dia** com regras malucas, modificadores de partida, **cores alternativas**, estatísticas e jukebox.
+- **45 conquistas**, controle e teclado com teclas **remapeáveis**, opções de acessibilidade (reduzir flashes, velocidade do jogo, qualidade automática).
 - **Arte e som feitos do zero**: xilogravura com camada de pintura em tempo real e música sintetizada ao vivo — zabumba, triângulo, ganzá, sanfona, pífano, violão e baixo — que muda com a Energia da rinha.
 - **Em três idiomas**: português, inglês e espanhol.
 
@@ -60,7 +62,9 @@ In Vila Brasa, every Saint John's night the festival lights the Brasa — the Em
 - **Story mode** with a night map, optional challenges for each fight, S-to-C grades, bonds with your rivals, campfire blessings, a two-phase boss and **three endings**, one of them secret.
 - **Legends of the Night**: a second arc against Northeastern folklore, with its own cordels, dialogue and ending.
 - **Local versus**, **Free Brawl** (seven opponents and the boss), **Training** with a configurable dummy and three CPU levels — from Rookie to Legendary.
-- **26 achievements**, controller and keyboard with **remappable keys**, accessibility options (reduce flashes, game speed, auto quality).
+- **Competitive mode**: **ranked** play against a CPU that adapts to your level (7 tiers, Bronze to Ember Legend), **local tournaments** with single or double elimination brackets for up to 16 players, **replays** with shareable codes, **frame data** for every move and a **broadcast mode** for streamers.
+- **More modes**: endless-wave **Marathon**, a **Daily Challenge** with wild rules, match modifiers, **alternate colors**, statistics and a jukebox.
+- **45 achievements**, controller and keyboard with **remappable keys**, accessibility options (reduce flashes, game speed, auto quality).
 - **Art and sound made from scratch**: a woodcut look with a real-time painted layer, and live-synthesized music — zabumba, triangle, ganzá, accordion, fife, guitar and bass — that shifts with the brawl's Energy.
 - **In three languages**: Portuguese, English and Spanish.
 
@@ -85,7 +89,9 @@ En Vila Brasa, cada noche de San Juan la fiesta enciende la Brasa en la plaza, y
 - **Modo Historia** con mapa de la noche, desafíos opcionales por pelea, nota de S a C, lazos con los rivales, bendiciones en la fogata, jefe en dos fases y **tres finales**, uno de ellos secreto.
 - **Leyendas de la Noche**: un segundo arco contra el folclore del Nordeste, con cordeles, diálogos y final propios.
 - **Versus local**, **Riña Libre** (siete rivales y el jefe), **Entrenamiento** con muñeco configurable y tres niveles de CPU — de Novato a Legendario.
-- **26 logros**, mando y teclado con **teclas remapeables**, opciones de accesibilidad (reducir destellos, velocidad del juego, calidad automática).
+- **Modo competitivo**: **clasificatoria** contra una CPU que se adapta a tu nivel (7 niveles, de Bronce a Leyenda de la Brasa), **torneo local** con llaves de eliminación simple o doble para hasta 16 jugadores, **repeticiones** con código para compartir, **datos de cuadros** de todos los golpes y **modo transmisión** para streamers.
+- **Más modos**: **Maratón** de oleadas sin fin, **Desafío del Día** con reglas locas, modificadores de partida, **colores alternativos**, estadísticas y jukebox.
+- **45 logros**, mando y teclado con **teclas remapeables**, opciones de accesibilidad (reducir destellos, velocidad del juego, calidad automática).
 - **Arte y sonido hechos desde cero**: grabado con una capa de pintura en tiempo real y música sintetizada en vivo —zabumba, triángulo, ganzá, acordeón, pífano, guitarra y bajo— que cambia con la Energía de la riña.
 - **En tres idiomas**: portugués, inglés y español.
 

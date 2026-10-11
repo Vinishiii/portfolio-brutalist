@@ -4,7 +4,7 @@
 // ============================================================
 const M = window.M = window.M || {};
 M.W = 960; M.H = 540; M.GROUND = 452;
-M.VERSION = '1.6';
+M.VERSION = '1.7';
 
 M.clamp = (v, a, b) => v < a ? a : v > b ? b : v;
 M.lerp = (a, b, t) => a + (b - a) * t;
@@ -19,6 +19,8 @@ M.easeBack = t => { const c = 1.7; return 1 + (c + 1) * Math.pow(t - 1, 3) + c *
 M.sign = v => (v < 0 ? -1 : 1);
 M.rad = d => d * Math.PI / 180;
 M.rects = (a, b) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+// gerador de 32 bits (mulberry32): a simulação de cada luta usa o dele, assim a luta pode ser reproduzida (replay)
+M.rng32 = seed => { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; };
 M.seeded = seed => () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
 M.fmtTime = s => { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
 
@@ -41,7 +43,7 @@ M.store = {
     try { if (window.steam && window.steam.loadSave) raw = window.steam.loadSave() || null; } catch (e) { /* ignora */ }
     try { if (!raw) raw = localStorage.getItem(this.key); this.data = JSON.parse(raw) || {}; } catch (e) { this.data = {}; }
     const d = this.data;
-    d.settings = Object.assign({ volume: 0.8, music: true, sfx: true, shake: true, hitboxes: false, difficulty: 'brabo', touch: 'auto', paint: true, post: true, lang: null, speed: 1, reduceFlash: false, quality: 'auto', keys: null }, d.settings || {});
+    d.settings = Object.assign({ volume: 0.8, music: true, sfx: true, shake: true, hitboxes: false, difficulty: 'brabo', touch: 'auto', paint: true, post: true, lang: null, speed: 1, reduceFlash: false, quality: 'auto', keys: null, broadcast: false }, d.settings || {});
     d.progress = Object.assign({ storyDone: false, endings: [], cinzas: false, bestTime: null, freeBest: null, wins: 0, legendsDone: false, bestGrade: null, bonds: {} }, d.progress || {});
     d.story = d.story || null;
     d.legends = d.legends || null;

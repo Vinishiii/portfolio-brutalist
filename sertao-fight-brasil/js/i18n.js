@@ -17,7 +17,8 @@ M.i18n = (function () {
 
   function add(rows) { for (const r of rows) { const es = r[2] === undefined ? r[1] : r[2]; D.en.set(r[0], r[1]); D.es.set(r[0], es); UP.en.set(r[0].toUpperCase(), r[1].toUpperCase()); UP.es.set(r[0].toUpperCase(), es.toUpperCase()); } }
   // padrão: expressão regular sobre o texto em português; en/es são strings com $1.. ou funções
-  function pat(re, en, es) { PATS.push([re, { en, es: es === undefined ? en : es }]); }
+  // first = true: avalia antes dos padrões genéricos (que dividem por " • ", " — " etc.)
+  function pat(re, en, es, first) { const e = [re, { en, es: es === undefined ? en : es }]; if (first) PATS.unshift(e); else PATS.push(e); }
 
   function detect() {
     const n = String((window.steam && window.steam.locale) || (navigator.languages && navigator.languages[0]) || navigator.language || 'pt').toLowerCase();
@@ -53,6 +54,7 @@ M.i18n = (function () {
     if (out !== cur) node.nodeValue = out;
   }
   function xlateAttrs(el) {
+    if (el.closest && el.closest('[data-notr]')) return;
     for (const a of ['title', 'aria-label', 'placeholder']) {
       if (!el.hasAttribute || !el.hasAttribute(a)) continue;
       const k = '__a_' + a, cur = el.getAttribute(a);
