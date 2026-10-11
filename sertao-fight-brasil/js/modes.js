@@ -61,8 +61,8 @@ M.palette = (function () {
     if (!idx) return def;
     const key = def.id + ':' + idx; if (cache[key]) return cache[key];
     const keep = new Set(['skin', 'hair', 'shoes']), skin = def.colors.skin;
-    const col = {};
-    for (const k of Object.keys(def.colors)) { const v = def.colors[k]; col[k] = (keep.has(k) || v === skin) ? v : shift(v, idx); }
+    const col = {}, ov = def.palettes && def.palettes[idx]; // paleta desenhada à mão (ex.: jaqueta marrom) vence o giro de matiz
+    for (const k of Object.keys(def.colors)) { const v = def.colors[k]; col[k] = ov && ov[k] ? ov[k] : (keep.has(k) || v === skin) ? v : shift(v, idx); }
     const d = Object.create(def); d.colors = col; d.pid = key; d.palIdx = idx;
     return (cache[key] = d);
   }

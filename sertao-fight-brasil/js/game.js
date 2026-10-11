@@ -400,6 +400,7 @@ M.Match = class Match {
     if (heavy) this.fx.push({ type: 'lines', x: hx, y: hy, r: 60, t: 0, life: 12, rot: Math.random() * Math.PI });
     this.confetti(hx, hy, heavy ? 14 : 6);
     if (mv.fx === 'fire' || mv.burn) this.embers(hx, hy, 8);
+    if (mv.code && att.def.codeFx) this.codeBurst(hx, hy, mv.super ? 9 : 7, mv.super ? 4 : 3, 0.6);
     if (src && (src.kind === 'wave' || src.kind === 'ripple' || src.kind === 'rain' || src.kind === 'pororoca' || src.kind === 'gourd' || src.kind === 'whirl' || src.kind === 'fish')) this.drops(hx, hy, 10);
     M.audio.play(mv.super ? 'hitS' : heavy ? 'hitH' : 'hitL', hx); if (!armor) M.audio.voice(mv.super || heavy || counter ? 'hurtH' : 'hurt', def.def.id, def.x);
     if (mv.burn) { def.burn = 150; this.popup('QUEIMANDO!', def.x, def.y - 200, M.C.orange, 20); }
@@ -515,6 +516,7 @@ M.Match = class Match {
       if (pr.mv.projectile.gravity) pr.vy += pr.mv.projectile.gravity;
       if (pr.kind === 'snake' && pr.age === (pr.mv.projectile.rise || 999)) { pr.vy = -4.2; pr.vx *= 0.8; }
       pr.x += pr.vx; pr.y += pr.vy; pr.life--;
+      if (pr.kind === 'bug' && pr.age % 2 === 0) this.codeDigit(pr.x - pr.dir * 16 + (M.crand() - 0.5) * 10, pr.y + (M.crand() - 0.5) * 36, { vx: -pr.dir * (0.3 + M.crand() * 0.5), vy: -0.4 - M.crand() * 0.6, life: 30 });
       if (pr.vy > 0 && pr.y + pr.h / 2 >= M.GROUND) { pr.dead = true; if (pr.kind === 'rain') this.drops(pr.x, M.GROUND, 8); else this.embers(pr.x, M.GROUND - 10, 6); }
       if (pr.life <= 0 || pr.x < -120 || pr.x > M.W + 120) pr.dead = true;
       if (pr.dead) continue;
@@ -557,6 +559,7 @@ M.Match = class Match {
     else if (mv.teleport.back) f.x = M.clamp(f.x - f.facing * mv.teleport.back, 44, M.W - 44);
     this.dust(f); this.fx.push({ type: 'dust', x: oldX, y: f.y, t: 0, life: 16, color: '#fff8e8' }); this.fx.push({ type: 'ring', x: f.x, y: f.y - 80, r: 70, t: 0, life: 14, color: f.def.colors.accent });
     if (mv.teleport.back) this.popup('ROLLBACK', f.x, f.y - 200, M.C.cyan, 18);
+    if (f.def.codeFx) { this.codeBurst(oldX, f.y - 90, 12, 2.6, 0.8); this.fx.push({ type: 'codering', x: oldX, y: f.y - 80, r: 52, rot: 0.5, seed: 5, t: 0, life: 18 }); }
     M.audio.play('dodge');
   }
   leech(f, n) {
@@ -589,6 +592,7 @@ M.Match = class Match {
       tr.age++; tr.life--; if (tr.age > 18) tr.armed = true;
       const box = { x: tr.x - tr.w / 2, y: M.GROUND - tr.h, w: tr.w, h: tr.h };
       const def = this.other(tr.owner);
+      if (tr.mv.trap.wall && tr.armed && tr.owner.def.codeFx && this.frame % 5 === 0) this.codeDigit(tr.x + (M.crand() - 0.5) * tr.w * 1.4, M.GROUND - 8 - M.crand() * tr.h * 0.8, { vy: -0.8 - M.crand() * 0.8 });
       if (tr.mv.trap.wall && tr.armed) for (const pr of this.projectiles) if (pr.owner !== tr.owner && !pr.mv.super && M.rects(box, { x: pr.x - pr.w / 2, y: pr.y - pr.h / 2, w: pr.w, h: pr.h })) { pr.dead = true; this.spark(pr.x, pr.y, 10, '#2aa9b8'); this.popup('BLOQUEADO', tr.x, M.GROUND - tr.h - 24, M.C.cyan, 16); M.audio.play('block'); }
       if (tr.armed && tr.life > 0 && def.invuln <= 0 && def.grounded && !['knockdown', 'getup', 'thrown', 'ko', 'dodge'].includes(def.state) && M.rects(box, def.hurtbox())) {
         tr.life = 0; this.hit(tr.owner, def, tr.mv, box, { dir: def.x >= tr.x ? 1 : -1, kind: 'trap' }); this.embers(tr.x, M.GROUND - 30, 14); M.audio.play('fire');

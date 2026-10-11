@@ -5,6 +5,7 @@
 // ============================================================
 M.render = (function () {
   const INK = M.C.ink;
+  const ext = {}; // extensões de desenho por personagem (js/vinicius.js registra aqui)
   // Parâmetros da camada visual (preenchidos por paint.js). paint=false mantém a xilogravura original.
   const style = { paint: false, light: { x: 0, y: -1 }, key: '#ffb45a', rim: '#ffd890', fill: '#4a6fd8', dark: 0 };
   function mixHex(a, b, t) { const pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16); const ch = sh => Math.round(((pa >> sh) & 255) * (1 - t) + ((pb >> sh) & 255) * t); return '#' + ((ch(16) << 16) | (ch(8) << 8) | ch(0)).toString(16).padStart(6, '0'); }
@@ -82,8 +83,10 @@ M.render = (function () {
     }
     const fist = !!o.angry;
     // --- membros de trás ---
+    const kit = !sil && !flash && ext.kit && D.includes('jacket') ? ext.kit : null; // jaqueta, jeans e tênis do Vinícius
     limbStroke(ctx, rig.fa, 11 * s + thick, col(C.arms), ink); hand(ctx, rig.fa, 6.5 * s + thick * 0.5, col(C.skin), ink, fist);
-    limbStroke(ctx, rig.fl, 14 * s * (bw > 1.1 ? 1.15 : 1) + thick, col(C.legs), ink); foot(ctx, rig.fl, col(C.shoes), ink, s);
+    if (kit) kit.sleeve(ctx, rig.fa, s, def, false);
+    limbStroke(ctx, rig.fl, 14 * s * (bw > 1.1 ? 1.15 : 1) + thick, col(C.legs), ink); if (kit) kit.jeans(ctx, rig.fl, s, def, false); foot(ctx, rig.fl, col(C.shoes), ink, s); if (kit) kit.sneaker(ctx, rig.fl, s, def);
     // --- tronco com ombros e cintura ---
     const H = rig.hip, N = rig.neck;
     const ux = N[0] - H[0], uy = N[1] - H[1], L = Math.hypot(ux, uy) || 1; const u = [ux / L, uy / L], p = [-u[1], u[0]];
@@ -111,20 +114,24 @@ M.render = (function () {
       ctx.save(); ctx.globalAlpha = 0.2; ctx.strokeStyle = INK; ctx.lineWidth = 2;
       for (let i = 1; i <= 3; i++) { const t = i / 4; const px = H[0] + ux * t, py = H[1] + uy * t; ctx.beginPath(); ctx.moveTo(px - 12 * bw, py + 3); ctx.lineTo(px - 2, py - 2); ctx.stroke(); }
       ctx.restore();
-      // cinto / faixa
-      ctx.beginPath(); ctx.moveTo(P1[0], P1[1] - 3); ctx.lineTo(P4[0], P4[1] - 3); ctx.lineWidth = 8; ctx.strokeStyle = C.accent; ctx.stroke(); ctx.lineWidth = 2; ctx.strokeStyle = INK; ctx.stroke();
+      // cinto / faixa (a jaqueta de couro tem a própria barra)
+      if (kit) kit.jacket(ctx, { H, N, u, p, L, sw, hw, s, clip: torsoPath }, def);
+      else { ctx.beginPath(); ctx.moveTo(P1[0], P1[1] - 3); ctx.lineTo(P4[0], P4[1] - 3); ctx.lineWidth = 8; ctx.strokeStyle = C.accent; ctx.stroke(); ctx.lineWidth = 2; ctx.strokeStyle = INK; ctx.stroke(); }
     }
     // ombros (deltoides)
     for (const sh of [rig.fa[0], rig.na[0]]) { ctx.beginPath(); ctx.arc(sh[0], sh[1], 8.5 * s, 0, Math.PI * 2); ctx.fillStyle = col(C.arms); ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = ink; ctx.stroke(); }
     // --- cabeça ---
     const Hd = rig.head, R = rig.L.headR;
-    if (!def.headless) { ctx.beginPath(); ctx.moveTo(N[0], N[1]); ctx.lineTo(Hd[0], Hd[1]); ctx.lineWidth = 12 * s; ctx.strokeStyle = ink; ctx.stroke(); ctx.lineWidth = 7 * s; ctx.strokeStyle = col(C.skin); ctx.stroke(); }
+    const realFace = def.face === 'real' && ext.realHead;
+    if (!def.headless) { const nk = realFace ? 1.4 : 1; ctx.beginPath(); ctx.moveTo(N[0], N[1]); ctx.lineTo(Hd[0], Hd[1]); ctx.lineWidth = 12 * s * nk; ctx.strokeStyle = ink; ctx.stroke(); ctx.lineWidth = 7 * s * nk; ctx.strokeStyle = col(C.skin); ctx.stroke(); if (realFace && !sil && !flash) { ctx.lineWidth = 3 * s; ctx.strokeStyle = 'rgba(40,18,8,0.28)'; ctx.beginPath(); ctx.moveTo(N[0] - 2, N[1] + 1); ctx.lineTo((N[0] + Hd[0]) / 2 - 2, (N[1] + Hd[1]) / 2); ctx.stroke(); } }
     if (def.headless) drawFireHead(ctx, rig, def, o, col, ink, thick, sil);
     else if (def.hair === 'gourd') drawGourd(ctx, rig, def, o, col, ink, thick, sil);
+    else if (realFace) ext.realHead(ctx, rig, def, o, col, ink, thick, sil);
     else { dot(ctx, Hd, R + thick * 0.5, col(C.skin), ink); if (!sil) drawHead(ctx, rig, def, o, col, ink); }
     // --- membros da frente ---
-    limbStroke(ctx, rig.nl, 14 * s * (bw > 1.1 ? 1.15 : 1) + thick, col(C.legs), ink); foot(ctx, rig.nl, col(C.shoes), ink, s);
+    limbStroke(ctx, rig.nl, 14 * s * (bw > 1.1 ? 1.15 : 1) + thick, col(C.legs), ink); if (kit) kit.jeans(ctx, rig.nl, s, def, true); foot(ctx, rig.nl, col(C.shoes), ink, s); if (kit) kit.sneaker(ctx, rig.nl, s, def);
     limbStroke(ctx, rig.na, 11 * s + thick, col(C.arms), ink); hand(ctx, rig.na, 6.5 * s + thick * 0.5, col(C.skin), ink, fist);
+    if (kit) kit.sleeve(ctx, rig.na, s, def, true);
     if (!sil && !flash) drawDetails(ctx, rig, def, D);
     if (!sil) drawProp(ctx, rig, def, o, col, ink);
     ctx.restore();
@@ -565,12 +572,17 @@ M.render = (function () {
         break;
       }
       case 'bug': {
+        // bug glitchado: chip escuro com barras roxa e verde, olhos de terminal e dígitos orbitando
         const g = Math.floor(t / 3) % 3;
-        ctx.fillStyle = '#c7267a'; ctx.fillRect(-16 + (g === 1 ? 6 : 0), -12, 32, 8);
-        ctx.fillStyle = '#2aa9b8'; ctx.fillRect(-16 - (g === 2 ? 6 : 0), 4, 32, 8);
-        ctx.fillStyle = '#141210'; ctx.fillRect(-14, -8, 28, 18); ctx.strokeStyle = INK; ctx.strokeRect(-14, -8, 28, 18);
-        ctx.fillStyle = '#2aa9b8'; ctx.fillRect(-10, -4, 6, 6); ctx.fillRect(4, -4, 6, 6); ctx.fillRect(-6, 4, 12, 3);
-        ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(10, -8); ctx.lineTo(18, -16); ctx.moveTo(-10, -8); ctx.lineTo(-18, -16); ctx.moveTo(-14, 2); ctx.lineTo(-22, 8); ctx.moveTo(14, 2); ctx.lineTo(22, 8); ctx.stroke();
+        ctx.shadowColor = '#3dff7a'; ctx.shadowBlur = 12;
+        ctx.fillStyle = '#b25cff'; ctx.fillRect(-16 + (g === 1 ? 6 : 0), -12, 32, 8);
+        ctx.fillStyle = '#3dff7a'; ctx.fillRect(-16 - (g === 2 ? 6 : 0), 4, 32, 8);
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = '#0d0716'; ctx.fillRect(-14, -8, 28, 18); ctx.strokeStyle = INK; ctx.strokeRect(-14, -8, 28, 18);
+        ctx.fillStyle = '#3dff7a'; ctx.fillRect(-10, -4, 6, 6); ctx.fillRect(4, -4, 6, 6); ctx.fillStyle = '#b25cff'; ctx.fillRect(-6, 4, 12, 3);
+        ctx.strokeStyle = '#b25cff'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(10, -8); ctx.lineTo(18, -16); ctx.moveTo(-10, -8); ctx.lineTo(-18, -16); ctx.moveTo(-14, 2); ctx.lineTo(-22, 8); ctx.moveTo(14, 2); ctx.lineTo(22, 8); ctx.stroke();
+        ctx.font = `bold 13px ${M.FONT_TEXT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(10,5,24,0.85)';
+        for (let i = 0; i < 4; i++) { const a = t * 0.2 + i * Math.PI / 2, x = Math.cos(a) * 30, y = Math.sin(a) * 22, ch = ((i + (t >> 3)) & 1) ? '1' : '0'; ctx.strokeText(ch, x, y); ctx.fillStyle = i % 2 ? '#b25cff' : '#3dff7a'; ctx.fillText(ch, x, y); }
         break;
       }
       case 'boomerang': {
@@ -690,6 +702,12 @@ M.render = (function () {
   }
   function drawTrap(ctx, tr) {
     const t = tr.age; ctx.save(); ctx.translate(tr.x, M.GROUND);
+    if (tr.mv.trap.wall && ext.firewall && tr.owner.def.codeFx) {
+      // Firewall do Vinícius: parede de código verde e roxo
+      ext.firewall(ctx, tr, tr.w, tr.h, tr.armed);
+      ctx.fillStyle = '#3dff7a'; ctx.strokeStyle = 'rgba(10,5,24,0.85)'; ctx.lineWidth = 3; ctx.font = `bold 12px ${M.FONT_TEXT}`; ctx.textAlign = 'center'; ctx.strokeText('FIREWALL', 0, -tr.h - 6); ctx.fillText('FIREWALL', 0, -tr.h - 6);
+      ctx.restore(); return;
+    }
     if (tr.mv.trap.wall) {
       const h = tr.h, w = tr.w; const a = tr.armed ? 0.55 + Math.sin(t * 0.3) * 0.15 : 0.25;
       ctx.globalAlpha = a; ctx.fillStyle = '#2aa9b8'; ctx.fillRect(-w / 2, -h, w, h);
@@ -771,6 +789,7 @@ M.render = (function () {
         M.text(ctx, e.text, 0, 0, { size: e.size || 26, color: e.color || '#f2b70c' });
         break;
       }
+      default: if (ext.fx) ext.fx(ctx, e, k);
     }
     ctx.restore();
   }
@@ -784,9 +803,10 @@ M.render = (function () {
       case 'ember': ctx.fillStyle = p.color; ctx.beginPath(); ctx.moveTo(0, -p.size * 1.6 * k); ctx.quadraticCurveTo(p.size, 0, 0, p.size * k); ctx.quadraticCurveTo(-p.size, 0, 0, -p.size * 1.6 * k); ctx.fill(); break;
       case 'drop': ctx.fillStyle = p.color; ctx.beginPath(); ctx.ellipse(0, 0, p.size * 0.6, p.size, 0, 0, Math.PI * 2); ctx.fill(); break;
       case 'ash': ctx.fillStyle = p.color; ctx.globalAlpha *= 0.6; ctx.beginPath(); ctx.arc(0, 0, p.size, 0, Math.PI * 2); ctx.fill(); break;
+      default: if (ext.particle) ext.particle(ctx, p, k);
     }
     ctx.restore();
   }
 
-  return { style, computeRig, drawRig, drawFighter, drawGhost, drawShadow, drawPortrait, drawProjectile, drawTrap, drawFx, drawParticle };
+  return { ext, shade, inkOf, style, computeRig, drawRig, drawFighter, drawGhost, drawShadow, drawPortrait, drawProjectile, drawTrap, drawFx, drawParticle };
 })();

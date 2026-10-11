@@ -77,6 +77,12 @@ Zeca Ventania, Bia Sombrinha, Maré Bacuri, Tião Sertão, Bené Sanfona, Juvena
 
 Cada lenda tem seu cenário: Mata Branca Encantada, Estrada da Meia-Noite, Beco da Matriz e Delta do Parnaíba.
 
+### Vinícius Andrey — visual realista e código no ar
+
+Vinícius (`js/vinicius.js`) é o lutador desenhado "como gente": rosto com anatomia (crânio e mandíbula, nariz de perfil, olhos com íris e pálpebras, sobrancelhas grossas, orelha, barba cheia com textura e bigode, óculos de acetato) que muda de expressão (neutro, feliz, bravo, gritando, de dor); **jaqueta de couro preta** aberta sobre camiseta branca com estampa `</>` (gola alta, lapela, zíper, bolso, barra canelada, ombreira e punhos com zíper), jeans escuro com costura e tênis branco. Tem três cores: original (jaqueta preta), jaqueta marrom e jaqueta vinho.
+
+Os **especiais soltam códigos verdes e roxos flutuando** (dígitos, binário, hexadecimal e símbolos, que sobem, balançam e piscam): *Bug* deixa rastro de bits, *Firewall* vira uma parede de código, *Download* e *Push/Deploy* deixam esteira de números, *Hotfix* cura numa nuvem de dígitos, *Rollback* some e reaparece em anel de código, e *Deploy em Produção* (a Peia) chove código na tela inteira. É só visual: a simulação (e os replays) não mudam.
+
 ## Competitivo
 
 Menu ▸ **COMPETITIVO**: **ranqueada** contra uma CPU que se ajusta ao seu nível (PR, 7 níveis, divisões, colocação), **torneio local** (3–16 jogadores, eliminação simples ou dupla, séries MD1/3/5, banimento de cenário, vencedor mantém o lutador, CPUs simuladas), **replays** (gravação automática, velocidade, código para compartilhar), **dados de quadros** de todos os golpes e **modo transmissão** (placar, tags, entradas dos jogadores, F9 esconde o painel). Detalhes, limites e plano para o online em **[COMPETITIVO.md](COMPETITIVO.md)**. O jogo **não tem partidas online**.
@@ -126,6 +132,7 @@ sertao-fight-brasil/
   js/fighters.js       os doze lutadores: stats, visual, frame data
   js/poses.js          rig esquelético e poses
   js/render.js         desenho xilogravura, projéteis, efeitos
+  js/vinicius.js       rosto realista, jaqueta de couro e códigos verdes/roxos do Vinícius
   js/stages.js         doze cenários, torcida, fogueira
   js/fighter.js        máquina de estados do lutador
   js/ai.js             IA por intenção e personalidade

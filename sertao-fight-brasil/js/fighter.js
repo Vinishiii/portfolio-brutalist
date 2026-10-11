@@ -214,6 +214,7 @@ M.Fighter = class Fighter {
     const mv = this.move;
     if (!this.throwing) this.mf++;
     const f = this.mf;
+    if (mv.code && this.def.codeFx) G.codeFx(this, mv, f); // códigos verdes e roxos nos especiais do Vinícius (cosmético)
     if (mv.invuln && f >= mv.invuln[0] && f <= mv.invuln[1]) this.invuln = Math.max(this.invuln, 1);
     this.armorNow = !!(mv.armor && f >= mv.armor[0] && f <= mv.armor[1]) || (this.exMove && f <= mv.startup);
     this.counterNow = !!(mv.counter && f >= mv.counter[0] && f <= mv.counter[1]);
