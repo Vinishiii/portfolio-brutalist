@@ -39,7 +39,16 @@ M.ach = (function () {
     { id: 'bonds6', icon: '∞', name: 'Todos os Laços', desc: 'Faça laço com os seis adversários.' },
     { id: 'fama7', icon: '✪', name: 'Fama Total', desc: 'Cumpra os sete desafios da História.' },
     { id: 'legends_done', icon: '☾', name: 'A Noite Tem Guardião', desc: 'Termine as Lendas da Noite.' },
-    { id: 'free_done', icon: '⚑', name: 'Rinha Inteira', desc: 'Vença a Rinha Livre completa.' }
+    { id: 'free_done', icon: '⚑', name: 'Rinha Inteira', desc: 'Vença a Rinha Livre completa.' },
+    { id: 'surv5', icon: '⇈', name: 'Maratonista', desc: 'Chegue à onda 5 da Maratona.' },
+    { id: 'surv10', icon: '❋', name: 'Fôlego de Boi', desc: 'Chegue à onda 10 da Maratona.' },
+    { id: 'surv20', icon: '♚', name: 'Lenda da Maratona', desc: 'Chegue à onda 20 da Maratona.' },
+    { id: 'daily1', icon: '☀', name: 'Desafio Aceito', desc: 'Vença um Desafio do Dia.' },
+    { id: 'daily3', icon: '☼', name: 'Três Dias Seguidos', desc: 'Vença o Desafio do Dia em três dias seguidos.' },
+    { id: 'daily_star', icon: '✧', name: 'Estrela do Dia', desc: 'Cumpra o objetivo bônus de um Desafio do Dia.' },
+    { id: 'mut_win', icon: '✺', name: 'Rinha Maluca', desc: 'Vença a CPU com dois modificadores ligados.' },
+    { id: 'palette', icon: '◐', name: 'Cara Nova', desc: 'Vença uma luta com uma cor alternativa.' },
+    { id: 'jukebox', icon: '♫', name: 'Ouvido Absoluto', desc: 'Ouça todas as faixas do Jukebox.' }
   ];
   const byId = Object.fromEntries(LIST.map(a => [a.id, a]));
   const store = () => (M.store.data.progress.ach || (M.store.data.progress.ach = {}));
@@ -81,6 +90,8 @@ M.ach = (function () {
       if (taken === 0) unlock('flawless');
       if (r.winner.hp <= r.winner.maxHp * 0.1) unlock('comeback');
     }
+    if (vsCpu && (o.mutators || []).length >= 2) unlock('mut_win');
+    if (o.p1 && (o.p1.pal | 0) > 0) unlock('palette');
     if ((st.maxCombo || 0) >= 10) unlock('combo10');
     if ((st.landed.L3 || 0) >= 1) unlock('string3');
     if ((st.landed.S2 || 0) + (st.landed.dS2 || 0) >= 1) unlock('follow');

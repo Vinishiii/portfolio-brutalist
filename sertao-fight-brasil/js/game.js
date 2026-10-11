@@ -21,11 +21,16 @@ M.Match = class Match {
   constructor(o) {
     this.o = o;
     const W = M.W;
-    this.p1 = new M.Fighter(M.FIGHTERS[o.p1.id], 1, o.p1.ctrl);
-    this.p2 = new M.Fighter(M.FIGHTERS[o.p2.id], 2, o.p2.ctrl);
+    // paleta alternativa (opcional); se os dois são o mesmo lutador na mesma cor, o 2 troca de roupa
+    const pal1 = o.p1.pal | 0; let pal2 = o.p2.pal | 0; if (o.p1.id === o.p2.id && pal1 === pal2) pal2 = (pal1 + 1) % M.PAL_COUNT;
+    this.p1 = new M.Fighter(M.palette(M.FIGHTERS[o.p1.id], pal1), 1, o.p1.ctrl);
+    this.p2 = new M.Fighter(M.palette(M.FIGHTERS[o.p2.id], pal2), 2, o.p2.ctrl);
+    this.mutators = (o.mutators || []).map(id => M.mutById(id)).filter(Boolean);
+    this.gravK = this.mutators.reduce((k, m) => k * (m.gravK || 1), 1);
     for (const [f, cfg] of [[this.p1, o.p1], [this.p2, o.p2]]) {
       if (cfg.mods) Object.assign(f.mods, cfg.mods);
       if (cfg.patuas) { f.patuas = cfg.patuas.slice(); for (const id of f.patuas) { const pt = M.modById ? M.modById(id) : M.PATUAS.find(p => p.id === id); if (pt) pt.apply(f.mods); } }
+      for (const mu of this.mutators) if (mu.apply) mu.apply(f.mods);
       f.applyMods();
       if (f.ctrl === 'cpu') { f.ai = M.AI.make(o.difficulty || 'brabo', f.def, cfg.aiExtra); const d = o.difficulty || 'brabo'; if (d === 'novato') { f.mods.dmg *= 0.75; f.mods.hp *= 0.9; } else if (d === 'lendario') { f.mods.dmg *= 1.1; f.mods.hp *= 1.05; } }
     }
@@ -59,6 +64,7 @@ M.Match = class Match {
     this.timeF = this.timeStart * 60; this.phase = 'intro'; this.phaseT = 0; this.banner = null; this.freeze = 0;
     this.camTarget = null; this.cam.zoom = 1; this.cam.x = M.W / 2; this.cam.y = M.H / 2;
     for (const f of this.fighters) if (f.mods.regen && this.round > 1) f.hp = Math.min(f.maxHp, f.hp + f.maxHp * f.mods.regen);
+    if (this.round === 1) for (const [f, cfg] of [[this.p1, this.o.p1], [this.p2, this.o.p2]]) if (cfg.hpFrac && cfg.hpFrac < 1) { f.hp = Math.max(1, Math.round(f.maxHp * cfg.hpFrac)); f.dmgTrail = f.hp; }
     for (const f of this.fighters) if (f.ai) { f.ai.timer = 0; f.ai.intent = 'wait'; }
     M.audio.music.setMode(this.phase2 ? 'boss2' : this.boss ? 'boss' : 'fight', this.stage.id);
     M.audio.crowd(0.5);
@@ -294,6 +300,7 @@ M.Match = class Match {
     dmg = Math.round(dmg);
     const exB = (!src && att.exMove) ? 1.35 : (src && src.ex ? 1.35 : 1); dmg = Math.round(dmg * exB);
     def.hp -= dmg;
+    if (att.mods.leech) att.hp = Math.min(att.maxHp, att.hp + Math.round(dmg * att.mods.leech));
     def.lastHurt = this.frame;
     this.popup('-' + dmg, def.x + (att.x < def.x ? 26 : -26), def.y - 150 - Math.min(60, att.combo * 12), counter ? M.C.red : (heavyFlag(mv) ? M.C.yellow : M.C.paper), heavyFlag(mv) ? 22 : 17);
     att.stats.dmg += dmg; att.stats.hits++; att.stats.landed[mv.id] = (att.stats.landed[mv.id] || 0) + 1;
@@ -645,12 +652,12 @@ M.Match = class Match {
       M.text(ctx, Math.ceil(pct * 100) + '%', right ? x0 + 12 : x0 + bw - 12, y + bh / 2 + 1, { size: 13, align: right ? 'left' : 'right', color: C.paper, lw: 2.5 });
       // medalhão com o rosto
       const fc = M._faces = M._faces || {};
-      if (!fc[f.def.id]) { const c = document.createElement('canvas'); c.width = 72; c.height = 72; const g2 = c.getContext('2d'); g2.beginPath(); g2.arc(36, 36, 35, 0, Math.PI * 2); g2.clip(); const bg = g2.createLinearGradient(0, 0, 0, 72); bg.addColorStop(0, '#f2b70c'); bg.addColorStop(1, f.def.colors.accent || '#c8371d'); g2.fillStyle = bg; g2.fillRect(0, 0, 72, 72); const rig = M.render.computeRig(M.poses.idlePose(f.def.idle, 0.6, f.def.idleOver), f.def); g2.translate(36, 40); g2.scale(2.1, 2.1); g2.translate(-rig.head[0], -(rig.head[1] + rig.shift)); M.render.drawRig(g2, rig, f.def, { happy: true }); fc[f.def.id] = c; }
+      const fk = f.def.pid || f.def.id; if (!fc[fk]) { const c = document.createElement('canvas'); c.width = 72; c.height = 72; const g2 = c.getContext('2d'); g2.beginPath(); g2.arc(36, 36, 35, 0, Math.PI * 2); g2.clip(); const bg = g2.createLinearGradient(0, 0, 0, 72); bg.addColorStop(0, '#f2b70c'); bg.addColorStop(1, f.def.colors.accent || '#c8371d'); g2.fillStyle = bg; g2.fillRect(0, 0, 72, 72); const rig = M.render.computeRig(M.poses.idlePose(f.def.idle, 0.6, f.def.idleOver), f.def); g2.translate(36, 40); g2.scale(2.1, 2.1); g2.translate(-rig.head[0], -(rig.head[1] + rig.shift)); M.render.drawRig(g2, rig, f.def, { happy: true }); fc[fk] = c; }
       const ready = this.superReady(f), shk = low ? Math.sin(this.frame * 0.9) * 1.2 : 0;
       ctx.save(); ctx.translate(mx + shk, my);
       ctx.beginPath(); ctx.arc(2, 3, 35, 0, Math.PI * 2); ctx.fillStyle = 'rgba(20,18,16,0.55)'; ctx.fill();
       ctx.beginPath(); ctx.arc(0, 0, 36, 0, Math.PI * 2); ctx.fillStyle = C.ink; ctx.fill();
-      ctx.drawImage(fc[f.def.id], -33, -33, 66, 66);
+      ctx.drawImage(fc[fk], -33, -33, 66, 66);
       ctx.beginPath(); ctx.arc(0, 0, 33.5, 0, Math.PI * 2); ctx.lineWidth = 4; ctx.strokeStyle = ready ? (this.frame % 10 < 5 ? C.magenta : C.yellow) : (low ? `rgba(255,${90 + pulse * 100},60,1)` : C.paper); ctx.stroke();
       if (ready) { ctx.globalAlpha = 0.35 + 0.25 * Math.sin(this.frame * 0.3); ctx.beginPath(); ctx.arc(0, 0, 40, 0, Math.PI * 2); ctx.lineWidth = 3; ctx.strokeStyle = C.magenta; ctx.stroke(); ctx.globalAlpha = 1; }
       ctx.restore();
@@ -669,6 +676,9 @@ M.Match = class Match {
     ctx.beginPath(); ctx.arc(W / 2, 40, 30, 0, Math.PI * 2); ctx.fillStyle = C.paper; ctx.fill(); ctx.lineWidth = 4; ctx.strokeStyle = C.ink; ctx.stroke();
     const secs = Math.ceil(this.timeF / 60);
     M.text(ctx, this.timerOn ? String(secs) : '∞', W / 2, 42, { size: this.timerOn ? 28 : 34, color: this.timerOn && secs <= 10 ? C.red : C.ink, stroke: false });
+    // onda da Maratona e modificadores ligados
+    if (this.o.survival) M.text(ctx, 'ONDA ' + this.o.survival.wave, W / 2, 84, { size: 14, color: C.yellow, lw: 3 });
+    if (this.mutators.length) M.text(ctx, this.mutators.map(m => m.icon).join(' '), W / 2, this.o.survival ? 102 : 84, { size: 15, color: C.paper, lw: 3 });
     // AXÉ
     const ax0 = W / 2 - 240, ay = 494, aw = 480, ah = 18;
     ctx.fillStyle = C.ink; ctx.fillRect(ax0 - 4, ay - 4, aw + 8, ah + 8);
@@ -714,8 +724,8 @@ M.Match = class Match {
       ctx.fillStyle = C.ink; ctx.fillRect(-700, -52, 1400, 6); ctx.fillRect(-700, 46, 1400, 6);
       M.text(ctx, b.text.toUpperCase(), (1 - slide) * (f.side === 1 ? -300 : 300), 2, { size: 46, color: C.paper });
       M.text(ctx, f.def.name.toUpperCase() + ' — PEIA', 0, 72, { size: 16, color: C.yellow });
-      const bp = M._bp = M._bp || {}; if (!bp[f.def.id]) { const c = document.createElement('canvas'); c.width = 220; c.height = 270; M.render.drawPortrait(c, f.def, { facing: 1 }); bp[f.def.id] = c; }
-      ctx.save(); ctx.translate((f.side === 1 ? -380 : 380) + (1 - slide) * (f.side === 1 ? -500 : 500), 0); if (f.side === 2) ctx.scale(-1, 1); ctx.rotate(0.06); ctx.drawImage(bp[f.def.id], -85, -150, 170, 208); ctx.restore();
+      const bp = M._bp = M._bp || {}; const bk = f.def.pid || f.def.id; if (!bp[bk]) { const c = document.createElement('canvas'); c.width = 220; c.height = 270; M.render.drawPortrait(c, f.def, { facing: 1 }); bp[bk] = c; }
+      ctx.save(); ctx.translate((f.side === 1 ? -380 : 380) + (1 - slide) * (f.side === 1 ? -500 : 500), 0); if (f.side === 2) ctx.scale(-1, 1); ctx.rotate(0.06); ctx.drawImage(bp[bk], -85, -150, 170, 208); ctx.restore();
       ctx.restore();
     }
     if (this.bigText && !(this.banner && this.phase === 'fight')) {

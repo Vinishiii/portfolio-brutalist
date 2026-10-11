@@ -61,7 +61,7 @@
     else M.input.takePadEdges();
     if (M.state === 'fight' && M.match) {
       if (M.input.pausePressed()) { openPause(); return; }
-      M.match.update();
+      M.match.update(); M.stats.tick();
     } else {
       M.input.pausePressed();
       if (ambient && !M.match) updateAmbient();
@@ -88,24 +88,33 @@
   const flow = M.flow = {
     story: null,
     startMatch(o) {
-      const done = o.onEnd; o.onEnd = r => { try { M.ach.matchEnd(r, o); } catch (e) { /* ignora */ } if (done) done(r); };
+      const done = o.onEnd; o.onEnd = r => { try { M.stats.record(r, o); M.ach.matchEnd(r, o); } catch (e) { /* ignora */ } if (done) done(r); };
       M.ui.hide(); M.state = 'fight'; M.input.clear();
       M.match = new M.Match(o);
       flow.updateTouch();
     },
     startFromSelect(sel) {
-      const diff = M.store.data.settings.difficulty;
+      const diff = M.store.data.settings.difficulty, R = M.rules.forMatch();
+      const P = (id, ctrl, pal) => ({ id, ctrl, pal: pal | 0 });
       if (sel.mode === 'cpu') {
-        flow.startMatch({ mode: 'versus', p1: { id: sel.p1, ctrl: 'human' }, p2: { id: sel.p2, ctrl: 'cpu' }, stage: sel.stage, rounds: 2, timer: 99, difficulty: diff, onEnd: r => flow.versusEnd(r, sel) });
+        flow.startMatch({ mode: 'versus', p1: P(sel.p1, 'human', sel.pal1), p2: P(sel.p2, 'cpu', sel.pal2), stage: sel.stage, rounds: R.rounds, timer: R.timer, mutators: R.mutators, difficulty: diff, onEnd: r => flow.versusEnd(r, sel) });
       } else if (sel.mode === 'versus') {
-        flow.startMatch({ mode: 'versus', p1: { id: sel.p1, ctrl: 'human' }, p2: { id: sel.p2, ctrl: 'human' }, stage: sel.stage, rounds: 2, timer: 99, onEnd: r => flow.versusEnd(r, sel) });
+        flow.startMatch({ mode: 'versus', p1: P(sel.p1, 'human', sel.pal1), p2: P(sel.p2, 'human', sel.pal2), stage: sel.stage, rounds: R.rounds, timer: R.timer, mutators: R.mutators, onEnd: r => flow.versusEnd(r, sel) });
       } else if (sel.mode === 'training') {
-        flow.startMatch({ mode: 'training', p1: { id: sel.p1, ctrl: 'human' }, p2: { id: sel.p2, ctrl: 'dummy' }, stage: sel.stage, rounds: 99, timer: 0, difficulty: diff, dummy: 'stand', onEnd: () => M.ui.menu() });
+        flow.startMatch({ mode: 'training', p1: P(sel.p1, 'human', sel.pal1), p2: P(sel.p2, 'dummy', sel.pal2), stage: sel.stage, rounds: 99, timer: 0, difficulty: diff, dummy: 'stand', onEnd: () => M.ui.menu() });
       } else if (sel.mode === 'free') {
-        flow.free = { p1: sel.p1, order: M.shuffle(M.ROSTER.filter(id => id !== sel.p1 && id !== 'cinzas')).slice(0, 7).concat(['cinzas']), idx: 0, patuas: [], frames: 0, deaths: 0, difficulty: diff };
+        flow.free = { p1: sel.p1, pal: sel.pal1 | 0, order: M.shuffle(M.ROSTER.filter(id => id !== sel.p1 && id !== 'cinzas')).slice(0, 7).concat(['cinzas']), idx: 0, patuas: [], frames: 0, deaths: 0, difficulty: diff };
         flow.freeFight();
+      } else if (sel.mode === 'survival') {
+        M.survival.start(sel.p1, sel.pal1 | 0);
       }
     },
+    // ---- desafio do dia ----
+    startDaily() {
+      const ch = M.daily.current();
+      flow.startMatch({ mode: 'daily', p1: { id: ch.p1, ctrl: 'human' }, p2: { id: ch.p2, ctrl: 'cpu' }, stage: ch.stage, rounds: 2, timer: 99, mutators: ch.mut, difficulty: ch.difficulty, daily: ch.key, onEnd: r => flow.dailyEnd(r, ch) });
+    },
+    dailyEnd(r, ch) { M.state = 'results'; const res = M.daily.finish(ch, r); M.ui2.dailyResult({ r, ch, res }); },
     versusEnd(r, sel) {
       M.state = 'results';
       M.ui.results({ result: r, buttons: [{ id: 'again', label: 'REVANCHE', fn: () => flow.startFromSelect(sel) }, { id: 'change', label: 'TROCAR LUTADORES', fn: () => { M.match = null; M.ui.charselect({ players: 2, mode: sel.mode }); } }, { id: 'menu', label: 'MENU', fn: () => M.ui.menu() }] });
@@ -114,7 +123,7 @@
     freeFight() {
       const F = flow.free; const opp = F.order[F.idx];
       const stage = opp === 'cinzas' ? 'cinzas' : M.choice(M.stages.order.filter(s => s !== 'cinzas'));
-      flow.startMatch({ mode: 'free', p1: { id: F.p1, ctrl: 'human', patuas: F.patuas }, p2: { id: opp, ctrl: 'cpu' }, stage, rounds: 2, timer: 99, difficulty: F.difficulty, boss: opp === 'cinzas', onEnd: r => flow.freeEnd(r) });
+      flow.startMatch({ mode: 'free', p1: { id: F.p1, ctrl: 'human', patuas: F.patuas, pal: F.pal | 0 }, p2: { id: opp, ctrl: 'cpu' }, stage, rounds: 2, timer: 99, difficulty: F.difficulty, boss: opp === 'cinzas', onEnd: r => flow.freeEnd(r) });
     },
     freeEnd(r) {
       const F = flow.free; F.frames += r.frames; M.state = 'results';

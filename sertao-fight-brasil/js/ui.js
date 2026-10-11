@@ -15,14 +15,21 @@ M.ui = (function () {
       if (!current) return;
       if (current.onKey && current.onKey(e) === true) { e.preventDefault(); return; }
       if (!items.length) return;
-      if (['ArrowUp', 'KeyW', 'ArrowLeft', 'KeyA'].includes(e.code)) { move(-1); e.preventDefault(); }
+      const horiz = ['ArrowLeft', 'KeyA', 'ArrowRight', 'KeyD'].includes(e.code);
+      if (horiz && current.step && idx < (current.gridCount || items.length)) {
+        // grade em colunas: esquerda/direita pulam uma coluna; nas pontas, ficam onde estão
+        const to = idx + (['ArrowLeft', 'KeyA'].includes(e.code) ? -current.step : current.step);
+        if (to >= 0 && to < (current.gridCount || items.length)) { idx = to; focus(); M.audio.play('uiMove'); }
+        e.preventDefault();
+      }
+      else if (['ArrowUp', 'KeyW', 'ArrowLeft', 'KeyA'].includes(e.code)) { move(-1); e.preventDefault(); }
       else if (['ArrowDown', 'KeyS', 'ArrowRight', 'KeyD'].includes(e.code)) { move(1); e.preventDefault(); }
       else if (KEYS_CONFIRM.includes(e.code)) { if (items[idx]) { items[idx].click(); } e.preventDefault(); }
       else if (KEYS_BACK.includes(e.code)) { if (current.onBack) { M.audio.play('uiBack'); current.onBack(); } e.preventDefault(); }
     });
   }
   function move(d) { if (!items.length) return; idx = (idx + d + items.length) % items.length; focus(); M.audio.play('uiMove'); }
-  function focus() { items.forEach((el, i) => el.classList.toggle('sel', i === idx)); const el = items[idx]; if (el && el.scrollIntoView) { try { el.scrollIntoView({ block: 'nearest' }); } catch (e) { /* ignora */ } } }
+  function focus() { items.forEach((el, i) => el.classList.toggle('sel', i === idx)); const el = items[idx]; if (el && el.scrollIntoView) { try { el.scrollIntoView({ block: 'nearest' }); } catch (e) { /* ignora */ } } if (el && current && current.onFocus) current.onFocus(el, idx); }
   function show(html, o = {}) {
     stopTyping();
     root.innerHTML = html; root.classList.add('active');
@@ -50,7 +57,7 @@ M.ui = (function () {
     }, speed);
     return () => { stopTyping(); el.innerHTML = safe; if (done) done(); };
   }
-  function portrait(id, w = 140, h = 180, opts) { const c = document.createElement('canvas'); c.width = w; c.height = h; M.render.drawPortrait(c, M.FIGHTERS[id], opts); return c; }
+  function portrait(id, w = 140, h = 180, opts) { const c = document.createElement('canvas'); c.width = w; c.height = h; M.render.drawPortrait(c, M.palette(M.FIGHTERS[id], (opts && opts.pal) || 0), opts); return c; }
   function diffLabel(d) { return { novato: 'Novato', brabo: 'Brabo', lendario: 'Lendário' }[d] || d; }
 
   // ---------- TÍTULO ----------
@@ -72,33 +79,44 @@ M.ui = (function () {
     const d = M.store.data; const cont = d.story && d.story.idx > 0 && d.story.idx < M.STORY.fights.length;
     const free = d.progress.storyDone;
     const legUnlocked = d.progress.storyDone; const legCont = legUnlocked && d.legends && d.legends.idx > 0 && d.legends.idx < M.LEGENDS.fights.length;
+    const dayDone = M.daily.done(M.daily.today());
+    // [id, rótulo, selo (opcional), descrição, trancado]
+    const L = [], R = [];
+    if (cont) L.push(['cont', 'CONTINUAR HISTÓRIA', `luta ${d.story.idx + 1}/${M.STORY.fights.length}`, 'volte de onde parou na Rinha do Fogo']);
+    L.push(['story', (cont ? 'NOVA ' : '') + 'HISTÓRIA', '', 'a Rinha do Fogo, com Zeca Ventania']);
+    L.push(['legends', (legCont ? 'CONTINUAR ' : '') + 'LENDAS DA NOITE', legCont ? `luta ${d.legends.idx + 1}/${M.LEGENDS.fights.length}` : '', legUnlocked ? (legCont ? 'continue a noite das assombrações' : 'o folclore do Nordeste acorda') : 'vença a História para liberar', !legUnlocked]);
+    L.push(['cpu', 'VERSUS CPU', '', 'você contra a máquina, escolha o adversário']);
+    L.push(['versus', 'VERSUS 2 JOGADORES', '', 'dois no mesmo teclado']);
+    L.push(['training', 'TREINO', '', 'pratique golpes e combos']);
+    R.push(['free', 'RINHA LIVRE', '', free ? 'enfrente toda a rinha com qualquer lutador' : 'vença a História para liberar', !free]);
+    R.push(['survival', 'MARATONA', d.progress.surv && d.progress.surv.bestWave ? `onda ${d.progress.surv.bestWave}` : '', 'ondas sem fim, cada uma mais brava; a vida passa de luta em luta']);
+    R.push(['daily', 'DESAFIO DO DIA', dayDone ? '✔' : '', 'um duelo novo todo dia, com regras malucas e um objetivo bônus']);
+    R.push(['ach', 'CONQUISTAS', `${M.ach.count()}/${M.ach.total}`, 'veja o que você já conquistou']);
+    R.push(['extras', 'EXTRAS', '', 'estatísticas e jukebox']);
+    const rows = Math.max(L.length, R.length);
+    const all = L.concat(R);
+    const foot = [['howto', 'COMO JOGAR'], ['options', 'OPÇÕES'], ['credits', 'CRÉDITOS']];
+    if (M.platform.desktop) foot.push(['quit', 'SAIR']);
+    const desc = {}; all.forEach(x => { desc[x[0]] = x[3]; });
+    desc.howto = 'controles, golpes e a regra da Energia'; desc.options = 'idioma, vídeo, áudio, teclas e acessibilidade'; desc.credits = 'quem fez a rinha'; desc.quit = 'fechar o jogo';
     show(`<div class="screen menu">
       <div class="menu-left"><div class="logo small"><h1 class="sr" data-notr>SERTÃO FIGHT BRASIL</h1><div class="logo-slot"></div></div>
-        <nav>
-          ${cont ? `<button class="mi" data-go="cont">CONTINUAR HISTÓRIA <small>luta ${d.story.idx + 1}/${M.STORY.fights.length}</small></button>` : ''}
-          <button class="mi" data-go="story">${cont ? 'NOVA ' : ''}HISTÓRIA <small>a Rinha do Fogo, com Zeca Ventania</small></button>
-          <button class="mi ${legUnlocked ? '' : 'locked'}" data-go="legends">${legCont ? 'CONTINUAR ' : ''}LENDAS DA NOITE <small>${legUnlocked ? (legCont ? `luta ${d.legends.idx + 1}/${M.LEGENDS.fights.length}` : 'o folclore do Nordeste acorda') : 'vença a História para liberar'}</small></button>
-          <button class="mi" data-go="cpu">VERSUS CPU <small>você contra a máquina, escolha o adversário</small></button>
-          <button class="mi" data-go="versus">VERSUS 2 JOGADORES <small>dois no mesmo teclado</small></button>
-          <button class="mi" data-go="training">TREINO <small>pratique golpes e combos</small></button>
-          <button class="mi ${free ? '' : 'locked'}" data-go="free">RINHA LIVRE <small>${free ? 'enfrente toda a rinha com qualquer lutador' : 'vença a História para liberar'}</small></button>
-          <button class="mi" data-go="ach">CONQUISTAS <small data-notr>${M.ach.count()}/${M.ach.total}</small></button>
+        <nav class="grid2" style="--rows:${rows}">
+          ${all.map(x => `<button class="mi ${x[4] ? 'locked' : ''}" data-go="${x[0]}">${x[1]}${x[2] ? ` <small data-notr>${x[2]}</small>` : ''}</button>`).join('')}
         </nav>
-        <div class="mi-foot">
-          <button class="mi" data-go="howto">COMO JOGAR</button>
-          <button class="mi" data-go="options">OPÇÕES</button>
-          <button class="mi" data-go="credits">CRÉDITOS</button>
-          ${M.platform.desktop ? '<button class="mi" data-go="quit">SAIR</button>' : ''}
-        </div></div>
+        <div class="mi-foot">${foot.map(x => `<button class="mi" data-go="${x[0]}">${x[1]}</button>`).join('')}</div></div>
       <div class="menu-right"><div class="stamp">${free ? 'GUARDIÃO DA BRASA' : 'VILA BRASA, SERTÃO'}</div>
+        <p class="mdesc" id="mDesc"></p>
         <p class="pitch">Quem tem <b>Energia</b> manda na rinha.<br>O público é a barra de poder — e ele escolhe quem merece a Peia.</p>
         ${d.progress.bestTime ? `<p class="tiny">Melhor História: ${M.fmtTime(d.progress.bestTime)}${d.progress.bestGrade ? ' • Nota ' + d.progress.bestGrade : ''} • Finais vistos: ${d.progress.endings.length}/3</p>` : ''}
       </div>
     </div>`, {
-      idx: menuMem,
+      idx: menuMem, step: rows, gridCount: all.length,
+      onFocus: el => { const t = document.getElementById('mDesc'); if (t) t.textContent = desc[el.dataset.go] || ''; },
       actions: {
         cont: () => M.flow.continueStory(), story: () => storyStart(), legends: () => { if (!legUnlocked) { M.audio.play('uiBack'); return; } if (legCont) legendsMenu(); else storyStart({ title: 'LENDAS DA NOITE', text: 'Quatro assombrações do Nordeste — Fulozinha, Cabeça de Cuia, Mula-sem-Cabeça e Papa-Figo — esperam o novo guardião da Brasa. Garrafada entre as rinhas. Caiu? Levanta e tenta de novo.', pick: dd => M.flow.newLegends(dd) }); }, versus: () => charselect({ players: 2, mode: 'versus' }), cpu: () => charselect({ players: 2, mode: 'cpu' }),
         training: () => charselect({ players: 1, mode: 'training' }), free: () => { if (free) charselect({ players: 1, mode: 'free' }); else M.audio.play('uiBack'); },
+        survival: () => charselect({ players: 1, mode: 'survival' }), daily: () => M.ui2.daily(), extras: () => M.ui2.extras(),
         ach: () => achievements(menu), howto: () => howto(menu), options: () => options(menu), credits: () => credits(), quit: () => M.platform.quit()
       }
     });
@@ -198,10 +216,11 @@ M.ui = (function () {
         <div class="vs-side right"><div class="vs-port" id="vsB"></div><h3>${esc(B.name)}</h3><p>${esc(B.alias)}</p></div>
       </div>
       ${ch ? `<div class="vs-challenge"><b>DESAFIO</b> ${esc(ch.text)}${o.best ? ` <i>(melhor nota: ${o.best})</i>` : ''}</div>` : ''}
+      ${o.note ? `<div class="vs-challenge">${o.note}</div>` : ''}
       <div class="vs-foot">ENTER / TOQUE ▸ <button class="btn ghost" data-go="skip">pular</button></div>
     </div>`, { actions: { skip: () => { clearTimeout(t); onDone(); } }, onKey: e => { if (KEYS_CONFIRM.includes(e.code)) { clearTimeout(t); onDone(); return true; } return false; } });
-    document.getElementById('vsA').appendChild(portrait(o.p1, 200, 250, { facing: 1 }));
-    document.getElementById('vsB').appendChild(portrait(o.p2, 200, 250, { facing: -1 }));
+    document.getElementById('vsA').appendChild(portrait(o.p1, 200, 250, { facing: 1, pal: o.pal1 }));
+    document.getElementById('vsB').appendChild(portrait(o.p2, 200, 250, { facing: -1, pal: o.pal2 }));
     const t = setTimeout(onDone, 4200);
     root.querySelector('.screen').addEventListener('pointerdown', e => { if (e.target.closest('button')) return; clearTimeout(t); onDone(); });
     M.audio.play('super');
@@ -291,9 +310,11 @@ M.ui = (function () {
     M.state = 'charselect';
     const unlocked = M.store.data.progress.cinzas;
     const roster = M.ROSTER;
-    const sel = { p1: 0, p2: 1, stage: 0, step: 1 };
+    const sel = o.keep || { p1: 0, p2: 1, stage: 0, step: 1, pal1: 0, pal2: 0, palFor: null };
+    const setPal = () => { const id = roster[sel.p1]; if (sel.palFor !== id) { sel.palFor = id; sel.pal1 = ((M.store.data.settings.pals || {})[id]) | 0; } const id2 = roster[sel.p2]; if (sel.palFor2 !== id2) { sel.palFor2 = id2; sel.pal2 = 0; } };
     const stages = ['aleatorio'].concat(M.stages.order);
-    const modeName = { versus: 'VERSUS 2P', cpu: 'VERSUS CPU', training: 'TREINO', free: 'RINHA LIVRE' }[o.mode];
+    const modeName = { versus: 'VERSUS 2P', cpu: 'VERSUS CPU', training: 'TREINO', free: 'RINHA LIVRE', survival: 'MARATONA' }[o.mode];
+    const hasRules = o.mode === 'cpu' || o.mode === 'versus';
     show(`<div class="screen cs">
       <div class="cs-head"><span class="stamp">${modeName}</span><span id="csTurn" class="cs-turn"></span><button class="btn ghost" data-go="back">◂ voltar</button></div>
       <div class="cs-main">
@@ -304,19 +325,21 @@ M.ui = (function () {
       <div class="cs-foot">
         <div class="cs-stage"><span>CENÁRIO</span><button class="btn small" data-go="stPrev">◂</button><b id="csStage"></b><button class="btn small" data-go="stNext">▸</button></div>
         ${o.mode !== 'versus' ? `<div class="cs-stage"><span>DIFICULDADE</span><button class="btn small" data-go="dfPrev">◂</button><b id="csDiff"></b><button class="btn small" data-go="dfNext">▸</button></div>` : ''}
-        <div class="cs-hint">P1: WASD + J confirma • K volta${o.players === 2 && o.mode !== 'cpu' ? ' • P2: setas + Num1 ou vírgula' : ''}</div>
+        ${hasRules ? `<div class="cs-stage"><span>REGRAS</span><button class="btn small" data-go="rules" id="csRules"></button></div>` : ''}
+        <div class="cs-hint">P1: WASD + J confirma • K volta • L muda a cor${o.players === 2 && o.mode !== 'cpu' ? ' • P2: setas + Num1 ou vírgula' : ''}</div>
         <button class="btn primary" data-go="go" id="csGo">LUTAR!</button>
       </div>
     </div>`, {
       showBack: false, onBack: () => { if (sel.step === 2) { sel.step = 1; refresh(); } else menu(); },
-      actions: { back: () => menu(), stPrev: () => { sel.stage = (sel.stage + stages.length - 1) % stages.length; refresh(); }, stNext: () => { sel.stage = (sel.stage + 1) % stages.length; refresh(); }, dfPrev: () => cycleDiff(-1), dfNext: () => cycleDiff(1), go: () => go() },
+      actions: { back: () => menu(), rules: () => M.ui2.rules({ onBack: () => charselect(Object.assign({}, o, { keep: sel })) }), stPrev: () => { sel.stage = (sel.stage + stages.length - 1) % stages.length; refresh(); }, stNext: () => { sel.stage = (sel.stage + 1) % stages.length; refresh(); }, dfPrev: () => cycleDiff(-1), dfNext: () => cycleDiff(1), go: () => go() },
       onKey: e => {
         const c = e.code;
         const who = (o.players === 2 && sel.step === 2) ? 'p2' : 'p1';
-        const isP1 = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyJ', 'KeyK', 'Enter', 'Space'].includes(c);
-        const isP2 = ['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight', 'Numpad1', 'Comma', 'Numpad2', 'Period'].includes(c);
+        const isP1 = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyJ', 'KeyK', 'KeyL', 'Enter', 'Space'].includes(c);
+        const isP2 = ['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight', 'Numpad1', 'Comma', 'Numpad2', 'Period', 'Numpad3', 'Slash'].includes(c);
         if (!isP1 && !isP2 && c !== 'Escape') return false;
         if (c === 'Escape') { if (sel.step === 2) { sel.step = 1; refresh(); } else menu(); return true; }
+        if (['KeyL', 'Numpad3', 'Slash'].includes(c)) { cyclePal(who === 'p2' ? 2 : 1, 1); return true; }
         const key = who === 'p2' ? sel.p2 : sel.p1;
         let n = key;
         const N = roster.length, COLS = 4;
@@ -332,21 +355,43 @@ M.ui = (function () {
     });
     const grid = document.getElementById('csGrid');
     grid.querySelectorAll('.cs-card').forEach((el, i) => { el.querySelector('.cs-port').appendChild(portrait(roster[i], 120, 150, { silhouette: roster[i] === 'cinzas' && !unlocked ? '#141210' : null })); el.addEventListener('click', () => { if (sel.step === 2 && o.players === 2) sel.p2 = i; else sel.p1 = i; refresh(); confirm(); }); });
+    function setPalIdx(who, k) {
+      const id = roster[who === 2 ? sel.p2 : sel.p1]; if (id === 'cinzas' && !unlocked) return;
+      if (who === 2) sel.pal2 = k; else { sel.pal1 = k; const st = M.store.data.settings; st.pals = st.pals || {}; st.pals[id] = k; M.store.save(); }
+      M.audio.play('uiMove'); refresh();
+    }
+    function cyclePal(who, d) { setPalIdx(who, (((who === 2 ? sel.pal2 : sel.pal1) + d) % M.PAL_COUNT + M.PAL_COUNT) % M.PAL_COUNT); }
     function cycleDiff(d) { const L = ['novato', 'brabo', 'lendario']; const s = M.store.data.settings; s.difficulty = L[(L.indexOf(s.difficulty) + d + 3) % 3]; M.store.save(); refresh(); }
-    function info(el, i, label) {
+    function info(el, i, label, who) {
       const id = roster[i], f = M.FIGHTERS[id]; const locked = id === 'cinzas' && !unlocked;
       const cmds = [['S', 'L'], ['dS', '↓+L'], ['fS', '→+L'], ['aS', 'ar+L'], ['fH', '→+K'], ['bH', '←+K'], ['dH', 'dash+K']].filter(([k]) => f.moves[k]).map(([k, i]) => `<span><b>${i}</b> ${esc(f.moves[k].name)}</span>`).join('')
       const fk = f.moves.S && f.moves.S.follow ? 'S' : f.moves.dS && f.moves.dS.follow ? 'dS' : null;
       const extra = (f.moves.L2 ? `<span><b>J,J,J</b> ${esc(f.moves.L2.name)} ▸ ${esc(f.moves.L3.name)}</span>` : '') + (fk ? `<span><b>${fk === 'S' ? 'L,L' : '↓L,L'}</b> ${esc(f.moves[f.moves[fk].follow].name)}</span>` : '');
       el.innerHTML = locked ? `<div class="cs-label">${label}</div><h3>???</h3><p>Vença a História para liberar.</p>` : `<div class="cs-label">${label}</div><h3>${esc(f.name)}</h3><p class="alias">${esc(f.alias)} • ${esc(f.origin)}</p><p class="style">${esc(f.style)}</p><p class="cmds">${cmds}${extra}</p><p class="super"><b>PEIA:</b> ${esc(f.superName)} — ${esc(f.superDesc)}</p>`;
+      if (!locked && who) {
+        const cur = who === 2 ? sel.pal2 : sel.pal1;
+        const pe = document.createElement('div'); pe.className = 'pals';
+        pe.appendChild(portrait(id, 60, 76, { pal: cur, facing: who === 2 ? -1 : 1 }));
+        const col = document.createElement('div'); col.className = 'pal-col';
+        const lab = document.createElement('span'); lab.textContent = 'COR'; col.appendChild(lab);
+        const row = document.createElement('div'); row.className = 'pal-sw';
+        for (let k = 0; k < M.PAL_COUNT; k++) {
+          const d = M.palette(f, k), b = document.createElement('button'); b.className = 'sw' + (k === cur ? ' on' : '');
+          b.style.background = `linear-gradient(135deg, ${d.colors.torso} 0 50%, ${d.colors.accent} 50% 100%)`; b.title = M.PAL_NAMES[k];
+          b.addEventListener('click', e => { e.stopPropagation(); setPalIdx(who, k); }); row.appendChild(b);
+        }
+        col.appendChild(row); pe.appendChild(col); el.appendChild(pe);
+      }
     }
     function refresh() {
       grid.querySelectorAll('.cs-card').forEach((el, i) => { el.classList.toggle('c1', i === sel.p1); el.classList.toggle('c2', o.players === 2 && i === sel.p2 && sel.step === 2 || (o.players === 2 && sel.step === 3 && i === sel.p2)); });
-      info(document.getElementById('csInfo1'), sel.p1, 'JOGADOR 1');
+      setPal();
+      info(document.getElementById('csInfo1'), sel.p1, 'JOGADOR 1', 1);
       const i2 = document.getElementById('csInfo2');
-      if (o.players === 2) info(i2, sel.p2, o.mode === 'cpu' ? 'ADVERSÁRIO (CPU)' : (sel.step >= 2 ? 'JOGADOR 2' : 'JOGADOR 2 (aguardando)')); else i2.innerHTML = `<div class="cs-label">${o.mode === 'free' ? 'A RINHA INTEIRA' : 'BONECO / CPU'}</div><p>${o.mode === 'free' ? 'Você enfrenta sete adversários sorteados e o Mestre por último. Garrafada a cada vitória.' : 'No treino, o oponente começa parado. Pause (ESC) para mudar o comportamento do boneco.'}</p>`;
+      if (o.players === 2) info(i2, sel.p2, o.mode === 'cpu' ? 'ADVERSÁRIO (CPU)' : (sel.step >= 2 ? 'JOGADOR 2' : 'JOGADOR 2 (aguardando)'), 2); else i2.innerHTML = `<div class="cs-label">${o.mode === 'free' ? 'A RINHA INTEIRA' : o.mode === 'survival' ? 'A MARATONA' : 'BONECO / CPU'}</div><p>${o.mode === 'free' ? 'Você enfrenta sete adversários sorteados e o Mestre por último. Garrafada a cada vitória.' : o.mode === 'survival' ? 'Adversários sem fim, cada onda mais brava. Sua vida passa de uma luta para a outra (com um respiro entre elas) e a cada três ondas você ganha uma garrafada. Quanto você aguenta?' : 'No treino, o oponente começa parado. Pause (ESC) para mudar o comportamento do boneco.'}</p>`;
       document.getElementById('csTurn').textContent = o.players === 2 ? (sel.step === 1 ? (o.mode === 'cpu' ? 'ESCOLHA SEU LUTADOR' : 'JOGADOR 1 ESCOLHE') : sel.step === 2 ? (o.mode === 'cpu' ? 'ESCOLHA O ADVERSÁRIO (CPU)' : 'JOGADOR 2 ESCOLHE') : 'PRONTO!') : '';
       document.getElementById('csStage').textContent = stages[sel.stage] === 'aleatorio' ? 'Aleatório' : M.stages.DEFS[stages[sel.stage]].name;
+      const rEl = document.getElementById('csRules'); if (rEl) { const R = M.rules.get(); rEl.setAttribute('data-notr', ''); rEl.textContent = R.rounds + ' • ' + (R.timer || '∞') + (R.timer ? 's' : '') + (R.mut.length ? ' • ' + R.mut.map(id => M.mutById(id).icon).join('') : ''); }
       const dEl = document.getElementById('csDiff'); if (dEl) dEl.textContent = diffLabel(M.store.data.settings.difficulty);
     }
     function confirm() {
@@ -361,7 +406,7 @@ M.ui = (function () {
       const stage = stages[sel.stage] === 'aleatorio' ? M.choice(M.stages.order) : stages[sel.stage];
       let p2 = roster[sel.p2];
       if (o.players === 1) { const pool = roster.filter(id => id !== roster[sel.p1] && (id !== 'cinzas' || unlocked)); p2 = M.choice(pool); }
-      M.flow.startFromSelect({ mode: o.mode, p1: roster[sel.p1], p2, stage });
+      M.flow.startFromSelect({ mode: o.mode, p1: roster[sel.p1], p2, stage, pal1: sel.pal1, pal2: o.players === 2 ? sel.pal2 : 0 });
     }
     refresh();
   }
@@ -535,5 +580,5 @@ M.ui = (function () {
     show(`<div class="screen center"><div class="panel wide"><div class="stamp">CRÉDITOS</div>${epi}<p class="credits">${esc(M.STORY.credits).replace(/\n/g, '<br>')}</p><p class="credits-author">Criado por <b>Vinícius Andrey</b> — 2026</p><nav><button class="mi back" data-go="back">VOLTAR</button></nav></div></div>`, { onBack: menu, actions: { back: menu } });
   }
 
-  return { init, show, hide, controls, achievements, title, menu, storyStart, cordel, dialogue, camp, versusCard, nightMap, fightReport, patua, choice, results, ending, charselect, pause, options, howto, credits, portrait };
+  return { esc, diffLabel, init, show, hide, controls, achievements, title, menu, storyStart, cordel, dialogue, camp, versusCard, nightMap, fightReport, patua, choice, results, ending, charselect, pause, options, howto, credits, portrait };
 })();

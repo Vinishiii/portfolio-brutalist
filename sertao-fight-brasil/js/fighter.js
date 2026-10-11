@@ -276,8 +276,9 @@ M.Fighter = class Fighter {
   physics(G) {
     this.x += this.vx;
     if (!this.grounded) {
-      if (this.airDashT > 0) { this.airDashT--; this.vy = 0; } else this.vy += 0.72;
+      if (this.airDashT > 0) { this.airDashT--; this.vy = 0; } else this.vy += 0.72 * (G.gravK || 1);
       this.y += this.vy;
+      if (this.y < 130) { this.y = 130; if (this.vy < 0) this.vy = 0; } // teto: com gravidade baixa, ninguém sai da tela
       if (this.y >= M.GROUND) { const impact = this.vy; this.y = M.GROUND; this.grounded = true; this.vy = 0; this.onLand(G, impact); }
     }
     const minX = 42, maxX = M.W - 42;
