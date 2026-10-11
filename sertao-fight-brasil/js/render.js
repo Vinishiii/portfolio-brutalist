@@ -789,6 +789,22 @@ M.render = (function () {
         M.text(ctx, e.text, 0, 0, { size: e.size || 26, color: e.color || '#f2b70c' });
         break;
       }
+      case 'bubble': {
+        // balão de fala preso ao lutador
+        const o = e.owner; if (!o || !o.def) break;
+        const a = k < 0.1 ? k / 0.1 : k > 0.85 ? (1 - k) / 0.15 : 1; ctx.globalAlpha = a;
+        const txt = M.tr(e.text); ctx.font = `15px ${M.FONT_TEXT}`; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+        const words = txt.split(' '), lines = []; let cur = '';
+        for (const w of words) { const t2 = cur ? cur + ' ' + w : w; if (cur && ctx.measureText(t2).width > 176) { lines.push(cur); cur = w; } else cur = t2; }
+        if (cur) lines.push(cur);
+        const w = Math.min(206, Math.max(...lines.map(l => ctx.measureText(l).width)) + 22), h = lines.length * 19 + 14;
+        const bx = M.clamp(o.x - w / 2, 8, M.W - 8 - w), by = o.y - 218 * o.def.body.height - h - Math.min(14, e.t * 0.5);
+        ctx.fillStyle = M.C.paper; ctx.strokeStyle = INK; ctx.lineWidth = 3.5; ctx.lineJoin = 'round';
+        ctx.beginPath(); ctx.moveTo(bx + 8, by); ctx.lineTo(bx + w - 8, by); ctx.quadraticCurveTo(bx + w, by, bx + w, by + 8); ctx.lineTo(bx + w, by + h - 8); ctx.quadraticCurveTo(bx + w, by + h, bx + w - 8, by + h);
+        const tx = M.clamp(o.x, bx + 18, bx + w - 18); ctx.lineTo(tx + 9, by + h); ctx.lineTo(tx, by + h + 11); ctx.lineTo(tx - 7, by + h); ctx.lineTo(bx + 8, by + h); ctx.quadraticCurveTo(bx, by + h, bx, by + h - 8); ctx.lineTo(bx, by + 8); ctx.quadraticCurveTo(bx, by, bx + 8, by); ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = INK; lines.forEach((l, i) => ctx.fillText(l, bx + 11, by + 7 + 9.5 + i * 19));
+        break;
+      }
       default: if (ext.fx) ext.fx(ctx, e, k);
     }
     ctx.restore();

@@ -77,6 +77,7 @@ M.ui = (function () {
 
   // ---------- MENU ----------
   function menu() {
+    if (M.pendingChallenge) { const c = M.pendingChallenge; M.pendingChallenge = null; M.state = 'menu'; M.match = null; M.audio.music.setMode('menu'); return M.ui5.challengeIntro(c); }
     M.state = 'menu'; M.match = null; M.audio.music.setMode('menu');
     const d = M.store.data; const cont = d.story && d.story.idx > 0 && d.story.idx < M.STORY.fights.length;
     const free = d.progress.storyDone;
@@ -89,19 +90,21 @@ M.ui = (function () {
     L.push(['legends', (legCont ? 'CONTINUAR ' : '') + 'LENDAS DA NOITE', legCont ? `luta ${d.legends.idx + 1}/${M.LEGENDS.fights.length}` : '', legUnlocked ? (legCont ? 'continue a noite das assombrações' : 'o folclore do Nordeste acorda') : 'vença a História para liberar', !legUnlocked]);
     L.push(['cpu', 'VERSUS CPU', '', 'você contra a máquina, escolha o adversário']);
     L.push(['versus', 'VERSUS 2 JOGADORES', '', 'dois no mesmo teclado']);
+    L.push(['king', 'QUEM GANHA FICA', '', 'festa: quem vence continua no trono, quem perde volta pro fim da fila']);
     L.push(['training', 'TREINO', '', 'pratique golpes e combos']);
     R.push(['comp', 'COMPETITIVO', d.progress.comp ? M.tr(M.comp.rank(d.progress.comp.pr).tier.name.split(' ')[0]) : '', 'ranqueada, torneio local, replays e dados de quadros']);
     R.push(['free', 'RINHA LIVRE', '', free ? 'enfrente toda a rinha com qualquer lutador' : 'vença a História para liberar', !free]);
     R.push(['survival', 'MARATONA', d.progress.surv && d.progress.surv.bestWave ? `onda ${d.progress.surv.bestWave}` : '', 'ondas sem fim, cada uma mais brava; a vida passa de luta em luta']);
     R.push(['daily', 'DESAFIO DO DIA', dayDone ? '✔' : '', 'um duelo novo todo dia, com regras malucas e um objetivo bônus']);
-    R.push(['ach', 'CONQUISTAS', `${M.ach.count()}/${M.ach.total}`, 'veja o que você já conquistou']);
+    R.push(['week', 'RINHA DA SEMANA', M.week.data().stars[M.week.build().key] ? '★'.repeat(M.week.data().stars[M.week.build().key]) : '', 'três lutas com as regras malucas da semana, com placar e estrelas']);
+    R.push(['progress', 'PROGRESSO', 'NV ' + M.meta.level().lv, 'seu nível, missões do dia, títulos, molduras e a maestria de cada lutador']);
     R.push(['extras', 'EXTRAS', '', 'estatísticas e jukebox']);
     const rows = Math.max(L.length, R.length);
     const all = L.concat(R);
     const foot = [['howto', 'COMO JOGAR'], ['options', 'OPÇÕES'], ['credits', 'CRÉDITOS']];
     if (M.platform.desktop) foot.push(['quit', 'SAIR']);
     const desc = {}; all.forEach(x => { desc[x[0]] = x[3]; });
-    desc.howto = 'controles, golpes e a regra da Energia'; desc.options = 'idioma, vídeo, áudio, teclas e acessibilidade'; desc.credits = 'quem fez a rinha'; desc.quit = 'fechar o jogo';
+    desc.howto = 'controles, golpes e a regra da Energia'; desc.ach = 'veja o que você já conquistou'; desc.options = 'idioma, vídeo, áudio, teclas e acessibilidade'; desc.credits = 'quem fez a rinha'; desc.quit = 'fechar o jogo';
     show(`<div class="screen menu">
       <div class="menu-left"><div class="logo small"><h1 class="sr" data-notr>SERTÃO FIGHT BRASIL</h1><div class="logo-slot"></div></div>
         <nav class="grid2" style="--rows:${rows}">
@@ -120,6 +123,7 @@ M.ui = (function () {
         cont: () => M.flow.continueStory(), story: () => storyStart(), legends: () => { if (!legUnlocked) { M.audio.play('uiBack'); return; } if (legCont) legendsMenu(); else storyStart({ title: 'LENDAS DA NOITE', text: 'Quatro assombrações do Nordeste — Fulozinha, Cabeça de Cuia, Mula-sem-Cabeça e Papa-Figo — esperam o novo guardião da Brasa. Garrafada entre as rinhas. Caiu? Levanta e tenta de novo.', pick: dd => M.flow.newLegends(dd) }); }, versus: () => charselect({ players: 2, mode: 'versus' }), cpu: () => charselect({ players: 2, mode: 'cpu' }),
         training: () => charselect({ players: 1, mode: 'training' }), free: () => { if (free) charselect({ players: 1, mode: 'free' }); else M.audio.play('uiBack'); },
         survival: () => charselect({ players: 1, mode: 'survival' }), comp: () => M.ui3.hub(), daily: () => M.ui2.daily(), extras: () => M.ui2.extras(),
+        king: () => M.king.setup(), week: () => M.ui5.week(), progress: () => M.ui5.progress(),
         ach: () => achievements(menu), howto: () => howto(menu), options: () => options(menu), credits: () => credits(), quit: () => M.platform.quit()
       }
     });
@@ -285,13 +289,16 @@ M.ui = (function () {
   function results(o) {
     const r = o.result; const w = r.winner;
     const st = r.stats.p1;
-    show(`<div class="screen center"><div class="panel">
+    const X = M.ui5 ? M.ui5.resultExtras(o) : { html: '', actions: {}, after: null };
+    show(`<div class="screen center"><div class="panel res">
       <div class="stamp">${o.defeat ? 'CAIU NA RINHA' : 'VENCEU A RINHA'}</div>
       <h2>${esc(w.def.name.toUpperCase())}</h2>
       <p class="sub">${esc(w.def.alias)} • ${r.wins[0]} × ${r.wins[1]}</p>
       <div class="stats"><span>Tempo ${M.fmtTime(r.frames / 60)}</span><span>Golpes P1 ${st.hits}</span><span>Esquivas perfeitas ${st.perfect}</span><span>No compasso ${r.beatHits}</span></div>
+      ${X.html}
       <nav>${o.buttons.map(b => `<button class="mi" data-go="${b.id}">${esc(b.label)}</button>`).join('')}</nav>
-    </div></div>`, { actions: Object.fromEntries(o.buttons.map(b => [b.id, b.fn])) });
+    </div></div>`, { actions: Object.assign({}, X.actions, Object.fromEntries(o.buttons.map(b => [b.id, b.fn]))) });
+    if (X.after) X.after();
   }
 
   // ---------- FINAL ----------
@@ -321,9 +328,10 @@ M.ui = (function () {
       if (lock.p2 !== undefined) sel.p2 = roster.indexOf(lock.p2);
       if (o.players === 2 && lock.p1 !== undefined) sel.step = 2;
     }
-    const setPal = () => { const id = roster[sel.p1]; if (sel.palFor !== id) { sel.palFor = id; sel.pal1 = ((M.store.data.settings.pals || {})[id]) | 0; } const id2 = roster[sel.p2]; if (sel.palFor2 !== id2) { sel.palFor2 = id2; sel.pal2 = 0; } };
+    const palOk = (id, k, who) => !k || (who === 2 && o.mode === 'cpu') || M.meta.palUnlocked(id, k); // cor alternativa: ganha-se com a maestria do lutador
+    const setPal = () => { const id = roster[sel.p1]; if (sel.palFor !== id) { sel.palFor = id; const sv = ((M.store.data.settings.pals || {})[id]) | 0; sel.pal1 = palOk(id, sv, 1) ? sv : 0; } const id2 = roster[sel.p2]; if (sel.palFor2 !== id2) { sel.palFor2 = id2; sel.pal2 = 0; } };
     const stages = ['aleatorio'].concat(M.stages.order);
-    const modeName = { versus: 'VERSUS 2P', cpu: 'VERSUS CPU', training: 'TREINO', free: 'RINHA LIVRE', survival: 'MARATONA', ranked: 'RANQUEADA', tourney: 'TORNEIO' }[o.mode];
+    const modeName = { versus: 'VERSUS 2P', cpu: 'VERSUS CPU', training: 'TREINO', free: 'RINHA LIVRE', survival: 'MARATONA', ranked: 'RANQUEADA', tourney: 'TORNEIO', week: 'RINHA DA SEMANA' }[o.mode];
     const hasRules = o.mode === 'cpu' || o.mode === 'versus';
     show(`<div class="screen cs">
       <div class="cs-head"><span class="stamp">${modeName}</span><span id="csTurn" class="cs-turn"></span><button class="btn ghost" data-go="back">◂ voltar</button></div>
@@ -333,8 +341,8 @@ M.ui = (function () {
         <div class="cs-info right" id="csInfo2"></div>
       </div>
       <div class="cs-foot">
-        ${tourney ? '' : `<div class="cs-stage"><span>CENÁRIO</span><button class="btn small" data-go="stPrev">◂</button><b id="csStage"></b><button class="btn small" data-go="stNext">▸</button></div>`}
-        ${o.mode !== 'versus' && !tourney ? `<div class="cs-stage"><span>DIFICULDADE</span><button class="btn small" data-go="dfPrev">◂</button><b id="csDiff"></b><button class="btn small" data-go="dfNext">▸</button></div>` : ''}
+        ${tourney || o.mode === 'week' ? '' : `<div class="cs-stage"><span>CENÁRIO</span><button class="btn small" data-go="stPrev">◂</button><b id="csStage"></b><button class="btn small" data-go="stNext">▸</button></div>`}
+        ${o.mode !== 'versus' && !tourney && o.mode !== 'week' ? `<div class="cs-stage"><span>DIFICULDADE</span><button class="btn small" data-go="dfPrev">◂</button><b id="csDiff"></b><button class="btn small" data-go="dfNext">▸</button></div>` : ''}
         ${hasRules ? `<div class="cs-stage"><span>REGRAS</span><button class="btn small" data-go="rules" id="csRules"></button></div>` : ''}
         <div class="cs-hint">P1: WASD + J confirma • K volta • L muda a cor${o.players === 2 && o.mode !== 'cpu' ? ' • P2: setas + Num1 ou vírgula' : ''}</div>
         <button class="btn primary" data-go="go" id="csGo">${tourney ? 'CONFIRMAR' : 'LUTAR!'}</button>
@@ -367,10 +375,11 @@ M.ui = (function () {
     grid.querySelectorAll('.cs-card').forEach((el, i) => { el.querySelector('.cs-port').appendChild(portrait(roster[i], 120, 150, { silhouette: roster[i] === 'cinzas' && !unlocked ? '#141210' : null })); el.addEventListener('click', () => { if (sel.step === 2 && o.players === 2) sel.p2 = i; else sel.p1 = i; refresh(); confirm(); }); });
     function setPalIdx(who, k) {
       const id = roster[who === 2 ? sel.p2 : sel.p1]; if (id === 'cinzas' && !unlocked) return;
+      if (!palOk(id, k, who)) { M.audio.play('uiBack'); if (M.ui5) M.ui5.say('Cor bloqueada: maestria ' + M.meta.PAL_AT[k] + ' com ' + (M.FIGHTERS[id].short || M.FIGHTERS[id].name), '🔒'); return; }
       if (who === 2) sel.pal2 = k; else { sel.pal1 = k; const st = M.store.data.settings; st.pals = st.pals || {}; st.pals[id] = k; M.store.save(); }
       M.audio.play('uiMove'); refresh();
     }
-    function cyclePal(who, d) { setPalIdx(who, (((who === 2 ? sel.pal2 : sel.pal1) + d) % M.PAL_COUNT + M.PAL_COUNT) % M.PAL_COUNT); }
+    function cyclePal(who, d) { const id = roster[who === 2 ? sel.p2 : sel.p1]; let k = who === 2 ? sel.pal2 : sel.pal1; for (let n = 0; n < M.PAL_COUNT; n++) { k = ((k + d) % M.PAL_COUNT + M.PAL_COUNT) % M.PAL_COUNT; if (palOk(id, k, who)) break; } setPalIdx(who, k); }
     function cycleDiff(d) { const L = ['novato', 'brabo', 'lendario']; const s = M.store.data.settings; s.difficulty = L[(L.indexOf(s.difficulty) + d + 3) % 3]; M.store.save(); refresh(); }
     function info(el, i, label, who) {
       const id = roster[i], f = M.FIGHTERS[id]; const locked = id === 'cinzas' && !unlocked;
@@ -386,8 +395,8 @@ M.ui = (function () {
         const lab = document.createElement('span'); lab.textContent = 'COR'; col.appendChild(lab);
         const row = document.createElement('div'); row.className = 'pal-sw';
         for (let k = 0; k < M.PAL_COUNT; k++) {
-          const d = M.palette(f, k), b = document.createElement('button'); b.className = 'sw' + (k === cur ? ' on' : '');
-          b.style.background = `linear-gradient(135deg, ${d.colors.torso} 0 50%, ${d.colors.accent} 50% 100%)`; b.title = M.PAL_NAMES[k];
+          const d = M.palette(f, k), b = document.createElement('button'), lk = !palOk(id, k, who); b.className = 'sw' + (k === cur ? ' on' : '') + (lk ? ' lock' : '');
+          b.style.background = `linear-gradient(135deg, ${d.colors.torso} 0 50%, ${d.colors.accent} 50% 100%)`; b.title = lk ? '🔒 ' + M.tr('maestria') + ' ' + M.meta.PAL_AT[k] : M.PAL_NAMES[k]; if (lk) b.textContent = '🔒';
           b.addEventListener('click', e => { e.stopPropagation(); setPalIdx(who, k); }); row.appendChild(b);
         }
         col.appendChild(row); pe.appendChild(col); el.appendChild(pe);
@@ -398,7 +407,7 @@ M.ui = (function () {
       setPal();
       info(document.getElementById('csInfo1'), sel.p1, tourney ? names[0] : 'JOGADOR 1', 1);
       const i2 = document.getElementById('csInfo2');
-      if (o.players === 2) info(i2, sel.p2, o.mode === 'cpu' ? 'ADVERSÁRIO (CPU)' : (tourney ? names[1] : (sel.step >= 2 ? 'JOGADOR 2' : 'JOGADOR 2 (aguardando)')), 2); else i2.innerHTML = tourney ? `<div class="cs-label">${names[1]}</div><p>A CPU escolhe o lutador dela sozinha.</p>` : `<div class="cs-label">${o.mode === 'free' ? 'A RINHA INTEIRA' : o.mode === 'survival' ? 'A MARATONA' : o.mode === 'ranked' ? 'PARTIDA RANQUEADA' : 'BONECO / CPU'}</div><p>${o.mode === 'free' ? 'Você enfrenta sete adversários sorteados e o Mestre por último. Garrafada a cada vitória.' : o.mode === 'survival' ? 'Adversários sem fim, cada onda mais brava. Sua vida passa de uma luta para a outra (com um respiro entre elas) e a cada três ondas você ganha uma garrafada. Quanto você aguenta?' : o.mode === 'ranked' ? 'Melhor de 3 rodadas, 99 segundos, sem modificadores. A CPU é sorteada e ajustada ao seu nível: vença para subir de divisão, perca e a pontuação cai.' : 'No treino, o oponente começa parado. Pause (ESC) para mudar o comportamento do boneco.'}</p>`;
+      if (o.players === 2) info(i2, sel.p2, o.mode === 'cpu' ? 'ADVERSÁRIO (CPU)' : (tourney ? names[1] : (sel.step >= 2 ? 'JOGADOR 2' : 'JOGADOR 2 (aguardando)')), 2); else i2.innerHTML = tourney ? `<div class="cs-label">${names[1]}</div><p>A CPU escolhe o lutador dela sozinha.</p>` : `<div class="cs-label">${o.mode === 'free' ? 'A RINHA INTEIRA' : o.mode === 'survival' ? 'A MARATONA' : o.mode === 'week' ? 'RINHA DA SEMANA' : o.mode === 'ranked' ? 'PARTIDA RANQUEADA' : 'BONECO / CPU'}</div><p>${o.mode === 'week' ? 'Três lutas seguidas contra a CPU, com as regras malucas da semana. Adversários e cenários já estão sorteados. Perdeu uma, acabou.' : o.mode === 'free' ? 'Você enfrenta sete adversários sorteados e o Mestre por último. Garrafada a cada vitória.' : o.mode === 'survival' ? 'Adversários sem fim, cada onda mais brava. Sua vida passa de uma luta para a outra (com um respiro entre elas) e a cada três ondas você ganha uma garrafada. Quanto você aguenta?' : o.mode === 'ranked' ? 'Melhor de 3 rodadas, 99 segundos, sem modificadores. A CPU é sorteada e ajustada ao seu nível: vença para subir de divisão, perca e a pontuação cai.' : 'No treino, o oponente começa parado. Pause (ESC) para mudar o comportamento do boneco.'}</p>`;
       document.getElementById('csTurn').toggleAttribute('data-notr', !!tourney);
       document.getElementById('csTurn').textContent = tourney ? (o.players === 2 ? (sel.step === 1 ? names[0] : names[1]) + ' ' + M.tr('ESCOLHE') : names[0] + ' ' + M.tr('ESCOLHE')) : o.players === 2 ? (sel.step === 1 ? (o.mode === 'cpu' ? 'ESCOLHA SEU LUTADOR' : 'JOGADOR 1 ESCOLHE') : sel.step === 2 ? (o.mode === 'cpu' ? 'ESCOLHA O ADVERSÁRIO (CPU)' : 'JOGADOR 2 ESCOLHE') : 'PRONTO!') : '';
       const sEl = document.getElementById('csStage'); if (sEl) sEl.textContent = stages[sel.stage] === 'aleatorio' ? 'Aleatório' : M.stages.DEFS[stages[sel.stage]].name;
@@ -478,7 +487,7 @@ M.ui = (function () {
           <button class="mi" data-go="broadcast">MODO TRANSMISSÃO <b>${onoff(s.broadcast)}</b></button>
           <button class="mi" data-go="fullscreen">TELA CHEIA <b>${document.fullscreenElement ? 'LIGADO' : 'DESLIGADO'}</b></button>
           <h4>ACESSIBILIDADE</h4>
-          ${tog('shake', 'TREMOR DE TELA')}${tog('reduceFlash', 'REDUZIR FLASHES')}
+          ${tog('shake', 'TREMOR DE TELA')}${tog('reduceFlash', 'REDUZIR FLASHES')}${tog('bubbles', 'BALÕES DE FALA')}${M.clip.supported() ? tog('clips', 'GRAVAR CLIPES') : ''}
           <h4>DADOS</h4>
           <button class="mi" data-go="reset">APAGAR PROGRESSO</button>
           <button class="mi back" data-go="back">VOLTAR</button>
@@ -488,7 +497,7 @@ M.ui = (function () {
       onBack, idx: 0,
       actions: {
         music: () => { s.music = !s.music; save(); }, sfx: () => { s.sfx = !s.sfx; save(); }, shake: () => { s.shake = !s.shake; save(); }, hitboxes: () => { s.hitboxes = !s.hitboxes; save(); },
-        reduceFlash: () => { s.reduceFlash = !s.reduceFlash; save(); M.paint.apply(); },
+        reduceFlash: () => { s.reduceFlash = !s.reduceFlash; save(); M.paint.apply(); }, bubbles: () => { s.bubbles = !s.bubbles; save(); }, clips: () => { s.clips = !s.clips; save(); },
         broadcast: () => { s.broadcast = !s.broadcast; save(); M.flow.updateTouch(); },
         touch: () => { s.touch = { auto: 'on', on: 'off', off: 'auto' }[s.touch]; save(); M.flow.updateTouch(); },
         paint: () => { s.paint = !s.paint; save(); M.paint.apply(); }, post: () => { s.post = !s.post; save(); M.paint.apply(); },

@@ -11,7 +11,7 @@
   const R = M.render, ext = R.ext, INK = M.C.ink, shade = R.shade, inkOf = R.inkOf;
   const GREEN = '#3dff7a', PURPLE = '#b25cff', GREEN_L = '#a6ffc4', PURPLE_L = '#dcb6ff';
   // sorteio só de enfeite: usa o Math.random nativo (durante a luta o Math.random é o da semente da partida; mexer nele mudaria a simulação e os replays)
-  const rnd = Math.random.bind(Math); M.crand = rnd;
+  const rnd = M.crand;
   const hash = n => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
   const lerp = (a, b, t) => a + (b - a) * t;
   const rr = (ctx, x, y, w, h, r) => { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); };

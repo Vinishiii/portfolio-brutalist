@@ -8,6 +8,9 @@ M.VERSION = '1.8';
 
 M.clamp = (v, a, b) => v < a ? a : v > b ? b : v;
 M.lerp = (a, b, t) => a + (b - a) * t;
+// sorteio só de enfeite (partículas, balões): o Math.random nativo, que nunca é trocado pela semente da luta
+M.crand = Math.random.bind(Math);
+M.cchoice = arr => arr[Math.floor(M.crand() * arr.length)];
 M.rand = (a = 1, b) => (b === undefined ? Math.random() * a : a + Math.random() * (b - a));
 M.randi = (a, b) => Math.floor(M.rand(a, b + 1));
 M.choice = arr => arr[Math.floor(Math.random() * arr.length)];
@@ -43,7 +46,7 @@ M.store = {
     try { if (window.steam && window.steam.loadSave) raw = window.steam.loadSave() || null; } catch (e) { /* ignora */ }
     try { if (!raw) raw = localStorage.getItem(this.key); this.data = JSON.parse(raw) || {}; } catch (e) { this.data = {}; }
     const d = this.data;
-    d.settings = Object.assign({ volume: 0.8, music: true, sfx: true, shake: true, hitboxes: false, difficulty: 'brabo', touch: 'auto', paint: true, post: true, lang: null, speed: 1, reduceFlash: false, quality: 'auto', keys: null, broadcast: false }, d.settings || {});
+    d.settings = Object.assign({ volume: 0.8, music: true, sfx: true, shake: true, hitboxes: false, difficulty: 'brabo', touch: 'auto', paint: true, post: true, lang: null, speed: 1, reduceFlash: false, quality: 'auto', keys: null, broadcast: false, clips: true, bubbles: true }, d.settings || {});
     d.progress = Object.assign({ storyDone: false, endings: [], cinzas: false, bestTime: null, freeBest: null, wins: 0, legendsDone: false, bestGrade: null, bonds: {} }, d.progress || {});
     d.story = d.story || null;
     d.legends = d.legends || null;

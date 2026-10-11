@@ -58,7 +58,20 @@ M.ach = (function () {
     { id: 'tourney_champ', icon: '🏆', name: 'Campeão da Praça', desc: 'Seja campeão de um Torneio Local.' },
     { id: 'replay_watch', icon: '▶', name: 'Cinema da Rinha', desc: 'Assista a um replay.' },
     { id: 'replay_share', icon: '✉', name: 'Compartilha Essa', desc: 'Gere o código de um replay para compartilhar.' },
-    { id: 'framedata', icon: '☷', name: 'Rato de Planilha', desc: 'Abra os Dados de Quadros.' }
+    { id: 'framedata', icon: '☷', name: 'Rato de Planilha', desc: 'Abra os Dados de Quadros.' },
+    { id: 'lv10', icon: '▲', name: 'Cabra da Peste', desc: 'Chegue ao nível 10.' },
+    { id: 'lv25', icon: '⯅', name: 'Lenda do Sertão', desc: 'Chegue ao nível 25.' },
+    { id: 'master5', icon: '✪', name: 'Mestre de Verdade', desc: 'Chegue à maestria 5 com um lutador.' },
+    { id: 'mission1', icon: '✔', name: 'Dever de Casa', desc: 'Cumpra uma missão do dia.' },
+    { id: 'missions3', icon: '☑', name: 'Dia Completo', desc: 'Cumpra as três missões do dia.' },
+    { id: 'week1', icon: '☾', name: 'Doido da Semana', desc: 'Termine a Rinha da Semana.' },
+    { id: 'clip1', icon: '🎬', name: 'Cineasta da Rinha', desc: 'Salve ou compartilhe um clipe de luta.' },
+    { id: 'card1', icon: '🖼', name: 'Cartão Postal', desc: 'Gere um cartão de resultado.' },
+    { id: 'challenge1', icon: '⚔', name: 'Duvido!', desc: 'Envie um desafio para um amigo.' },
+    { id: 'chal_beat', icon: '⚑', name: 'Superou o Placar', desc: 'Supere o placar de um desafio recebido.' },
+    { id: 'king_first', icon: '♛', name: 'Na Festa do Sítio', desc: 'Jogue uma partida do Quem Ganha Fica.' },
+    { id: 'king3', icon: '♚', name: 'Rei do Terreiro', desc: 'Vença 3 vezes seguidas no Quem Ganha Fica.' },
+    { id: 'king5', icon: '♔', name: 'Imbatível na Festa', desc: 'Vença 5 vezes seguidas no Quem Ganha Fica.' }
   ];
   const byId = Object.fromEntries(LIST.map(a => [a.id, a]));
   const store = () => (M.store.data.progress.ach || (M.store.data.progress.ach = {}));

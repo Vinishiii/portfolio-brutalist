@@ -71,6 +71,7 @@
     if (M.match) M.match.render(ctx);
     else if (ambient) renderAmbient();
     M.paint.post();
+    if (M.clip) M.clip.frame();
   }
 
   // ---------- pausa ----------
@@ -80,8 +81,8 @@
       training: m.mode === 'training',
       resume: () => { M.ui.hide(); M.state = 'fight'; M.input.clear(); },
       replay: !!m.o.replay,
-      restart: () => { if (m.o.replay) { M.replay.start(m.o.replay, m.o.onEnd); return; } M.ui.hide(); const o = m.o; M.match = new M.Match(o); M.state = 'fight'; },
-      quit: () => { if (m.o.mode === 'ranked') { M.comp.forfeit(); return; } if (m.o.mode === 'tourney' && M.tourney) { M.tourney.abortGame(); return; } M.match = null; M.ui.menu(); }
+      restart: () => { if (m.o.replay) { M.replay.start(m.o.replay, m.o.onEnd); return; } M.ui.hide(); const o = m.o; if (M.clip) { M.clip.abort(); M.clip.begin(); } M.match = new M.Match(o); M.state = 'fight'; },
+      quit: () => { if (M.clip) M.clip.abort(); if (m.o.mode === 'ranked') { M.comp.forfeit(); return; } if (m.o.mode === 'tourney' && M.tourney) { M.tourney.abortGame(); return; } M.match = null; M.ui.menu(); }
     });
   }
 
@@ -89,8 +90,9 @@
   const flow = M.flow = {
     story: null,
     startMatch(o) {
-      const done = o.onEnd; o.onEnd = r => { try { M.stats.record(r, o); M.ach.matchEnd(r, o); if (r.replay && (o.keepReplay !== undefined ? o.keepReplay : ['versus', 'daily', 'ranked', 'tourney'].includes(o.mode))) r.replayId = M.replay.keep(r.replay, { title: o.label || '', p1: o.p1.id, p2: o.p2.id }); } catch (e) { /* ignora */ } if (done) done(r); };
+      const done = o.onEnd; o.onEnd = r => { try { r.meta = M.meta.award(r, o); } catch (e) { /* XP nunca derruba a luta */ } if (M.clip) M.clip.end(); try { M.stats.record(r, o); M.ach.matchEnd(r, o); if (r.replay && (o.keepReplay !== undefined ? o.keepReplay : ['versus', 'daily', 'ranked', 'tourney'].includes(o.mode))) r.replayId = M.replay.keep(r.replay, { title: o.label || '', p1: o.p1.id, p2: o.p2.id }); } catch (e) { /* ignora */ } if (done) done(r); try { if (r.meta && !r.meta.shown) M.meta.toast(r.meta); } catch (e) { /* ignora */ } };
       M.ui.hide(); M.state = 'fight'; M.input.clear();
+      if (M.clip) { M.clip.abort(); if (o.mode !== 'training' && !o.tutorial && !o.replay) M.clip.begin(); }
       M.match = new M.Match(o);
       flow.updateTouch();
     },
@@ -110,6 +112,8 @@
         M.survival.start(sel.p1, sel.pal1 | 0);
       } else if (sel.mode === 'ranked') {
         M.comp.play(sel.p1, sel.pal1 | 0);
+      } else if (sel.mode === 'week') {
+        M.ui5.weekBegin(sel.p1, sel.pal1 | 0);
       }
     },
     // ---- desafio do dia ----
@@ -338,6 +342,7 @@
     Object.defineProperty(M, 'state', { get: () => st, set: v => { st = v; flow.updateTouch(); } });
     void origState;
     M.i18n.init();
+    M.ui5.checkHash();
     M.ui.title();
     requestAnimationFrame(frame);
   }

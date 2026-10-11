@@ -244,7 +244,7 @@ M.Match = class Match {
     if (this.mode === 'training') { const hf = a.ctrl === 'human' ? a : b.ctrl === 'human' ? b : null; if (hf) M.frameData.watch(this, hf, this.other(hf)); }
     this.updateProjectiles(); this.updateTraps();
     for (const [x, y] of [[a, b], [b, a]]) {
-      if ((y.neutral || y.state === 'jump' || y.state === 'getup' || y.state === 'dodge') && x.combo > 0) { if (x.combo >= 2) x.comboShow = 70; x.combo = 0; x.comboDmg = 0; }
+      if ((y.neutral || y.state === 'jump' || y.state === 'getup' || y.state === 'dodge') && x.combo > 0) { if (x.combo >= 2) { x.comboShow = 70; this.comboEnd(x); } x.combo = 0; x.comboDmg = 0; }
       // rastro
       if (x.state === 'dash' || x.state === 'dodge' || (x.move && x.move.super) || (x.move && x.move.move && x.state === 'attack')) { if (this.frame % 2 === 0) this.ghosts.push({ pose: x.pose, x: x.x, y: x.y, facing: x.facing, alpha: 0.32, color: x.def.colors.accent, def: x.def }); }
       // partículas de identidade
@@ -270,7 +270,7 @@ M.Match = class Match {
     if (t === 24) this.bigText = { text: 'CAIU!', t: 0, life: 80, size: 84, color: M.C.red };
     if (t === 130) {
       const w = this.roundWinner;
-      if (this.wins[w.side - 1] >= this.winsNeeded) { this.phase = 'end'; this.phaseT = 0; w.state = 'win'; w.t = 0; M.audio.voice('win', w.def.id, w.x); this.bigText = { text: 'VENCEU A RINHA', t: 0, life: 150, size: 54, color: M.C.yellow }; M.audio.play('win'); this.camTarget = { zoom: 1.15, x: w.x, y: w.y - 80 }; this.camT = 400; M.audio.music.setMode(this.mode === 'story' && w === this.p1 ? 'ending' : 'menu'); }
+      if (this.wins[w.side - 1] >= this.winsNeeded) { this.phase = 'end'; this.phaseT = 0; w.state = 'win'; w.t = 0; M.audio.voice('win', w.def.id, w.x); this.say(w, 'win'); this.bigText = { text: 'VENCEU A RINHA', t: 0, life: 150, size: 54, color: M.C.yellow }; M.audio.play('win'); this.camTarget = { zoom: 1.15, x: w.x, y: w.y - 80 }; this.camT = 400; M.audio.music.setMode(this.mode === 'story' && w === this.p1 ? 'ending' : 'menu'); }
       else { this.startRound(); }
     }
   }
@@ -283,7 +283,7 @@ M.Match = class Match {
   }
   finish() {
     const w = this.roundWinner;
-    this.result = { winner: w, loser: this.other(w), winnerSide: w.side, frames: this.totalFrames, wins: this.wins.slice(), stats: { p1: this.p1.stats, p2: this.p2.stats }, beatHits: this.beatHits };
+    this.result = { winner: w, loser: this.other(w), winnerSide: w.side, frames: this.totalFrames, wins: this.wins.slice(), stats: { p1: this.p1.stats, p2: this.p2.stats }, beatHits: this.beatHits, seed: this.seed, opts: this.o };
     if (this.rec) this.result.replay = M.replay.pack(this);
     if (this.o.onEnd) this.o.onEnd(this.result);
   }
@@ -392,6 +392,8 @@ M.Match = class Match {
       if (cornered) { att.stats.cornered = (att.stats.cornered || 0) + 1; def.t += 16; def.vx = 0; att.vx = -facing * 1.5; this.popup('ENCURRALADO!', def.x, def.y - 215, M.C.orange, 22); this.fx.push({ type: 'lines', x: def.x, y: def.y - 90, r: 70, t: 0, life: 14, rot: 0.3 }); this.shake(7); }
       if (finisher) { def.kdPending = true; if (!mv.launch && def.grounded) { def.grounded = false; def.vy = -9; def.launched = true; def.t = 60; } def.vx = 8 * facing / def.def.stats.weight; }
       att.combo++; att.comboDmg += dmg; att.comboShow = 70; att.stats.maxCombo = Math.max(att.stats.maxCombo || 0, att.combo);
+      if (att.combo >= 8 && (att.combo - 8) % 3 === 0 && M.clip) M.clip.mark('combo', att.combo * 6);
+      if (att.combo === 6 && M.crand() < 0.7) this.say(att, 'combo');
     } else { this.popup('ARMADURA!', def.x, def.y - 190, M.C.yellow); M.audio.play('armor'); }
     let stop = mv.super ? 10 : Math.round(3 + Math.min(9, dmg / 20)); if (counter) stop += 2; if (isLastHit && mv.hits > 1) stop += 3;
     def.hitstop = stop; if (!src) att.hitstop = stop;
@@ -461,7 +463,7 @@ M.Match = class Match {
     const opp = this.other(f);
     this.axe = M.clamp(this.axe - (f.side === 1 ? 0.3 : -0.3), -1, 1);
     f.kdPending = false; f.launched = false; f.juggle = 0; f.state = 'idle'; f.t = 0; f.startDodge(this, false); f.invuln = 18; f.dodgeCd = Math.round(45 * f.mods.dodgeCd); if (!f.grounded) f.vy = Math.min(f.vy, -3);
-    if (opp.combo >= 2) opp.comboShow = 70; opp.combo = 0; opp.comboDmg = 0;
+    if (opp.combo >= 2) { opp.comboShow = 70; this.comboEnd(opp); } opp.combo = 0; opp.comboDmg = 0;
     this.popup('ESCAPOU!', f.x, f.y - 205, M.C.cyan, 26); this.fx.push({ type: 'ring', x: f.x, y: f.y - 80, r: 100, t: 0, life: 20, color: M.C.cyan });
     this.fx.push({ type: 'flash', t: 0, life: 6, color: '#2aa9b8', alpha: 0.25 }); M.audio.play('perfect'); this.slow = 12; this.slowAcc = 0;
   }
@@ -500,6 +502,7 @@ M.Match = class Match {
     this.axe = f.side === 1 ? Math.min(this.axe, 0) : Math.max(this.axe, 0);
     this.axe = 0;
     this.shake(6); this.camTarget = { zoom: 1.14, x: f.x, y: f.y - 80 }; this.camT = 50;
+    if (M.clip) M.clip.mark('super', 60);
     this.crowdExcite = 1.2;
     if (mv.dark && !this.phase2) { this.stageDarkTarget = 1; setTimeout(() => { if (!this.phase2) this.stageDarkTarget = 0; }, 2600); }
   }
@@ -615,6 +618,9 @@ M.Match = class Match {
     this.camTarget = { zoom: 1.3, x: loser.x, y: loser.y - 80 }; this.camT = 120;
     this.crowdExcite = 1.5; M.audio.cheer(1.5);
     this.wins[winner.side - 1]++; this.roundWinner = winner;
+    const decided = this.wins[winner.side - 1] >= this.winsNeeded;
+    if (M.clip) M.clip.mark(decided ? 'ko' : 'round', decided ? 100 : 40);
+    if (!timeout && winner.hp < winner.maxHp * 0.12 && winner.hp > 0) { this.popup('NA RAÇA!', winner.x, winner.y - 235, M.C.orange, 30); this.crowdExcite = 1.5; M.audio.cheer(1.8); this.fx.push({ type: 'ring', x: winner.x, y: winner.y - 90, r: 140, t: 0, life: 26, color: M.C.orange }); }
     this.projectiles = []; this.traps = [];
     if (winner.hp >= winner.maxHp && !timeout) { this.popup('SEM UM ARRANHÃO!', winner.x, winner.y - 220, M.C.yellow, 26); this.gainAxe(winner, 0.3); this.confetti(winner.x, winner.y - 120, 40); }
   }
@@ -654,6 +660,21 @@ M.Match = class Match {
 
   // ---------------- utilitários de efeito ----------------
   shake(a) { if (M.store.data.settings.shake) this.shakeAmt = Math.max(this.shakeAmt, a); }
+  // fim de um combo: a torcida reage ao tamanho dele (só som e enfeite)
+  comboEnd(f) {
+    const n = f.combo; if (n < 5) return;
+    M.audio.cheer(Math.min(1.4, 0.3 + n * 0.07)); this.crowdExcite = Math.min(1.5, this.crowdExcite + n * 0.03);
+    if (n >= 8) this.fx.push({ type: 'ring', x: f.x, y: f.y - 90, r: 70 + n * 5, t: 0, life: 20, color: n >= 12 ? M.C.cyan : M.C.magenta });
+  }
+  // balão de fala sobre o lutador: provocação, combo ou frase de vitória (sorteio só de enfeite)
+  say(f, kind) {
+    if (M.store.data.settings.bubbles === false || M.store.data.settings.broadcast) return;
+    let text = null;
+    if (kind === 'win') text = f.def.winQuote; else { const L = M.LINES && M.LINES[f.def.id]; if (L && L[kind] && L[kind].length) text = M.cchoice(L[kind]); }
+    if (!text) return;
+    this.fx = this.fx.filter(e => !(e.type === 'bubble' && e.owner === f));
+    this.fx.push({ type: 'bubble', owner: f, text, t: 0, life: kind === 'win' ? 170 : 100, kind });
+  }
   popup(text, x, y, color, size) { this.fx.push({ type: 'text', text, x, y, t: 0, life: 55, color, size: size || 22, rot: (Math.random() - 0.5) * 0.15 }); }
   dust(f) { if (f.grounded) this.fx.push({ type: 'dust', x: f.x, y: f.y, t: 0, life: 16, color: this.stage.def.dustColor || '#d9c27a' }); }
   confetti(x, y, n) { const cols = ['#f2b70c', '#c7267a', '#2aa9b8', '#1f7a4d', '#c8371d', '#fff8e8']; for (let i = 0; i < n; i++) this.particles.push({ x, y, vx: (Math.random() - 0.5) * 9, vy: -Math.random() * 7 - 1, g: 0.25, life: 40 + Math.random() * 25, max: 60, size: 3 + Math.random() * 3, color: M.choice(cols), type: 'confetti', rot: Math.random() * 6, vr: (Math.random() - 0.5) * 0.4 }); }
@@ -731,7 +752,7 @@ M.Match = class Match {
       ctx.beginPath(); ctx.arc(2, 3, 35, 0, Math.PI * 2); ctx.fillStyle = 'rgba(20,18,16,0.55)'; ctx.fill();
       ctx.beginPath(); ctx.arc(0, 0, 36, 0, Math.PI * 2); ctx.fillStyle = C.ink; ctx.fill();
       ctx.drawImage(fc[fk], -33, -33, 66, 66);
-      ctx.beginPath(); ctx.arc(0, 0, 33.5, 0, Math.PI * 2); ctx.lineWidth = 4; ctx.strokeStyle = ready ? (this.frame % 10 < 5 ? C.magenta : C.yellow) : (low ? `rgba(255,${90 + pulse * 100},60,1)` : C.paper); ctx.stroke();
+      ctx.beginPath(); ctx.arc(0, 0, 33.5, 0, Math.PI * 2); ctx.lineWidth = 4; ctx.strokeStyle = ready ? (this.frame % 10 < 5 ? C.magenta : C.yellow) : (low ? `rgba(255,${90 + pulse * 100},60,1)` : ((M.meta && f.ctrl === 'human' && f.side === 1 && !this.o.tags) ? M.meta.ring(this.frame) : C.paper)); ctx.stroke();
       if (ready) { ctx.globalAlpha = 0.35 + 0.25 * Math.sin(this.frame * 0.3); ctx.beginPath(); ctx.arc(0, 0, 40, 0, Math.PI * 2); ctx.lineWidth = 3; ctx.strokeStyle = C.magenta; ctx.stroke(); ctx.globalAlpha = 1; }
       ctx.restore();
       // placa do nome
@@ -779,15 +800,25 @@ M.Match = class Match {
       else if (f.ctrl === 'human' && this.canEscape(f)) M.text(ctx, 'ESPAÇO: ESCAPAR (-30%)', x, ay + 9, { size: 13, align: al, color: C.cyan, lw: 2.5 });
       else if (f.counterWin > 0) M.text(ctx, 'CONTRA-ATAQUE!', x, ay + 9, { size: 13, align: al, color: C.red, lw: 2.5 });
     }
-    // combo
-    for (const f of this.fighters) if (f.comboShow > 0 && (f.combo >= 2 || (f.combo === 0 && f.comboShow > 0 && f.comboDmgShown))) { }
+    // combo: o contador cresce com a sequência (cor e tamanho por nível) e, quando acaba, vira nota de estilo
+    const COMBO_WORDS = ['', '', 'BONITO!', 'MASSA!', 'LAPADA!', 'VIXE!', 'ARRETADO!', 'CABRA DA PESTE!', 'PEIA PURA!', 'ESPETÁCULO!', 'ESPETÁCULO!', 'LENDÁRIO!'];
+    const GRADES = [['C', 0, '#b8b2a4'], ['B', 45, C.cyan], ['A', 70, C.yellow], ['S', 100, C.orange], ['SS', 140, C.magenta]];
     for (const f of this.fighters) {
-      if (f.combo >= 2) { f.lastComboN = f.combo; f.lastComboDmg = f.comboDmg; }
+      if (f.combo >= 2) { f.lastComboN = f.combo; f.lastComboDmg = f.comboDmg; if (f._popC !== f.combo) { f._popC = f.combo; f._popT = 0; } }
+      f._popT = f._popT === undefined ? 99 : f._popT + 1;
       if (f.comboShow > 0 && f.lastComboN >= 2) {
-        const k = f.comboShow / 70; const x = f.side === 1 ? 60 : W - 60; const al = f.side === 1 ? 'left' : 'right';
-        const words = ['', '', 'BONITO!', 'MASSA!', 'LAPADA!', 'VIXE!', 'ARRETADO!', 'CABRA DA PESTE!', 'PEIA PURA!'];
-        M.text(ctx, f.lastComboN + ' GOLPES', x, 120, { size: 30, align: al, color: C.yellow, alpha: Math.min(1, k * 3) });
-        M.text(ctx, words[Math.min(words.length - 1, f.lastComboN)] + '  ' + f.lastComboDmg, x, 148, { size: 16, align: al, color: C.paper, alpha: Math.min(1, k * 3) });
+        const n = f.lastComboN, k = f.comboShow / 70, live = f.combo >= 2; const x = f.side === 1 ? 60 : W - 60; const al = f.side === 1 ? 'left' : 'right';
+        const tier = n >= 14 ? 5 : n >= 10 ? 4 : n >= 7 ? 3 : n >= 5 ? 2 : n >= 3 ? 1 : 0;
+        const col = [C.paper, C.yellow, C.orange, C.magenta, C.cyan, `hsl(${(this.frame * 7) % 360},95%,62%)`][tier];
+        const pop = live ? Math.max(0, 1 - f._popT / 9) : 0, size = 30 + tier * 4 + pop * 14, jx = tier >= 3 && live ? Math.sin(this.frame * 1.7) * tier * 0.5 : 0;
+        M.text(ctx, f.lastComboN + ' GOLPES', x + jx, 120 - pop * 3, { size, align: al, color: col, alpha: Math.min(1, k * 3) });
+        M.text(ctx, COMBO_WORDS[Math.min(COMBO_WORDS.length - 1, n)] + '  ' + f.lastComboDmg, x, 148 + (size - 30) * 0.45, { size: 16 + tier, align: al, color: C.paper, alpha: Math.min(1, k * 3) });
+        if (!live && n >= 3) {
+          const pts = n * 12 + f.lastComboDmg / 12; let gr = GRADES[0]; for (const G of GRADES) if (pts >= G[1]) gr = G;
+          const sc = 1 + Math.max(0, 1 - (70 - f.comboShow) / 10) * 0.7, gy = 206 + (size - 30) * 0.6;
+          M.text(ctx, 'ESTILO', x, gy - 26, { size: 12, align: al, color: C.paper, alpha: Math.min(1, k * 3), lw: 2.5 });
+          ctx.save(); ctx.translate(x + (f.side === 1 ? 26 : -26), gy + 12); ctx.scale(sc, sc); M.text(ctx, gr[0], 0, 0, { size: 46, color: gr[2], alpha: Math.min(1, k * 3), lw: 6 }); ctx.restore();
+        }
       } else if (f.comboShow <= 0) f.lastComboN = 0;
     }
     // ginga cooldown (P1 humano)

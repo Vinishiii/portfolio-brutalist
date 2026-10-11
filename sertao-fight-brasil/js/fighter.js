@@ -177,7 +177,7 @@ M.Fighter = class Fighter {
     if (this.buf.ginga > 0 && this.dodgeCd <= 0) { this.buf.ginga = 0; this.startDodge(G, h.fwd); return true; }
     if (this.buf.up > 0 && !h.down) { this.buf.up = 0; this.jump(G); return true; }
     if (fromDash) return false;
-    if (this.buf.taunt > 0) { this.buf.taunt = 0; this.state = 'taunt'; this.t = 0; this.vx = 0; this.stats.taunts++; M.audio.play('taunt'); return true; }
+    if (this.buf.taunt > 0) { this.buf.taunt = 0; this.state = 'taunt'; this.t = 0; this.vx = 0; this.stats.taunts++; M.audio.play('taunt'); G.say(this, 'taunt'); return true; }
     if (dashF) { this.state = 'dash'; this.t = 0; this.vx = this.def.stats.dashV * this.mods.speed * (this.lag > 0 ? 0.65 : 1) * this.facing; G.dust(this); M.audio.play('dash'); return true; }
     if (dashB) { this.state = 'backdash'; this.t = 0; this.vx = -this.def.stats.dashV * 0.95 * this.mods.speed * this.facing; this.invuln = 7; G.dust(this); M.audio.play('dash'); return true; }
     return false;

@@ -529,5 +529,9 @@ M.audio = (function () {
     if (f) try { f(panOf(x)); } catch (e) { /* ignora */ }
   }
 
-  return { A, init, resume, applySettings, play, voice, music, crowd, cheer, now, get ready() { return A.ready; } };
+  // fluxo de áudio da mixagem final (para gravar clipes com som)
+  let tapDest = null;
+  function capture() { if (!A.ctx) init(); if (!A.ctx || !comp || !A.ctx.createMediaStreamDestination) return null; if (!tapDest) { tapDest = A.ctx.createMediaStreamDestination(); comp.connect(tapDest); } return tapDest.stream; }
+
+  return { A, init, resume, applySettings, play, voice, music, crowd, cheer, now, capture, get ready() { return A.ready; } };
 })();
