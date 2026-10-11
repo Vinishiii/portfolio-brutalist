@@ -173,9 +173,9 @@ São **45**. O jogo chama `ACH_<ID EM MAIÚSCULAS>`; cadastre exatamente estes *
 - ES: Legendario — Gana una pelea contra la CPU en nivel Legendario.
 
 **ACH_ROSTER**
-- PT: Todos na Rinha — Vença com todos os 12 lutadores.
-- EN: Everyone in the Brawl — Win with all 12 fighters.
-- ES: Todos en la Riña — Gana con los 12 luchadores.
+- PT: Todos na Rinha — Vença com todos os 20 lutadores.
+- EN: Everyone in the Brawl — Win with all 20 fighters.
+- ES: Todos en la Riña — Gana con los 20 luchadores.
 
 **ACH_STORY_DONE**
 - PT: Guardião da Brasa — Termine a História.

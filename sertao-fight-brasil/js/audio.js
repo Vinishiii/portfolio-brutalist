@@ -436,7 +436,8 @@ M.audio = (function () {
   // ---------- vozes dos lutadores ----------
   const VOICES = {
     zeca: { p: 135, f: 1 }, bia: { p: 235, f: 1.15 }, mare: { p: 215, f: 1.14 }, tiao: { p: 92, f: 0.9 }, bene: { p: 120, f: 0.98 }, juvenal: { p: 108, f: 0.94 },
-    vinicius: { p: 122, f: 0.97 }, cinzas: { p: 98, f: 0.92 }, fulozinha: { p: 290, f: 1.2 }, mula: { p: 200, f: 1.1 }, papafigo: { p: 82, f: 0.88 }, cuia: { p: 112, f: 0.95 }
+    vinicius: { p: 122, f: 0.97 }, cinzas: { p: 98, f: 0.92 }, fulozinha: { p: 290, f: 1.2 }, mula: { p: 200, f: 1.1 }, papafigo: { p: 82, f: 0.88 }, cuia: { p: 112, f: 0.95 },
+    saci: { p: 215, f: 1.12 }, curupira: { p: 250, f: 1.15 }, iara: { p: 262, f: 1.18 }, boto: { p: 128, f: 0.98 }, lobisomem: { p: 76, f: 0.84 }, mapinguari: { p: 60, f: 0.78 }, cuca: { p: 190, f: 1.05 }, pisadeira: { p: 172, f: 1.0 }
   };
   const voiceCd = {};
   function voice(kind, id, x) {

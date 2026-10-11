@@ -5,7 +5,7 @@
 // ============================================================
 M.render = (function () {
   const INK = M.C.ink;
-  const ext = {}; // extensões de desenho por personagem (js/vinicius.js registra aqui)
+  const ext = { heads: {}, hair: {}, prop: {}, details: {}, back: {}, proj: {}, trap: {} }; // extensões de desenho por personagem (js/vinicius.js e js/folk2draw.js registram aqui)
   // Parâmetros da camada visual (preenchidos por paint.js). paint=false mantém a xilogravura original.
   const style = { paint: false, light: { x: 0, y: -1 }, key: '#ffb45a', rim: '#ffd890', fill: '#4a6fd8', dark: 0 };
   function mixHex(a, b, t) { const pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16); const ch = sh => Math.round(((pa >> sh) & 255) * (1 - t) + ((pb >> sh) & 255) * t); return '#' + ((ch(16) << 16) | (ch(8) << 8) | ch(0)).toString(16).padStart(6, '0'); }
@@ -84,9 +84,11 @@ M.render = (function () {
     const fist = !!o.angry;
     // --- membros de trás ---
     const kit = !sil && !flash && ext.kit && D.includes('jacket') ? ext.kit : null; // jaqueta, jeans e tênis do Vinícius
+    const oneLeg = D.includes('oneLeg'), backFeet = D.includes('backfeet'); // o Saci só tem uma perna (a de trás some); o Curupira tem os pés virados
     limbStroke(ctx, rig.fa, 11 * s + thick, col(C.arms), ink); hand(ctx, rig.fa, 6.5 * s + thick * 0.5, col(C.skin), ink, fist);
     if (kit) kit.sleeve(ctx, rig.fa, s, def, false);
-    limbStroke(ctx, rig.fl, 14 * s * (bw > 1.1 ? 1.15 : 1) + thick, col(C.legs), ink); if (kit) kit.jeans(ctx, rig.fl, s, def, false); foot(ctx, rig.fl, col(C.shoes), ink, s); if (kit) kit.sneaker(ctx, rig.fl, s, def);
+    if (!oneLeg) { limbStroke(ctx, rig.fl, 14 * s * (bw > 1.1 ? 1.15 : 1) + thick, col(C.legs), ink); if (kit) kit.jeans(ctx, rig.fl, s, def, false); foot(ctx, rig.fl, col(C.shoes), ink, s, backFeet); if (kit) kit.sneaker(ctx, rig.fl, s, def); }
+    if (!sil && !flash) for (const k of D) if (ext.back[k]) ext.back[k](ctx, rig, def, s); // o que fica atrás do corpo (cauda, nadadeira)
     // --- tronco com ombros e cintura ---
     const H = rig.hip, N = rig.neck;
     const ux = N[0] - H[0], uy = N[1] - H[1], L = Math.hypot(ux, uy) || 1; const u = [ux / L, uy / L], p = [-u[1], u[0]];
@@ -126,10 +128,11 @@ M.render = (function () {
     if (!def.headless) { const nk = realFace ? 1.4 : 1; ctx.beginPath(); ctx.moveTo(N[0], N[1]); ctx.lineTo(Hd[0], Hd[1]); ctx.lineWidth = 12 * s * nk; ctx.strokeStyle = ink; ctx.stroke(); ctx.lineWidth = 7 * s * nk; ctx.strokeStyle = col(C.skin); ctx.stroke(); if (realFace && !sil && !flash) { ctx.lineWidth = 3 * s; ctx.strokeStyle = 'rgba(40,18,8,0.28)'; ctx.beginPath(); ctx.moveTo(N[0] - 2, N[1] + 1); ctx.lineTo((N[0] + Hd[0]) / 2 - 2, (N[1] + Hd[1]) / 2); ctx.stroke(); } }
     if (def.headless) drawFireHead(ctx, rig, def, o, col, ink, thick, sil);
     else if (def.hair === 'gourd') drawGourd(ctx, rig, def, o, col, ink, thick, sil);
+    else if (def.head && ext.heads[def.head]) ext.heads[def.head](ctx, rig, def, o, col, ink, thick, sil);
     else if (realFace) ext.realHead(ctx, rig, def, o, col, ink, thick, sil);
     else { dot(ctx, Hd, R + thick * 0.5, col(C.skin), ink); if (!sil) drawHead(ctx, rig, def, o, col, ink); }
     // --- membros da frente ---
-    limbStroke(ctx, rig.nl, 14 * s * (bw > 1.1 ? 1.15 : 1) + thick, col(C.legs), ink); if (kit) kit.jeans(ctx, rig.nl, s, def, true); foot(ctx, rig.nl, col(C.shoes), ink, s); if (kit) kit.sneaker(ctx, rig.nl, s, def);
+    limbStroke(ctx, rig.nl, 14 * s * (bw > 1.1 ? 1.15 : 1) + thick, col(C.legs), ink); if (kit) kit.jeans(ctx, rig.nl, s, def, true); foot(ctx, rig.nl, col(C.shoes), ink, s, backFeet); if (kit) kit.sneaker(ctx, rig.nl, s, def);
     limbStroke(ctx, rig.na, 11 * s + thick, col(C.arms), ink); hand(ctx, rig.na, 6.5 * s + thick * 0.5, col(C.skin), ink, fist);
     if (kit) kit.sleeve(ctx, rig.na, s, def, true);
     if (!sil && !flash) drawDetails(ctx, rig, def, D);
@@ -210,12 +213,13 @@ M.render = (function () {
     }
     if (D.includes('buckle')) { ctx.fillStyle = '#f2b70c'; ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.fillRect(rig.hip[0] - 5, rig.hip[1] - 9, 10, 10); ctx.strokeRect(rig.hip[0] - 5, rig.hip[1] - 9, 10, 10); }
     if (D.includes('boots')) { for (const leg of [rig.fl, rig.nl]) { const p = mid(leg[1], leg[2], 0.75); ctx.beginPath(); ctx.arc(p[0], p[1], 9 * s, 0, Math.PI * 2); ctx.fillStyle = '#3a2416'; ctx.fill(); ctx.lineWidth = 2.5; ctx.strokeStyle = INK; ctx.stroke(); } }
+    for (const k of D) if (ext.details[k]) ext.details[k](ctx, rig, def, s);
     ctx.restore();
   }
-  function foot(ctx, leg, color, ink, s) {
-    const a = M.rad(leg[3]); const f = leg[2];
-    const tx = f[0] + Math.cos(a) * 15 * s, ty = f[1] - Math.sin(a) * 15 * s;
-    const bx = f[0] - Math.cos(a) * 5 * s, by = f[1] + Math.sin(a) * 5 * s;
+  function foot(ctx, leg, color, ink, s, rev) {
+    const a = M.rad(leg[3]); const f = leg[2], d = rev ? -1 : 1; // rev: pés virados para trás (Curupira)
+    const tx = f[0] + Math.cos(a) * 15 * s * d, ty = f[1] - Math.sin(a) * 15 * s * d;
+    const bx = f[0] - Math.cos(a) * 5 * s * d, by = f[1] + Math.sin(a) * 5 * s * d;
     ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(tx, ty);
     ctx.lineWidth = 17; ctx.strokeStyle = ink; ctx.stroke();
     ctx.lineWidth = 11; ctx.strokeStyle = color; ctx.stroke();
@@ -339,14 +343,14 @@ M.render = (function () {
     ctx.lineWidth = 3; ctx.strokeStyle = INK;
     switch (def.hair) {
       case 'short':
-        ctx.fillStyle = col(C.hair); ctx.beginPath(); ctx.arc(0, 0, R + 1.5, Math.PI * 1.05, Math.PI * 2.05); ctx.closePath(); ctx.fill(); ctx.stroke(); break;
+        ctx.fillStyle = col(C.hair); ctx.beginPath(); ctx.arc(0, 0, R + 1.5, Math.PI * 1.13, Math.PI * 1.87); ctx.closePath(); ctx.fill(); ctx.stroke(); break;
       case 'curly':
         ctx.fillStyle = col(C.hair);
         for (let i = 0; i < 9; i++) { const a = -Math.PI * 1.25 + i * (Math.PI * 1.5 / 8); const rr = i % 2 ? 9 : 7.5; ctx.beginPath(); ctx.arc(Math.cos(a) * (R + 1) - 2, Math.sin(a) * (R + 1), rr, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
         ctx.beginPath(); ctx.arc(-1, -2, R - 1, Math.PI * 1.1, Math.PI * 1.95); ctx.closePath(); ctx.fill();
         break;
       case 'braid':
-        ctx.fillStyle = col(C.hair); ctx.beginPath(); ctx.arc(0, 0, R + 1.5, Math.PI * 1.0, Math.PI * 2.1); ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = col(C.hair); ctx.beginPath(); ctx.arc(0, 0, R + 1.5, Math.PI * 1.1, Math.PI * 1.9); ctx.closePath(); ctx.fill(); ctx.stroke();
         const sw3 = style.paint ? Math.sin(performance.now() * 0.004) * 6 : 0; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(-R + 2, 0); ctx.quadraticCurveTo(-R - 14 + sw3, 20, -R - 6 + sw3 * 1.4, 48);
         ctx.lineWidth = 11; ctx.strokeStyle = INK; ctx.stroke(); ctx.lineWidth = 6; ctx.strokeStyle = col(C.hair); ctx.stroke();
         ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(-R - 6, 48, 4, 0, Math.PI * 2); ctx.fill();
@@ -374,13 +378,13 @@ M.render = (function () {
       }
       case 'pompadour':
         ctx.fillStyle = col(C.hair);
-        ctx.beginPath(); ctx.arc(0, 0, R + 1.5, Math.PI * 1.0, Math.PI * 2.0); ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.arc(0, 0, R + 1.5, Math.PI * 1.12, Math.PI * 1.88); ctx.closePath(); ctx.fill(); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(-R - 2, -4); ctx.quadraticCurveTo(-R - 8, -R - 18, 0, -R - 19); ctx.quadraticCurveTo(R + 4, -R - 18, R + 9, -R + 1); ctx.quadraticCurveTo(R - 2, -R + 4, R - 6, -R + 1); ctx.quadraticCurveTo(0, -R - 5, -R + 2, -R + 3); ctx.closePath(); ctx.fill(); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(-R, -2); ctx.lineTo(-R, 6); ctx.lineWidth = 5; ctx.strokeStyle = col(C.hair); ctx.stroke(); ctx.lineWidth = 3; ctx.strokeStyle = INK;
         break;
       case 'cap':
-        ctx.fillStyle = col(C.hair); ctx.beginPath(); ctx.arc(0, 0, R + 1.5, Math.PI * 1.05, Math.PI * 2.05); ctx.closePath(); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = col(C.accent); ctx.beginPath(); ctx.arc(0, -2, R + 1, Math.PI * 1.08, Math.PI * 1.95); ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = col(C.hair); ctx.beginPath(); ctx.arc(0, 0, R + 1.5, Math.PI * 1.13, Math.PI * 1.87); ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = col(C.accent); ctx.beginPath(); ctx.arc(0, -2, R + 1, Math.PI * 1.14, Math.PI * 1.88); ctx.closePath(); ctx.fill(); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(R - 4, -6); ctx.lineTo(R + 14, -3); ctx.lineTo(R - 2, 1); ctx.closePath(); ctx.fill(); ctx.stroke();
         break;
       case 'long': {
@@ -389,7 +393,7 @@ M.render = (function () {
         ctx.beginPath(); ctx.moveTo(-R + 2, -6); ctx.quadraticCurveTo(-R - 18 + sw, 26, -R - 9 + sw * 1.6, 88); ctx.quadraticCurveTo(-R + 4 + sw * 1.2, 80, -R + 14, 78); ctx.quadraticCurveTo(-R + 6, 34, -2, 8); ctx.closePath(); ctx.fill(); ctx.stroke();
         ctx.strokeStyle = 'rgba(120,110,100,0.45)'; ctx.lineWidth = 1.5; for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.moveTo(-R + 1 - i * 2, 4 + i * 6); ctx.quadraticCurveTo(-R - 8 + sw - i * 2, 40, -R - 3 + sw * 1.4 + i * 3, 80); ctx.stroke(); }
         ctx.strokeStyle = INK; ctx.lineWidth = 3;
-        ctx.beginPath(); ctx.arc(0, 0, R + 2, Math.PI * 0.95, Math.PI * 2.08); ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.arc(0, 0, R + 2, Math.PI * 1.1, Math.PI * 1.9); ctx.closePath(); ctx.fill(); ctx.stroke();
         // franja cobrindo o olho de trás
         ctx.beginPath(); ctx.moveTo(-10, -R); ctx.quadraticCurveTo(-13, 2, -7, 13); ctx.quadraticCurveTo(-1, 4, 3, -R + 2); ctx.closePath(); ctx.fill(); ctx.stroke();
         leaf(ctx, 1, -R - 1, 15, -1.2, col('#3f8d4a'), INK); leaf(ctx, 3, -R, 13, -0.3, col('#6fb35a'), INK);
@@ -404,6 +408,7 @@ M.render = (function () {
         ctx.fillStyle = 'rgba(8,6,10,0.5)'; ctx.beginPath(); ctx.ellipse(1, -R + 12, R * 1.0, 6, 0, 0, Math.PI * 2); ctx.fill();
         break;
       }
+      default: if (ext.hair[def.hair]) ext.hair[def.hair](ctx, def, R, col, o); break;
       case 'straw':
         ctx.fillStyle = col('#d9c27a'); ctx.beginPath(); ctx.ellipse(0, -R + 5, R * 2.0, 6, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(-R + 3, -R + 5); ctx.lineTo(-R + 5, -R - 9); ctx.lineTo(R - 5, -R - 9); ctx.lineTo(R - 3, -R + 5); ctx.closePath(); ctx.fill(); ctx.stroke();
@@ -483,6 +488,8 @@ M.render = (function () {
       ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(base[0], base[1]); ctx.quadraticCurveTo((base[0] + tip[0]) / 2, (base[1] + tip[1]) / 2 - 16, tip[0], tip[1]);
       ctx.lineWidth = 7; ctx.strokeStyle = ink; ctx.stroke(); ctx.lineWidth = 3.4; ctx.strokeStyle = col('#8b5a2b'); ctx.stroke();
       if (!o.silhouette) { const sw = Math.sin(now() * 0.004) * 4; ctx.strokeStyle = '#e9e4d4'; ctx.lineWidth = 1.3; ctx.beginPath(); ctx.moveTo(tip[0], tip[1]); ctx.quadraticCurveTo(tip[0] + sw, tip[1] + 22, tip[0] + 2, tip[1] + 44); ctx.stroke(); ctx.strokeStyle = '#8d8a84'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(tip[0] + 2 + 2, tip[1] + 48, 4.5, -0.3, Math.PI * 1.2); ctx.stroke(); }
+    } else if (def.prop && ext.prop[def.prop]) {
+      ext.prop[def.prop](ctx, rig, def, o, col, ink);
     } else if (def.prop === 'oar') {
       const hand = rig.na[2], a = M.rad(rig.na[3]);
       const d = [Math.sin(a), Math.cos(a)];
@@ -535,7 +542,7 @@ M.render = (function () {
     const ctx = canvas.getContext('2d'); const w = canvas.width, h = canvas.height;
     ctx.clearRect(0, 0, w, h);
     ctx.save();
-    ctx.translate(w / 2 - 6, h - 10); const hs = def.body.height, extra = def.headless ? 52 : (['fedora', 'hat', 'straw', 'flame', 'gourd', 'pompadour'].includes(def.hair) ? 34 : 16); const sc = opts.scale || Math.min(h / 190, (h - 16) / (160 * hs + extra)); ctx.scale(sc * (opts.facing || 1), sc);
+    ctx.translate(w / 2 - 6, h - 10); const hs = def.body.height, extra = def.headless ? 52 : (def.portraitExtra || (['fedora', 'hat', 'straw', 'flame', 'gourd', 'pompadour'].includes(def.hair) ? 34 : 16)); const sc = opts.scale || Math.min(h / 190, (h - 16) / (160 * hs + extra)); ctx.scale(sc * (opts.facing || 1), sc);
     const pose = opts.pose || M.poses.idlePose(def.idle, opts.t || 0.6, def.idleOver);
     const rig = computeRig(pose, def);
     drawRig(ctx, rig, def, { umbrellaOpen: def.prop === 'umbrella', happy: true, glow: def.prop === 'fire' ? 'rgba(232,113,43,0.3)' : null, flash: opts.flash, silhouette: opts.silhouette });
@@ -697,6 +704,7 @@ M.render = (function () {
         ctx.strokeStyle = '#c8371d'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(80, hy - 6); ctx.lineTo(96, hy - 12); ctx.moveTo(80, hy - 6); ctx.lineTo(96, hy); ctx.stroke();
         break;
       }
+      default: if (ext.proj[p.kind]) ext.proj[p.kind](ctx, p, t);
     }
     ctx.restore();
   }
@@ -735,6 +743,7 @@ M.render = (function () {
       ctx.globalAlpha = 1; ctx.fillStyle = '#fff8e8'; for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.arc(-18 + i * 18, -9 - ((t * 0.5 + i * 7) % 12), 2.6, 0, Math.PI * 2); ctx.fill(); }
       ctx.restore(); return;
     }
+    if (ext.trap[tk]) { ext.trap[tk](ctx, tr); ctx.restore(); return; }
     const fl = 1 + Math.sin(t * 0.5) * 0.15;
     ctx.fillStyle = tr.armed ? '#2aa9b8' : '#e8712b'; ctx.lineWidth = 3; ctx.strokeStyle = INK;
     for (let i = 0; i < 3; i++) { const ox = (i - 1) * 18, h = (30 + (i % 2) * 14) * fl; ctx.beginPath(); ctx.moveTo(ox - 12, 0); ctx.quadraticCurveTo(ox - 10, -h * 0.6, ox + Math.sin(t * 0.3 + i) * 5, -h); ctx.quadraticCurveTo(ox + 10, -h * 0.6, ox + 12, 0); ctx.closePath(); ctx.fill(); ctx.stroke(); }

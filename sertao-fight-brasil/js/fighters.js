@@ -373,6 +373,8 @@
     papafigo: ['S', 'S2', { name: 'Navalha rápida', startup: 5, active: 4, recovery: 14, dmg: 85, steal: 0.3, hitstun: 19, blockstun: 11, kb: 5, hitbox: { x: 20, y: 60, w: 130, h: 60 }, pose: 'swing', sfx: 'whooshH' }, true],
     cuia: ['S', 'S2', { name: 'Sacudida do anzol', startup: 7, active: 4, recovery: 16, dmg: 100, hitstun: 20, blockstun: 12, kb: 9, hitbox: { x: 20, y: 60, w: 140, h: 80 }, pose: 'swing', sfx: 'whooshH' }, true]
   };
+  // as oito lendas novas (js/folk2.js, carregado antes) entram no elenco e nas tabelas de sequências
+  if (M.FOLK2) { Object.assign(M.FIGHTERS, M.FOLK2.defs); Object.assign(STRINGS, M.FOLK2.strings); Object.assign(FOLLOW, M.FOLK2.follow); }
   for (const id in M.FIGHTERS) {
     const mvs = M.FIGHTERS[id].moves;
     // deslocamento nos golpes básicos: o corpo acompanha o soco/chute
@@ -395,7 +397,8 @@
     if (fo && mvs[fo[0]]) { mvs[fo[1]] = mv(Object.assign({ id: fo[1] }, fo[2])); mvs[fo[0]].follow = fo[1]; if (fo[3]) mvs[fo[0]].followAny = true; }
   }
 
-  M.ROSTER = ['zeca', 'bia', 'mare', 'tiao', 'bene', 'juvenal', 'vinicius', 'fulozinha', 'mula', 'papafigo', 'cuia', 'cinzas'];
+  // vinte lutadores; o Mestre Cinzas (liberado ao fim da História) fecha a lista
+  M.ROSTER = ['zeca', 'bia', 'mare', 'tiao', 'bene', 'juvenal', 'vinicius', 'fulozinha', 'mula', 'papafigo', 'cuia'].concat(M.FOLK2 ? M.FOLK2.order : [], ['cinzas']);
   for (const id in M.FIGHTERS) {
     const f = M.FIGHTERS[id];
     // agarrão universal (J + K juntos ou tecla H)

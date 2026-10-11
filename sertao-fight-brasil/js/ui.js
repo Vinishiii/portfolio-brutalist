@@ -360,7 +360,7 @@ M.ui = (function () {
         if (['KeyL', 'Numpad3', 'Slash'].includes(c)) { cyclePal(who === 'p2' ? 2 : 1, 1); return true; }
         const key = who === 'p2' ? sel.p2 : sel.p1;
         let n = key;
-        const N = roster.length, COLS = 4;
+        const N = roster.length, COLS = 5;
         if (['KeyA', 'ArrowLeft'].includes(c)) n = (key + N - 1) % N;
         else if (['KeyD', 'ArrowRight'].includes(c)) n = (key + 1) % N;
         else if (['KeyW', 'ArrowUp'].includes(c)) n = (key + N - COLS + N) % N;

@@ -374,7 +374,7 @@ M.i18n.add([
   ['Lendário', 'Legendary', 'Legendario'],
   ['Vença uma luta contra a CPU no nível Lendário.', 'Win a fight against the CPU on Legendary.', 'Gana una pelea contra la CPU en nivel Legendario.'],
   ['Todos na Rinha', 'Everyone in the Brawl', 'Todos en la Riña'],
-  ['Vença com todos os 12 lutadores.', 'Win with all 12 fighters.', 'Gana con los 12 luchadores.'],
+  ['Vença com todos os 20 lutadores.', 'Win with all 20 fighters.', 'Gana con los 20 luchadores.'],
   ['Guardião da Brasa', 'Keeper of the Ember', 'Guardián de la Brasa'],
   ['Termine a História.', 'Finish the Story.', 'Termina la Historia.'],
   ['A Brasa é de Todo Mundo', 'The Ember Belongs to Everyone', 'La Brasa es de Todos'],

@@ -7,7 +7,7 @@ M.ui3 = (function () {
   const nm = id => { const f = M.FIGHTERS[id]; return f ? (f.short || f.name) : id; };
   const loc = () => (M.i18n.lang === 'pt' ? 'pt-BR' : M.i18n.lang === 'es' ? 'es' : 'en');
   const fmtDate = t => { try { return new Date(t).toLocaleDateString(loc(), { day: '2-digit', month: 'short' }) + ' ' + new Date(t).toLocaleTimeString(loc(), { hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } };
-  const AB = { zeca: 'Zeca', bia: 'Bia', mare: 'Maré', tiao: 'Tião', bene: 'Bené', juvenal: 'Juv.', vinicius: 'Vinic.', fulozinha: 'Fulo', mula: 'Mula', papafigo: 'Papa', cuia: 'Cuia', cinzas: 'Cinz.' };
+  const AB = { zeca: 'Zeca', bia: 'Bia', mare: 'Maré', tiao: 'Tião', bene: 'Bené', juvenal: 'Juv.', vinicius: 'Vinic.', fulozinha: 'Fulo', mula: 'Mula', papafigo: 'Papa', cuia: 'Cuia', cinzas: 'Cinz.', saci: 'Saci', curupira: 'Curup.', iara: 'Iara', boto: 'Boto', lobisomem: 'Lobis.', mapinguari: 'Mapin.', cuca: 'Cuca', pisadeira: 'Pisad.' };
   const sign = n => (n > 0 ? '+' + n : String(n));
   const emblemCanvas = (rk, w, h, S) => { const c = document.createElement('canvas'); c.width = w; c.height = h; M.comp.emblem(c.getContext('2d'), w / 2, h / 2, S, rk, true); return c; };
 

@@ -29,7 +29,7 @@ M.ach = (function () {
     { id: 'counter3', icon: '⛨', name: 'Contra-Golpista', desc: 'Faça 3 contra-golpes numa luta.' },
     { id: 'corner3', icon: '▦', name: 'Encurralador', desc: 'Encurrale o oponente 3 vezes numa luta.' },
     { id: 'legendary', icon: '☠', name: 'Lendário', desc: 'Vença uma luta contra a CPU no nível Lendário.' },
-    { id: 'roster', icon: '☰', name: 'Todos na Rinha', desc: 'Vença com todos os 12 lutadores.' },
+    { id: 'roster', icon: '☰', name: 'Todos na Rinha', desc: 'Vença com todos os 20 lutadores.' },
     { id: 'story_done', icon: '🔥', name: 'Guardião da Brasa', desc: 'Termine a História.' },
     { id: 'true_ending', icon: '❂', name: 'A Brasa é de Todo Mundo', desc: 'Veja o final verdadeiro.' },
     { id: 'all_endings', icon: '❖', name: 'Três Caminhos', desc: 'Veja os três finais da História.' },

@@ -64,9 +64,9 @@ Variações: agachado + golpe (baixo), frente + forte (comando), dash + forte (g
 - **Treino** — boneco configurável (parado, defende, pula, CPU), **histórico de entradas** (setas e botões com a duração em quadros) e leitura do último combo (golpes, dano e recorde).
 - **Rinha Livre** — liberado ao terminar a História: sete adversários sorteados e o Mestre Cinzas, com qualquer lutador.
 
-## Os doze lutadores
+## Os vinte lutadores
 
-Zeca Ventania, Bia Sombrinha, Maré Bacuri, Tião Sertão, Bené Sanfona, Juvenal Boitatá, Vinícius Andrey e Mestre Cinzas (liberado ao fim da História) — mais quatro lendas do folclore nordestino, jogáveis desde o começo:
+Zeca Ventania, Bia Sombrinha, Maré Bacuri, Tião Sertão, Bené Sanfona, Juvenal Boitatá, Vinícius Andrey e Mestre Cinzas (liberado ao fim da História) — mais doze lendas do folclore brasileiro, jogáveis desde o começo. As quatro primeiras:
 
 | Lenda | Estilo | O que a torna diferente |
 | --- | --- | --- |
@@ -76,6 +76,29 @@ Zeca Ventania, Bia Sombrinha, Maré Bacuri, Tião Sertão, Bené Sanfona, Juvena
 | **Cabeça de Cuia** (PI) | Anzol & tarrafa | Cabeça de cabaça, zoneador. **Fisgada** puxa o oponente pelo anzol, cuiada d'água em arco, poça do Parnaíba, chuva de peixes, mergulho no rio com invencibilidade. Peia: *Maldição do Parnaíba* (redemoinho que suga). |
 
 Cada lenda tem seu cenário: Mata Branca Encantada, Estrada da Meia-Noite, Beco da Matriz e Delta do Parnaíba.
+
+### Mais oito lendas do folclore brasileiro
+
+| Lenda | Estilo | O que a torna diferente |
+| --- | --- | --- |
+| **Saci-Pererê** | Peraltice de uma perna só | Pequeno e ágil, pulo duplo. Redemoinhos (projétil de dois golpes), *Sumiço* que o leva para as costas do rival, e *Esconder o chapéu*, que rouba Energia. Peia: *Redemoinho Gigante*. |
+| **Curupira** | Fogo e rastro | Cabelo de fogo e pés virados. Bola de fogo que queima, *Pegadas ao contrário* (armadilha que deixa o rival perdido), cabeçada flamejante e sumiço na mata. Peia: *Incêndio da Mata*. |
+| **Iara** | Canto e correnteza | Zoneadora: o *Canto* encanta (deixa o rival lento), *Espelho d'água* reflete projéteis, *Abraço do rio* rouba vida e *Beijo d'água* cura. Peia: *Canto da Sereia* (puxa para o redemoinho). |
+| **Boto Cor-de-Rosa** | Dança e encanto | Galã de terno branco: *Coração* deixa o rival apaixonado (lento), abraço com armadura, valsa, e *Conquista* que enche a Energia. Peia: *Festa do Boto*. |
+| **Lobisomem** | Garra e lua cheia | Berserker veloz: *Talho triplo*, bote com armadura, mordida que rouba vida, postura de revide e *Fome da lua* (ganha Energia). Peia: *Noite de Lua Cheia*. |
+| **Mapinguari** | Peso e urro | Gigante lento e pesadíssimo, com um olho só e uma boca na barriga: *Urro*, nuvem de *Fedor*, atropelo, e a *Barriga faminta* que engole e se cura. Peia: *Fúria da Mata*. |
+| **Cuca** | Poção e feitiço | Bruxa-jacaré: *Poção* que envenena, *Caldeirão* que queima, *Vira sapo!* (deixa o rival quase parado) e voo de vassoura. Peia: *Caldeirão do Sítio*. |
+| **Pisadeira** | Pesadelo e aperto | Alta e magra, unhas enormes (alcance longo): *Pesadelo* (lento + rouba Energia), *Sufoco* (agarrão que drena) e pisão com armadura. Peia: *Noite Sem Fim*. |
+
+## Progresso e compartilhamento
+
+- **XP, nível (1–60) e maestria (1–10) por lutador.** Toda luta rende XP (vitória, dano, combos, estilo, contra-golpes, esquivas, dificuldade). Missões do dia (as mesmas o dia todo), metas de cada lutador, e **recompensas ganhas, nunca compradas nem sorteadas**: títulos, molduras do retrato e as cores alternativas de cada lutador (maestria 2 e 4). Tela **PROGRESSO** no menu.
+- **Rinha da Semana:** três lutas seguidas contra a CPU com as regras malucas da semana (muda toda segunda), placar e até 3 estrelas. XP em dobro e meia.
+- **Quem Ganha Fica:** modo de festa para 2 a 8 pessoas no mesmo teclado; quem vence continua no trono, quem perde vai para o fim da fila.
+- **Clipe automático:** o jogo grava os últimos segundos do nocaute, da Peia ou de um combo grande (vídeo com som e a marca do jogo) e oferece **CLIPE** na tela de resultado. Pode ser desligado em Opções.
+- **Desafio por link:** **DESAFIAR UM AMIGO** gera um link com a luta (lutadores, cenário, regras e semente) e o seu placar; quem abre o link joga a mesma luta e tenta superar. Sem servidor: o desafio vai dentro do endereço.
+- **Cartão de resultado:** imagem vertical 1080×1350 pronta para story/WhatsApp.
+- **Mais suco:** contador de combo que cresce por níveis com nota de **estilo** (C a SS), reação da torcida, *Na raça!* quando a virada é no fio, e balões de fala dos lutadores (provocação, combo e vitória).
 
 ### Vinícius Andrey — visual realista e código no ar
 
@@ -100,7 +123,7 @@ Menu ▸ **COMPETITIVO**: **ranqueada** contra uma CPU que se ajusta ao seu nív
 
 ## Conquistas e opções
 
-- **45 conquistas** (primeira vitória, combos, esquivas perfeitas, finais, nota S, nível Lendário...), com aviso na tela e integração com a Steam (`ACH_<ID>`, ver `STEAM.md`).
+- **58 conquistas** (primeira vitória, combos, esquivas perfeitas, finais, nota S, nível Lendário...), com aviso na tela e integração com a Steam (`ACH_<ID>`, ver `STEAM.md`).
 - Opções: volume, música/efeitos, tremor de tela, idioma, **velocidade do jogo**, **reduzir flashes**, **qualidade** (auto / alta / baixa), estilo visual (Pintura / Xilogravura), controles de toque e remapeamento de teclas.
 - **Qualidade automática**: se os quadros caem, o jogo desliga primeiro o pós-processamento e depois a camada de pintura.
 - Fontes embutidas (funciona offline), salvamento automático (arquivo no desktop, `localStorage` no navegador).
@@ -129,7 +152,14 @@ sertao-fight-brasil/
   js/util.js           utilitários, paleta, salvamento, versão
   js/audio.js          síntese: zabumba, atabaque, pandeiro, agogô, efeitos, torcida
   js/input.js          teclado, toque, gamepad, dash
-  js/fighters.js       os doze lutadores: stats, visual, frame data
+  js/fighters.js       os lutadores originais: stats, visual, frame data
+  js/folk2.js          as oito lendas novas: golpes, sequências e atributos
+  js/folk2draw.js      desenho das lendas novas: cabeças, roupas, projéteis e armadilhas
+  js/meta.js           XP, níveis, maestria, missões, recompensas e Rinha da Semana
+  js/viral.js          clipe automático, desafio por link e cartão de resultado
+  js/ui5.js            resultado com XP, Progresso, Maestria, desafio e Semana
+  js/party.js          modo Quem Ganha Fica
+  js/lines.js          balões de fala dos lutadores
   js/poses.js          rig esquelético e poses
   js/render.js         desenho xilogravura, projéteis, efeitos
   js/vinicius.js       rosto realista, jaqueta de couro e códigos verdes/roxos do Vinícius

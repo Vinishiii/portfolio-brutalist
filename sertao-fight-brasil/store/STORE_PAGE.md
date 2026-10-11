@@ -22,7 +22,7 @@ Textos prontos para colar no painel da Steamworks (e itch.io). Imagens em `store
 ## Português (Brasil)
 
 **Descrição curta (até 300 caracteres)**
-Jogo de luta 1v1 em xilogravura de cordel. Doze lutadores — do sertão ao folclore do Nordeste —, uma barra de Energia disputada pelos dois, campanha com três finais e música tocada em zabumba, triângulo e sanfona.
+Jogo de luta 1v1 em xilogravura de cordel. Vinte lutadores — do sertão ao folclore do Brasil inteiro —, uma barra de Energia disputada pelos dois, campanha com três finais e música tocada em zabumba, triângulo e sanfona.
 
 **Sobre este jogo**
 
@@ -30,14 +30,16 @@ Em Vila Brasa, toda noite de São João a festa acende a Brasa na praça — e s
 
 **SERTÃO FIGHT BRASIL** é um jogo de luta brasileiro, desenhado como capa de cordel e animado como pintura. Aqui não tem barra de especial para cada um: tem **uma barra só, no meio da tela — a torcida**. Quem acerta golpes variados, faz esquivas perfeitas e bate **no compasso da zabumba** puxa a Energia pro seu lado, e com 70% libera a **Peia**, o super de cada lutador.
 
-- **Doze lutadores únicos**, cada um com estilo, sequências e Peia próprios: Zeca Ventania, Bia Sombrinha, Maré Bacuri, Tião Sertão, Bené Sanfona, Juvenal Boitatá, Vinícius Andrey, Mestre Cinzas e quatro lendas do folclore do Nordeste — Comadre Fulozinha, Mula-sem-Cabeça, Seu Papa-Figo e Cabeça de Cuia.
+- **Vinte lutadores únicos**, cada um com estilo, sequências e Peia próprios: Zeca Ventania, Bia Sombrinha, Maré Bacuri, Tião Sertão, Bené Sanfona, Juvenal Boitatá, Vinícius Andrey, Mestre Cinzas e as lendas do folclore brasileiro — Comadre Fulozinha, Mula-sem-Cabeça, Seu Papa-Figo, Cabeça de Cuia, Saci-Pererê, Curupira, Iara, Boto Cor-de-Rosa, Lobisomem, Mapinguari, Cuca e Pisadeira.
 - **Combate com peso**: strings de três golpes, sequência dos especiais, cancelamentos, arremate em câmera lenta, encurralada no canto, esquiva perfeita com contra-ataque, agarrão, corrida, dash aéreo, pulo na parede e rolamento.
 - **Modo História** com mapa da noite, desafios opcionais por luta, nota de S a C, laços com os rivais, bênçãos na fogueira, chefe em duas fases e **três finais**, um deles secreto.
 - **Lendas da Noite**: segundo arco contra o folclore do Nordeste, com cordéis, diálogos e final próprios.
 - **Versus local**, **Rinha Livre** (sete adversários e o chefe), **Treino** com boneco configurável e três níveis de CPU — do Novato ao Lendário.
 - **Modo competitivo**: **ranqueada** contra uma CPU que se ajusta ao seu nível (7 níveis, de Bronze a Lenda da Brasa), **torneio local** com chaves de eliminação simples ou dupla para até 16 jogadores, **replays** com código para compartilhar, **dados de quadros** de todos os golpes e **modo transmissão** para streamers.
 - **Mais modos**: **Maratona** de ondas sem fim, **Desafio do Dia** com regras malucas, modificadores de partida, **cores alternativas**, estatísticas e jukebox.
-- **45 conquistas**, controle e teclado com teclas **remapeáveis**, opções de acessibilidade (reduzir flashes, velocidade do jogo, qualidade automática).
+- **Sempre uma razão para mais uma**: nível e **maestria por lutador**, missões do dia, títulos, molduras e cores alternativas **ganhos jogando** (nada de caixa de sorte nem compra), **Rinha da Semana** com regras malucas e estrelas, e o modo de festa **Quem Ganha Fica**.
+- **Feito para compartilhar**: **clipe automático** do nocaute (com som), **desafio por link** para o amigo superar o seu placar e **cartão de resultado** pronto para stories. Música 100% sintetizada: **sem direitos autorais**, segura para streamers.
+- **58 conquistas**, controle e teclado com teclas **remapeáveis**, opções de acessibilidade (reduzir flashes, velocidade do jogo, qualidade automática).
 - **Arte e som feitos do zero**: xilogravura com camada de pintura em tempo real e música sintetizada ao vivo — zabumba, triângulo, ganzá, sanfona, pífano, violão e baixo — que muda com a Energia da rinha.
 - **Em três idiomas**: português, inglês e espanhol.
 
@@ -49,7 +51,7 @@ Em Vila Brasa, toda noite de São João a festa acende a Brasa na praça — e s
 ## English
 
 **Short description (max 300 characters)**
-A 1v1 fighting game drawn like a Brazilian cordel woodcut. Twelve fighters — from the backlands to Northeastern folklore —, one shared Energy bar, a campaign with three endings, and music played live on zabumba, triangle and accordion.
+A 1v1 fighting game drawn like a Brazilian cordel woodcut. Twenty fighters — from the backlands to folklore from all over Brazil —, one shared Energy bar, a campaign with three endings, and music played live on zabumba, triangle and accordion.
 
 **About this game**
 
@@ -57,14 +59,16 @@ In Vila Brasa, every Saint John's night the festival lights the Brasa — the Em
 
 **SERTÃO FIGHT BRASIL** is a Brazilian fighting game, drawn like a cordel pamphlet cover and animated like a painting. There is no separate super meter per fighter: there is **one bar, in the middle of the screen — the crowd**. Land varied hits, dodge perfectly and strike **on the beat of the zabumba drum** to pull the Energy to your side; at 70% you unleash your **Peia**, each fighter's super.
 
-- **Twelve unique fighters**, each with their own style, strings and Peia: Zeca Ventania, Bia Sombrinha, Maré Bacuri, Tião Sertão, Bené Sanfona, Juvenal Boitatá, Vinícius Andrey, Master Cinzas and four legends of Northeastern folklore — Comadre Fulozinha, Mula-sem-Cabeça, Seu Papa-Figo and Cabeça de Cuia.
+- **Twenty unique fighters**, each with their own style, strings and Peia: Zeca Ventania, Bia Sombrinha, Maré Bacuri, Tião Sertão, Bené Sanfona, Juvenal Boitatá, Vinícius Andrey, Master Cinzas and the legends of Brazilian folklore — Comadre Fulozinha, Headless Mule, Seu Papa-Figo, Gourd Head, Saci-Pererê, Curupira, Iara, Pink River Dolphin, Werewolf, Mapinguari, Cuca and Pisadeira.
 - **Combat with weight**: three-hit strings, special follow-ups, cancels, slow-motion finisher, corner pressure, perfect dodge with counter, throws, running, air dash, wall jump and quick-rise roll.
 - **Story mode** with a night map, optional challenges for each fight, S-to-C grades, bonds with your rivals, campfire blessings, a two-phase boss and **three endings**, one of them secret.
 - **Legends of the Night**: a second arc against Northeastern folklore, with its own cordels, dialogue and ending.
 - **Local versus**, **Free Brawl** (seven opponents and the boss), **Training** with a configurable dummy and three CPU levels — from Rookie to Legendary.
 - **Competitive mode**: **ranked** play against a CPU that adapts to your level (7 tiers, Bronze to Ember Legend), **local tournaments** with single or double elimination brackets for up to 16 players, **replays** with shareable codes, **frame data** for every move and a **broadcast mode** for streamers.
 - **More modes**: endless-wave **Marathon**, a **Daily Challenge** with wild rules, match modifiers, **alternate colors**, statistics and a jukebox.
-- **45 achievements**, controller and keyboard with **remappable keys**, accessibility options (reduce flashes, game speed, auto quality).
+- **Always a reason for one more**: player level and **mastery for every fighter**, daily missions, titles, frames and alternate colors **earned by playing** (no loot boxes, nothing to buy), a **Weekly Brawl** with crazy rules and stars, and the **Winner Stays** party mode.
+- **Made to share**: an **automatic clip** of the knockout (with sound), **link challenges** so a friend can beat your score, and a **result card** ready for stories. Music is 100% synthesized: **copyright-free**, safe for streamers.
+- **58 achievements**, controller and keyboard with **remappable keys**, accessibility options (reduce flashes, game speed, auto quality).
 - **Art and sound made from scratch**: a woodcut look with a real-time painted layer, and live-synthesized music — zabumba, triangle, ganzá, accordion, fife, guitar and bass — that shifts with the brawl's Energy.
 - **In three languages**: Portuguese, English and Spanish.
 
@@ -76,7 +80,7 @@ In Vila Brasa, every Saint John's night the festival lights the Brasa — the Em
 ## Español
 
 **Descripción corta (máx. 300 caracteres)**
-Juego de lucha 1v1 dibujado como un grabado de cordel brasileño. Doce luchadores —del sertón al folclore del Nordeste—, una barra de Energía compartida, campaña con tres finales y música tocada en zabumba, triángulo y acordeón.
+Juego de lucha 1v1 dibujado como un grabado de cordel brasileño. Veinte luchadores —del sertón al folclore de todo Brasil—, una barra de Energía compartida, campaña con tres finales y música tocada en zabumba, triángulo y acordeón.
 
 **Acerca de este juego**
 
@@ -84,14 +88,16 @@ En Vila Brasa, cada noche de San Juan la fiesta enciende la Brasa en la plaza, y
 
 **SERTÃO FIGHT BRASIL** es un juego de lucha brasileño, dibujado como portada de cordel y animado como una pintura. Aquí no hay una barra de súper por cada luchador: hay **una sola barra, en medio de la pantalla — el público**. Quien conecta golpes variados, esquiva a la perfección y pega **al compás de la zabumba** atrae la Energía hacia su lado, y con 70 % libera la **Peia**, el súper de cada luchador.
 
-- **Doce luchadores únicos**, cada uno con estilo, secuencias y Peia propios: Zeca Ventania, Bia Sombrinha, Maré Bacuri, Tião Sertão, Bené Sanfona, Juvenal Boitatá, Vinícius Andrey, Maestro Cinzas y cuatro leyendas del folclore del Nordeste — Comadre Fulozinha, Mula-sem-Cabeça, Seu Papa-Figo y Cabeça de Cuia.
+- **Veinte luchadores únicos**, cada uno con estilo, secuencias y Peia propios: Zeca Ventania, Bia Sombrinha, Maré Bacuri, Tião Sertão, Bené Sanfona, Juvenal Boitatá, Vinícius Andrey, Maestro Cinzas y las leyendas del folclore brasileño — Comadre Fulozinha, Mula-sin-Cabeza, Seu Papa-Figo, Cabeza de Cuia, Saci-Pererê, Curupira, Iara, Delfín Rosado, Hombre Lobo, Mapinguari, Cuca y Pisadeira.
 - **Combate con peso**: strings de tres golpes, secuencias de los especiales, cancelaciones, remate en cámara lenta, acorralar en la esquina, esquiva perfecta con contraataque, agarres, carrera, dash aéreo, salto en la pared y rodar al levantarse.
 - **Modo Historia** con mapa de la noche, desafíos opcionales por pelea, nota de S a C, lazos con los rivales, bendiciones en la fogata, jefe en dos fases y **tres finales**, uno de ellos secreto.
 - **Leyendas de la Noche**: un segundo arco contra el folclore del Nordeste, con cordeles, diálogos y final propios.
 - **Versus local**, **Riña Libre** (siete rivales y el jefe), **Entrenamiento** con muñeco configurable y tres niveles de CPU — de Novato a Legendario.
 - **Modo competitivo**: **clasificatoria** contra una CPU que se adapta a tu nivel (7 niveles, de Bronce a Leyenda de la Brasa), **torneo local** con llaves de eliminación simple o doble para hasta 16 jugadores, **repeticiones** con código para compartir, **datos de cuadros** de todos los golpes y **modo transmisión** para streamers.
 - **Más modos**: **Maratón** de oleadas sin fin, **Desafío del Día** con reglas locas, modificadores de partida, **colores alternativos**, estadísticas y jukebox.
-- **45 logros**, mando y teclado con **teclas remapeables**, opciones de accesibilidad (reducir destellos, velocidad del juego, calidad automática).
+- **Siempre una razón para una más**: nivel del jugador y **maestría de cada luchador**, misiones del día, títulos, marcos y colores alternativos **ganados jugando** (sin cajas de azar ni compras), una **Riña de la Semana** con reglas locas y estrellas, y el modo fiesta **El Ganador Se Queda**.
+- **Hecho para compartir**: **clip automático** del nocaut (con sonido), **desafíos por enlace** para que un amigo supere tu puntaje y una **tarjeta de resultado** lista para stories. Música 100% sintetizada: **sin derechos de autor**, segura para streamers.
+- **58 logros**, mando y teclado con **teclas remapeables**, opciones de accesibilidad (reducir destellos, velocidad del juego, calidad automática).
 - **Arte y sonido hechos desde cero**: grabado con una capa de pintura en tiempo real y música sintetizada en vivo —zabumba, triángulo, ganzá, acordeón, pífano, guitarra y bajo— que cambia con la Energía de la riña.
 - **En tres idiomas**: portugués, inglés y español.
 
