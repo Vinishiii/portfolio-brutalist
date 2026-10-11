@@ -1,6 +1,6 @@
 # Publicando na Steam — Sertão Fight Brasil
 
-Guia de ponta a ponta para levar o jogo à Steam (e também ao itch.io / web). O jogo já vem com tudo do lado do código: app de desktop (Electron), ponte com a Steamworks, 45 conquistas, idioma automático (PT / EN / ES), save em arquivo para o Steam Cloud, arte de loja pronta e build web.
+Guia de ponta a ponta para levar o jogo à Steam (e também ao itch.io / web). O jogo já vem com tudo do lado do código: app de desktop (Electron), ponte com a Steamworks, 58 conquistas, idioma automático (PT / EN / ES), save em arquivo para o Steam Cloud, arte de loja pronta e build web.
 
 > **Estado honesto:** o jogo foi testado no navegador (Chromium) e o app de desktop foi **empacotado e executado no Linux** (Electron 33 + electron-builder, sob Xvfb): abre a janela, detecta o idioma do sistema, grava o save em arquivo, relê o progresso na abertura seguinte e fecha pelo menu "SAIR DO JOGO". **Não foi possível testar aqui:** as chamadas reais da Steamworks (conquistas, overlay, idioma da Steam — precisam do cliente Steam e de um AppID), os builds de Windows e macOS, o Steam Deck e o Steam Cloud. Faça o teste da seção 3 antes de enviar o build.
 
@@ -45,7 +45,7 @@ npm run dist:win                  # ou dist:mac / dist:linux → desktop/dist/
 
 ## 4. Conquistas (Steamworks ▸ Stats & Achievements)
 
-São **45**. O jogo chama `ACH_<ID EM MAIÚSCULAS>`; cadastre exatamente estes **API Names**. Os textos nos três idiomas estão abaixo para colar nas traduções (a Steam mostra no idioma do jogador). Ícones (256×256, colorido e cinza): gere do `icons/icon-256.png` + glifo da conquista, ou encomende 26 ícones — a Steam exige uma imagem para cada.
+São **58**. O jogo chama `ACH_<ID EM MAIÚSCULAS>`; cadastre exatamente estes **API Names**. Os textos nos três idiomas estão abaixo para colar nas traduções (a Steam mostra no idioma do jogador). Ícones (256×256, colorido e cinza): gere do `icons/icon-256.png` + glifo da conquista, ou encomende 58 ícones — a Steam exige uma imagem para cada.
 
 | API Name | PT | EN | ES |
 | --- | --- | --- | --- |
@@ -65,7 +65,7 @@ São **45**. O jogo chama `ACH_<ID EM MAIÚSCULAS>`; cadastre exatamente estes *
 | `ACH_CORNER3` | Encurralador | Corner Crusher | Arrinconador |
 | `ACH_LEGENDARY` | Lendário | Legendary | Legendario |
 | `ACH_ROSTER` | Todos na Rinha | Everyone in the Brawl | Todos en la Riña |
-| `ACH_STORY_DONE` | Guardião da Brasa | Keeper of the Ember | Guardián de la Brasa |
+| `ACH_STORY_DONE` | Guardião da Brasa | Guardian of the Ember | Guardián de la Brasa |
 | `ACH_TRUE_ENDING` | A Brasa é de Todo Mundo | The Ember Belongs to Everyone | La Brasa es de Todos |
 | `ACH_ALL_ENDINGS` | Três Caminhos | Three Paths | Tres Caminos |
 | `ACH_STORY_S` | Nota S | Grade S | Nota S |
@@ -94,6 +94,19 @@ São **45**. O jogo chama `ACH_<ID EM MAIÚSCULAS>`; cadastre exatamente estes *
 | `ACH_REPLAY_WATCH` | Cinema da Rinha | Brawl Cinema | Cine de la Riña |
 | `ACH_REPLAY_SHARE` | Compartilha Essa | Share This One | Comparte Esta |
 | `ACH_FRAMEDATA` | Rato de Planilha | Spreadsheet Rat | Rata de Planilla |
+| `ACH_LV10` | Cabra da Peste | Tough Goat | Cabra de la Peste |
+| `ACH_LV25` | Lenda do Sertão | Legend of the Backlands | Leyenda del Sertón |
+| `ACH_MASTER5` | Mestre de Verdade | True Master | Maestro de Verdad |
+| `ACH_MISSION1` | Dever de Casa | Homework Done | Tarea Cumplida |
+| `ACH_MISSIONS3` | Dia Completo | Full Day | Día Completo |
+| `ACH_WEEK1` | Doido da Semana | Madman of the Week | Loco de la Semana |
+| `ACH_CLIP1` | Cineasta da Rinha | Brawl Filmmaker | Cineasta de la Riña |
+| `ACH_CARD1` | Cartão Postal | Postcard | Postal |
+| `ACH_CHALLENGE1` | Duvido! | I Dare You! | ¡Te Reto! |
+| `ACH_CHAL_BEAT` | Superou o Placar | Beat the Score | Superó el Puntaje |
+| `ACH_KING_FIRST` | Na Festa do Sítio | At the Farm Party | En la Fiesta del Sitio |
+| `ACH_KING3` | Rei do Terreiro | King of the Yard | Rey del Terreiro |
+| `ACH_KING5` | Imbatível na Festa | Unbeatable at the Party | Imbatible en la Fiesta |
 
 ### Textos por idioma
 
@@ -179,7 +192,7 @@ São **45**. O jogo chama `ACH_<ID EM MAIÚSCULAS>`; cadastre exatamente estes *
 
 **ACH_STORY_DONE**
 - PT: Guardião da Brasa — Termine a História.
-- EN: Keeper of the Ember — Finish the Story.
+- EN: Guardian of the Ember — Finish the Story.
 - ES: Guardián de la Brasa — Termina la Historia.
 
 **ACH_TRUE_ENDING**
@@ -322,6 +335,71 @@ São **45**. O jogo chama `ACH_<ID EM MAIÚSCULAS>`; cadastre exatamente estes *
 - EN: Spreadsheet Rat — Open the Frame Data.
 - ES: Rata de Planilla — Abre los Datos de Cuadros.
 
+**ACH_LV10**
+- PT: Cabra da Peste — Chegue ao nível 10.
+- EN: Tough Goat — Reach level 10.
+- ES: Cabra de la Peste — Llega al nivel 10.
+
+**ACH_LV25**
+- PT: Lenda do Sertão — Chegue ao nível 25.
+- EN: Legend of the Backlands — Reach level 25.
+- ES: Leyenda del Sertón — Llega al nivel 25.
+
+**ACH_MASTER5**
+- PT: Mestre de Verdade — Chegue à maestria 5 com um lutador.
+- EN: True Master — Reach mastery 5 with a fighter.
+- ES: Maestro de Verdad — Llega a la maestría 5 con un luchador.
+
+**ACH_MISSION1**
+- PT: Dever de Casa — Cumpra uma missão do dia.
+- EN: Homework Done — Complete a daily mission.
+- ES: Tarea Cumplida — Cumple una misión del día.
+
+**ACH_MISSIONS3**
+- PT: Dia Completo — Cumpra as três missões do dia.
+- EN: Full Day — Complete all three daily missions.
+- ES: Día Completo — Cumple las tres misiones del día.
+
+**ACH_WEEK1**
+- PT: Doido da Semana — Termine a Rinha da Semana.
+- EN: Madman of the Week — Finish the Weekly Brawl.
+- ES: Loco de la Semana — Termina la Riña de la Semana.
+
+**ACH_CLIP1**
+- PT: Cineasta da Rinha — Salve ou compartilhe um clipe de luta.
+- EN: Brawl Filmmaker — Save or share a fight clip.
+- ES: Cineasta de la Riña — Guarda o comparte un clip de pelea.
+
+**ACH_CARD1**
+- PT: Cartão Postal — Gere um cartão de resultado.
+- EN: Postcard — Generate a result card.
+- ES: Postal — Genera una tarjeta de resultado.
+
+**ACH_CHALLENGE1**
+- PT: Duvido! — Envie um desafio para um amigo.
+- EN: I Dare You! — Send a challenge to a friend.
+- ES: ¡Te Reto! — Envía un desafío a un amigo.
+
+**ACH_CHAL_BEAT**
+- PT: Superou o Placar — Supere o placar de um desafio recebido.
+- EN: Beat the Score — Beat the score of a challenge you received.
+- ES: Superó el Puntaje — Supera el puntaje de un desafío recibido.
+
+**ACH_KING_FIRST**
+- PT: Na Festa do Sítio — Jogue uma partida do Quem Ganha Fica.
+- EN: At the Farm Party — Play a Winner Stays match.
+- ES: En la Fiesta del Sitio — Juega una partida de El Ganador Se Queda.
+
+**ACH_KING3**
+- PT: Rei do Terreiro — Vença 3 vezes seguidas no Quem Ganha Fica.
+- EN: King of the Yard — Win 3 in a row in Winner Stays.
+- ES: Rey del Terreiro — Gana 3 veces seguidas en El Ganador Se Queda.
+
+**ACH_KING5**
+- PT: Imbatível na Festa — Vença 5 vezes seguidas no Quem Ganha Fica.
+- EN: Unbeatable at the Party — Win 5 in a row in Winner Stays.
+- ES: Imbatible en la Fiesta — Gana 5 veces seguidas en El Ganador Se Queda.
+
 ## 5. Steam Cloud (Auto-Cloud)
 
 O save é um único arquivo JSON, gravado pelo app em `userData/save.json` (Windows: `%APPDATA%\SertaoFightBrasil\`, Linux: `~/.config/SertaoFightBrasil/`, macOS: `~/Library/Application Support/SertaoFightBrasil/`; a pasta é fixada em ASCII em `desktop/main.js` porque o Electron no Linux ignora nomes com acento).
@@ -386,7 +464,7 @@ Tudo em `store/`, gerado do próprio jogo por `tools/make_assets.js` (Playwright
 ## 11. Antes de apertar "Publicar"
 
 - [ ] AppID real configurado (`STEAM_APP_ID` ou a constante em `desktop/main.js`).
-- [ ] 45 conquistas cadastradas com os API Names acima + ícones.
+- [ ] 58 conquistas cadastradas com os API Names acima + ícones.
 - [ ] Auto-Cloud configurado e testado em duas máquinas.
 - [ ] Textos e capturas da loja revisados nos 3 idiomas (`store/STORE_PAGE.md`).
 - [ ] Classificação etária preenchida.

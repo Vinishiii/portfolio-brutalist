@@ -128,6 +128,7 @@ M.ui3 = (function () {
     show(`<div class="screen center"><div class="panel">
       <div class="stamp">REPLAY</div><h2 data-notr>${esc(M.replay.label(x.rep))}</h2>
       <p class="sub" data-notr>${fmtDate(x.rep.date)} • ${M.fmtTime(x.rep.res.frames / 60)} • ${x.rep.res.wins[0]}–${x.rep.res.wins[1]}</p>
+      ${x.rep.ver && x.rep.ver !== M.VERSION ? `<p class="tiny">${esc(M.tr(`Gravado na versão ${x.rep.ver} (a atual é ${M.VERSION}): se o equilíbrio mudou, a repetição pode divergir.`))}</p>` : ''}
       <nav>
         <button class="mi" data-go="watch">ASSISTIR</button>
         <button class="mi" data-go="fav">${x.fav ? 'TIRAR DOS FAVORITOS' : 'FAVORITAR'}</button>

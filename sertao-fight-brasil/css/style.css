@@ -419,11 +419,11 @@ button:focus-visible { outline: 3px dashed var(--yellow); outline-offset: 3px; }
 .panel.hist, .panel.rep { width: 760px; }
 .codeta { width: 100%; height: 150px; font-family: 'Courier New', monospace; font-size: 11px; background: rgba(255,255,255,.6); border: 3px solid var(--ink); padding: 8px; resize: none; color: var(--ink); word-break: break-all; }
 .panel.matrix { width: 880px; }
-.mx-wrap { overflow: auto; max-height: 330px; }
+.mx-wrap { overflow: auto; max-height: 440px; }
 .mxt { border-collapse: collapse; margin: 6px auto; font-size: 11px; }
-.mxt th { font-family: var(--display); font-size: 10px; padding: 3px 4px; text-align: right; white-space: nowrap; }
-.mxt thead th { text-align: center; writing-mode: vertical-rl; transform: rotate(180deg); height: 54px; }
-.mx { width: 40px; height: 22px; text-align: center; border: 1px solid rgba(20,18,16,.25); font-family: var(--display); font-size: 10px; }
+.mxt th { font-family: var(--display); font-size: 10px; padding: 0 4px; text-align: right; white-space: nowrap; line-height: 1.1; }
+.mxt thead th { text-align: center; writing-mode: vertical-rl; transform: rotate(180deg); height: 50px; padding: 2px 0; }
+.mx { width: 40px; height: 14px; padding: 0; line-height: 1; text-align: center; border: 1px solid rgba(20,18,16,.25); font-family: var(--display); font-size: 10px; }
 .mx.e { background: rgba(20,18,16,.05); } .mx.w { background: rgba(31,122,77,.5); } .mx.l { background: rgba(200,55,29,.5); } .mx.d { background: rgba(242,183,12,.5); }
 .panel.fd { width: 940px; padding: 10px 20px 10px; }
 .fd .stamp { margin-bottom: 2px; } .fd .tiny { margin: 4px 0; font-size: 11px; line-height: 1.25; } .fd nav { margin-top: 4px; }

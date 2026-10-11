@@ -97,7 +97,7 @@
       quote: 'Lá no sertão a gente não arreda. A gente agarra.', winQuote: 'Peguei e não larguei, cabra.',
       colors: { skin: '#8a5a3c', torso: '#6b3f22', arms: '#d9b382', legs: '#3a2a1e', shoes: '#141210', accent: '#c8371d', hair: '#2a1a10' },
       hair: 'hat', prop: null, idle: 'stance', idleOver: { na: [45, 115], fa: [35, 105], torso: 10 }, details: ['vest', 'buckle', 'boots'], body: { height: 1.12, build: 1.4 }, mustache: true,
-      stats: { hp: 1150, speed: 2.5, jumpV: -11.6, weight: 1.35, dashV: 8, airSpeed: 2.4, maxJumps: 1 },
+      stats: { hp: 1180, speed: 2.8, jumpV: -11.8, weight: 1.35, dashV: 9.2, airSpeed: 2.6, maxJumps: 1 },
       superName: 'Vaquejada', superDesc: 'Arranca em disparada com armadura e derruba quem estiver na frente.',
       ai: { zone: 0, air: 0.15, grab: 0.5, rush: 0.7, poke: 0.3 },
       moves: {
@@ -152,7 +152,7 @@
       quote: 'Golpe fora do baião é só barulho.', winQuote: 'Isso é que é baião!',
       colors: { skin: '#6b4a30', torso: '#fff8e8', arms: '#6b4a30', legs: '#1c4e9c', shoes: '#fff8e8', accent: '#f2b70c', hair: '#141210' },
       hair: 'cap', prop: 'sanfona', idle: 'bounce', idleOver: { na: [38, 110], fa: [30, 105] }, body: { height: 1.02, build: 0.98 }, details: ['necklace', 'stripe', 'kerchief', 'suspenders'],
-      stats: { hp: 1030, speed: 3.2, jumpV: -13, weight: 0.95, dashV: 9.8, airSpeed: 3.2, maxJumps: 1 },
+      stats: { hp: 1100, speed: 3.3, jumpV: -13, weight: 0.95, dashV: 10.2, airSpeed: 3.3, maxJumps: 1 },
       superName: 'Baião de Dois', superDesc: 'Acelera o fole: uma sequência em que todo golpe cai no compasso.',
       ai: { zone: 0.1, air: 0.25, grab: 0.1, rush: 0.65, poke: 0.6 },
       moves: {
@@ -235,7 +235,7 @@
       quote: 'Quando a ferradura soar, já é tarde.', winQuote: 'Quinta pra sexta. Sempre.',
       colors: { skin: '#8a5a3a', torso: '#5a2a6b', arms: '#8a5a3a', legs: '#3a2a24', shoes: '#241812', accent: '#4aa3ff', hair: '#4aa3ff' },
       hair: 'fireneck', headless: true, prop: null, idle: 'bounce', idleOver: { torso: 12, nl: [8, 4] }, body: { height: 1.06, build: 1.18 }, details: ['hooves', 'shawl'],
-      stats: { hp: 1020, speed: 3.3, jumpV: -12.6, weight: 1.15, dashV: 11.5, airSpeed: 2.8, maxJumps: 1 },
+      stats: { hp: 980, speed: 3.3, jumpV: -12.6, weight: 1.15, dashV: 11.5, airSpeed: 2.8, maxJumps: 1 },
       superName: 'Madrugada de Sexta', superDesc: 'Escurece a noite e dispara num galope flamejante através da rinha.',
       ai: { zone: 0.05, air: 0.1, grab: 0, rush: 0.9, poke: 0.2 },
       moves: {

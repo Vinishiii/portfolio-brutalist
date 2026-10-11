@@ -116,7 +116,7 @@ M.ui5 = (function () {
   function mastery(onBack, pick) {
     const roster = M.ROSTER; pick = pick || roster[0];
     const goals = M.meta.goalsOf(pick), mi = M.meta.mastery(pick), F = M.FIGHTERS[pick];
-    const palLine = [1, 2].map(k => `${M.PAL_NAMES[k]}: ${M.meta.palUnlocked(pick, k) ? '✔' : '🔒 ' + T('maestria') + ' ' + M.meta.PAL_AT[k]}`).join(' • ');
+    const palLine = [1, 2].map(k => `${T(M.PAL_NAMES[k])}: ${M.meta.palUnlocked(pick, k) ? '✔' : '🔒 ' + T('maestria') + ' ' + M.meta.PAL_AT[k]}`).join(' • ');
     show(`<div class="screen center overlay"><div class="panel wide mastery">
       <div class="stamp">MAESTRIA</div>
       <div class="ms-grid">${roster.map(id => { const m = M.meta.mastery(id); const lock = id === 'cinzas' && !M.store.data.progress.cinzas; return `<button class="mi ms ${id === pick ? 'on' : ''}" data-go="p_${id}"><span data-notr>${lock ? '???' : esc(fn(id))}</span><b data-notr>${m.lv}</b></button>`; }).join('')}</div>

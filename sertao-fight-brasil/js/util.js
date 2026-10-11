@@ -4,7 +4,7 @@
 // ============================================================
 const M = window.M = window.M || {};
 M.W = 960; M.H = 540; M.GROUND = 452;
-M.VERSION = '1.8';
+M.VERSION = '2.0';
 
 M.clamp = (v, a, b) => v < a ? a : v > b ? b : v;
 M.lerp = (a, b, t) => a + (b - a) * t;
