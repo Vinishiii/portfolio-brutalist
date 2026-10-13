@@ -138,7 +138,7 @@ Todas as imagens foram geradas **a partir do próprio jogo**: cenários pintados
 | `instagram/lutador-do-dia/19-pisadeira_1080x1350.jpg` | Série "Lutador do dia" (carta com dados oficiais do lutador) | 1080×1350 | JPG | 375 |
 | `instagram/lutador-do-dia/20-cinzas_1080x1350.jpg` | Série "Lutador do dia" (carta com dados oficiais do lutador) | 1080×1350 | JPG | 348 |
 | `instagram/feed/post-apresentacao_1080x1350.jpg` | Post único de apresentação | 1080×1350 | JPG | 481 |
-| `instagram/reels/capa-reel_1080x1920.jpg` | Capa de Reel (miolo 3:4 seguro para a grade) | 1080×1920 | JPG | 570 |
+| `instagram/reels/capa-reel_1080x1920.jpg` | Capa de Reel (miolo 3:4 seguro para a grade) | 1080×1920 | JPG | 569 |
 | `instagram/stories/01-select_1080x1920.jpg` | Story (deixe o topo e a base livres para adesivos) | 1080×1920 | JPG | 511 |
 | `instagram/stories/02-map_1080x1920.jpg` | Story (deixe o topo e a base livres para adesivos) | 1080×1920 | JPG | 406 |
 | `instagram/stories/03-fight-galpao-code_1080x1920.jpg` | Story (deixe o topo e a base livres para adesivos) | 1080×1920 | JPG | 445 |

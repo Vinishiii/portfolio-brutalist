@@ -120,8 +120,8 @@ module.exports = () => {
   add(I + 'feed/post-apresentacao_1080x1350.jpg', 1080, 1350, 'cover', { stage: 'ladeira', k: 2.6, ay: 0.74, logoY: 0.17, logoW: 0.86, big: 'A RINHA NUNCA PARA', bigY: 0.37, stamp: 'JOGO DE LUTA BRASILEIRO', stampY: 0.955, stampS: 0.028,
     lineup: [idle('bia', 400, GR - 16, 1, 1.0), idle('iara', 565, GR - 16, -1, 1.0), idle('boto', 480, GR - 26, 1, 1.0), { id: 'zeca', x: 380, y: GR + 22, facing: 1, s: 1.2 }, { id: 'lobisomem', x: 600, y: GR + 22, facing: -1, s: 1.2 }, idle('mula', 480, GR + 26, 1, 1.0)] }, PT);
   // -- reel / stories / destaques (1080x1920; mantenha o essencial fora de ~250 px no topo e na base)
-  add(I + 'reels/capa-reel_1080x1920.jpg', 1080, 1920, 'cover', { stage: 'ladeira', k: 3.0, ay: 0.72, logoY: 0.33, logoW: 0.86, stamp: 'JOGO DE LUTA BRASILEIRO', stampY: 0.64, stampS: 0.022,
-    lineup: [idle('bia', 408, GR - 16, 1, 1.0), idle('iara', 558, GR - 16, -1, 1.0), { id: 'zeca', x: 395, y: GR + 22, facing: 1, s: 1.2 }, { id: 'lobisomem', x: 580, y: GR + 22, facing: -1, s: 1.2 }, idle('mula', 480, GR + 26, 1, 1.0)] }, PT);
+  add(I + 'reels/capa-reel_1080x1920.jpg', 1080, 1920, 'cover', { stage: 'ladeira', k: 3.6, ay: 0.84, logoY: 0.3, logoW: 0.88, stamp: 'JOGO DE LUTA BRASILEIRO', stampY: 0.585, stampS: 0.022,
+    lineup: [idle('mula', 480, GR - 26, 1, 0.95), { id: 'zeca', x: 400, y: GR + 22, facing: 1, s: 1.0 }, idle('iara', 566, GR + 22, -1, 1.0)] }, PT);
   const STO = [
     ['select', 'ladeira', 'QUEM VOCÊ ESCOLHE?', 'São 20 lutadores. Qual é o seu?'],
     ['map', 'beco', 'MODO HISTÓRIA', 'Uma noite em Vila Brasa. Três finais.'],
