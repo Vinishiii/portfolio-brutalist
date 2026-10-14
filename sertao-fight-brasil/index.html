@@ -84,7 +84,8 @@
 <script src="js/ui5.js"></script>
 <script src="js/party.js"></script>
 <script src="js/paint.js"></script>
+<script src="js/native.js"></script>
 <script src="js/main.js"></script>
-<script>if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !window.steam) navigator.serviceWorker.register("sw.js").catch(function () {});</script>
+<script>if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !window.steam && !window.Capacitor) navigator.serviceWorker.register("sw.js").catch(function () {});</script>
 </body>
 </html>

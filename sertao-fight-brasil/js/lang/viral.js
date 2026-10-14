@@ -94,6 +94,7 @@ M.i18n.pat(/^Maestria (.+) (\d+)$/, 'Mastery $1 $2', 'Maestría $1 $2');
 M.i18n.pat(/^NÍVEL (\d+)$/, 'LEVEL $1', 'NIVEL $1', true);
 M.i18n.pat(/^(Original|Folia|Noite) \(cor de (.+)\)$/, (a, b) => ({ Original: 'Original', Folia: 'Carnival', Noite: 'Night' }[a]) + ' (' + b + '’s color)', (a, b) => ({ Original: 'Original', Folia: 'Fiesta', Noite: 'Noche' }[a]) + ' (color de ' + b + ')');
 M.i18n.pat(/^Gravado na versão (\S+) \(a atual é (\S+)\): se o equilíbrio mudou, a repetição pode divergir\.$/, 'Recorded on version $1 (current is $2): if the balance changed, the replay may diverge.', 'Grabado en la versión $1 (la actual es $2): si cambió el equilibrio, la repetición puede divergir.', true);
+M.i18n.add([['Toque em voltar de novo para sair', 'Press back again to exit', 'Toca atrás otra vez para salir'], ['VIBRAÇÃO', 'VIBRATION', 'VIBRACIÓN']]);
 M.i18n.pat(/^Mestre (.+)$/, 'Master $1', 'Maestro $1');
 M.i18n.pat(/^Maestria (\d+) com (.+)\.$/, 'Mastery $1 with $2.', 'Maestría $1 con $2.', true);
 M.i18n.pat(/^RINHA DA SEMANA (\d+)\/(\d+)$/, 'WEEKLY BRAWL $1/$2', 'RIÑA DE LA SEMANA $1/$2', true);

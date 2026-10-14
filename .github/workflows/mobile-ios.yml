@@ -1,0 +1,137 @@
+name: Mobile iOS
+
+# Confere que o app compila para iPhone/iPad (sem assinatura) a cada alteração no jogo ou no projeto de celular.
+# O envio para a App Store/TestFlight exige a sua conta Apple Developer: cadastre os segredos de
+# sertao-fight-brasil/mobile/README.md e rode este fluxo à mão marcando "release".
+on:
+  push:
+    branches: [claude/fighting-game-brasil-dwr0qv, main]
+    paths:
+      - 'sertao-fight-brasil/mobile/**'
+      - 'sertao-fight-brasil/js/**'
+      - 'sertao-fight-brasil/css/**'
+      - 'sertao-fight-brasil/index.html'
+      - '.github/workflows/mobile-ios.yml'
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Assinar, gerar o .ipa e enviar ao TestFlight (exige os segredos da Apple)'
+        type: boolean
+        default: false
+
+jobs:
+  ios:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: sertao-fight-brasil/mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: sertao-fight-brasil/mobile/package-lock.json
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - name: Dependências
+        run: npm ci
+      - name: Jogo web -> app
+        run: |
+          node scripts/sync-web.js
+          npx cap sync ios
+          node scripts/patch-native.js
+      - name: Versões
+        run: |
+          xcodebuild -version
+          swift --version
+      - name: Compilar para o simulador (sem assinatura)
+        working-directory: sertao-fight-brasil/mobile/ios/App
+        run: |
+          xcodebuild -project App.xcodeproj -scheme App -configuration Debug \
+            -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO build | tail -40
+      - name: Compilar para aparelho (sem assinatura)
+        working-directory: sertao-fight-brasil/mobile/ios/App
+        run: |
+          xcodebuild -project App.xcodeproj -scheme App -configuration Release \
+            -sdk iphoneos -destination 'generic/platform=iOS' \
+            CODE_SIGNING_ALLOWED=NO build | tail -40
+
+  release:
+    # MODELO NÃO TESTADO: só roda quando você marca "release" e cadastra os segredos. Revise antes do primeiro envio.
+    if: ${{ github.event.inputs.release == 'true' }}
+    needs: ios
+    runs-on: macos-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: sertao-fight-brasil/mobile
+    env:
+      BUILD_NUMBER: ${{ github.run_number }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: sertao-fight-brasil/mobile/package-lock.json
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - run: npm ci
+      - run: |
+          node scripts/sync-web.js
+          npx cap sync ios
+          node scripts/patch-native.js
+      - name: Certificado e perfil de provisionamento
+        env:
+          CERT_P12_B64: ${{ secrets.IOS_CERT_P12_BASE64 }}
+          CERT_PASSWORD: ${{ secrets.IOS_CERT_PASSWORD }}
+          PROFILE_B64: ${{ secrets.IOS_PROFILE_BASE64 }}
+        run: |
+          test -n "$CERT_P12_B64" -a -n "$PROFILE_B64" || { echo "Faltam os segredos da Apple (veja mobile/README.md)"; exit 1; }
+          KC="$RUNNER_TEMP/build.keychain-db"
+          security create-keychain -p "ci" "$KC"; security set-keychain-settings -lut 21600 "$KC"; security unlock-keychain -p "ci" "$KC"
+          echo "$CERT_P12_B64" | base64 -d > "$RUNNER_TEMP/cert.p12"
+          security import "$RUNNER_TEMP/cert.p12" -k "$KC" -P "$CERT_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -s -k "ci" "$KC"
+          security list-keychains -d user -s "$KC" login.keychain-db
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          echo "$PROFILE_B64" | base64 -d > "$HOME/Library/MobileDevice/Provisioning Profiles/sfb.mobileprovision"
+      - name: Arquivar e exportar o .ipa
+        working-directory: sertao-fight-brasil/mobile/ios/App
+        env:
+          TEAM_ID: ${{ secrets.IOS_TEAM_ID }}
+          PROFILE_NAME: ${{ secrets.IOS_PROFILE_NAME }}
+        run: |
+          xcodebuild -project App.xcodeproj -scheme App -configuration Release -sdk iphoneos \
+            -archivePath "$RUNNER_TEMP/App.xcarchive" CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
+            DEVELOPMENT_TEAM="$TEAM_ID" CODE_SIGN_STYLE=Manual PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" archive
+          cat > "$RUNNER_TEMP/export.plist" <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>teamID</key><string>$TEAM_ID</string>
+            <key>signingStyle</key><string>manual</string>
+            <key>provisioningProfiles</key><dict><key>br.com.sertaofight.app</key><string>$PROFILE_NAME</string></dict>
+          </dict></plist>
+          PLIST
+          xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/App.xcarchive" -exportOptionsPlist "$RUNNER_TEMP/export.plist" -exportPath "$RUNNER_TEMP/ipa"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sertao-fight-brasil-ios-ipa
+          path: ${{ runner.temp }}/ipa/*.ipa
+          if-no-files-found: error
+      - name: Enviar ao TestFlight
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_B64: ${{ secrets.ASC_KEY_P8_BASE64 }}
+        run: |
+          mkdir -p "$HOME/.appstoreconnect/private_keys"
+          echo "$ASC_KEY_B64" | base64 -d > "$HOME/.appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8"
+          xcrun altool --upload-app --type ios --file "$RUNNER_TEMP"/ipa/*.ipa --apiKey "$ASC_KEY_ID" --apiIssuer "$ASC_ISSUER_ID"

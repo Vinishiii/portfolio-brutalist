@@ -485,9 +485,9 @@ M.ui = (function () {
           <button class="mi" data-go="post">PÓS-PROCESSAMENTO <b>${onoff(s.post)}</b></button>
           <button class="mi" data-go="quality">QUALIDADE GRÁFICA <b>${QUAL[s.quality || 'auto']}</b></button>
           <button class="mi" data-go="broadcast">MODO TRANSMISSÃO <b>${onoff(s.broadcast)}</b></button>
-          <button class="mi" data-go="fullscreen">TELA CHEIA <b>${document.fullscreenElement ? 'LIGADO' : 'DESLIGADO'}</b></button>
+          ${M.native && M.native.active ? '' : `<button class="mi" data-go="fullscreen">TELA CHEIA <b>${document.fullscreenElement ? 'LIGADO' : 'DESLIGADO'}</b></button>`}
           <h4>ACESSIBILIDADE</h4>
-          ${tog('shake', 'TREMOR DE TELA')}${tog('reduceFlash', 'REDUZIR FLASHES')}${tog('bubbles', 'BALÕES DE FALA')}${M.clip.supported() ? tog('clips', 'GRAVAR CLIPES') : ''}
+          ${tog('shake', 'TREMOR DE TELA')}${tog('reduceFlash', 'REDUZIR FLASHES')}${tog('bubbles', 'BALÕES DE FALA')}${M.clip.supported() ? tog('clips', 'GRAVAR CLIPES') : ''}${M.native && M.native.active ? tog('haptics', 'VIBRAÇÃO') : ''}
           <h4>DADOS</h4>
           <button class="mi" data-go="reset">APAGAR PROGRESSO</button>
           <button class="mi back" data-go="back">VOLTAR</button>
@@ -497,7 +497,7 @@ M.ui = (function () {
       onBack, idx: 0,
       actions: {
         music: () => { s.music = !s.music; save(); }, sfx: () => { s.sfx = !s.sfx; save(); }, shake: () => { s.shake = !s.shake; save(); }, hitboxes: () => { s.hitboxes = !s.hitboxes; save(); },
-        reduceFlash: () => { s.reduceFlash = !s.reduceFlash; save(); M.paint.apply(); }, bubbles: () => { s.bubbles = !s.bubbles; save(); }, clips: () => { s.clips = !s.clips; save(); },
+        reduceFlash: () => { s.reduceFlash = !s.reduceFlash; save(); M.paint.apply(); }, bubbles: () => { s.bubbles = !s.bubbles; save(); }, haptics: () => { s.haptics = s.haptics === false; save(); if (s.haptics !== false && M.native) M.native.haptic('medium'); }, clips: () => { s.clips = !s.clips; save(); },
         broadcast: () => { s.broadcast = !s.broadcast; save(); M.flow.updateTouch(); },
         touch: () => { s.touch = { auto: 'on', on: 'off', off: 'auto' }[s.touch]; save(); M.flow.updateTouch(); },
         paint: () => { s.paint = !s.paint; save(); M.paint.apply(); }, post: () => { s.post = !s.post; save(); M.paint.apply(); },

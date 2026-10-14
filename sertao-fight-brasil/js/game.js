@@ -318,6 +318,7 @@ M.Match = class Match {
     this.hit(att, def, att.move, hb, null);
   }
   hit(att, def, mv, hb, src) {
+    if (M.native && M.native.active && !this.o.replay && (att.ctrl === 'human' || def.ctrl === 'human')) M.native.haptic(mv.super ? 'heavy' : (mv.dmg || 0) >= 80 ? 'medium' : 'light');
     if (!src) { att.hitIds.add(def); att.hitCount++; att.lastHitFrame = att.mf; }
     const hx = M.clamp(def.x + (att.x < def.x ? -16 : 16), hb.x, hb.x + hb.w), hy = M.clamp(def.y - 95, hb.y, hb.y + hb.h);
     const facing = src ? src.dir : att.facing;
@@ -494,6 +495,7 @@ M.Match = class Match {
     if (def.hp <= 0) this.ko(def);
   }
   superStart(f, mv) {
+    if (M.native && M.native.active && f.ctrl === 'human') M.native.haptic('heavy');
     f.superBoost = Math.abs(this.axe) >= 0.97 ? 1.3 : 1;
     this.freeze = 26; this.banner = { text: mv.name + (f.superBoost > 1 ? ' BRABA' : ''), who: f, t: 0, life: 75 };
     f.superFlash = 60; f.invuln = Math.max(f.invuln, 26);

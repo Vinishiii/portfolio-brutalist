@@ -52,7 +52,9 @@
   C.icon = (n, o = {}) => {
     const c = KIT.canvas(n, n), g = c.getContext('2d'), u = n / 100;
     const bg = g.createRadialGradient(50 * u, 62 * u, 4 * u, 50 * u, 56 * u, 70 * u); bg.addColorStop(0, '#5a2a6b'); bg.addColorStop(0.55, '#2a1830'); bg.addColorStop(1, '#141210'); g.fillStyle = bg;
-    if (o.round) { g.beginPath(); g.roundRect(0, 0, n, n, 20 * u); g.fill(); } else g.fillRect(0, 0, n, n);
+    if (o.bgOnly) { g.fillRect(0, 0, n, n); return c; }
+    if (!o.noBg) { if (o.round) { g.beginPath(); g.roundRect(0, 0, n, n, 20 * u); g.fill(); } else g.fillRect(0, 0, n, n); }
+    g.save(); if (o.scale) { g.translate(n / 2, n / 2); g.scale(o.scale, o.scale); g.translate(-n / 2, -n / 2); }   // ícone adaptativo do Android: arte dentro da zona segura
     const fl = (cx, base, hh, ww, col) => { g.fillStyle = col; g.beginPath(); g.moveTo(cx - ww, base); g.quadraticCurveTo(cx - ww * 1.1, base - hh * 0.5, cx + ww * 0.1, base - hh); g.quadraticCurveTo(cx + ww * 0.5, base - hh * 0.55, cx + ww, base); g.closePath(); g.fill(); };
     fl(50 * u, 62 * u, 54 * u, 25 * u, '#c8371d'); fl(50 * u, 62 * u, 44 * u, 19 * u, '#e8712b'); fl(50 * u, 62 * u, 31 * u, 12 * u, '#f2b70c'); fl(50 * u, 62 * u, 18 * u, 6.5 * u, '#fff8e8');
     g.save(); g.font = `${31 * u}px ${M.FONT_DISPLAY}`; g.textAlign = 'center'; g.textBaseline = 'alphabetic'; g.lineJoin = 'round'; const ty = 76 * u;
@@ -60,6 +62,7 @@
     for (let k = 6; k >= 1; k--) { g.strokeStyle = g.fillStyle = k > 3 ? '#141210' : '#c8371d'; g.lineWidth = 4.4 * u; g.strokeText('SFB', 50 * u + k * u * 0.7, ty + k * u * 1.1); g.fillText('SFB', 50 * u + k * u * 0.7, ty + k * u * 1.1); }
     g.strokeStyle = '#141210'; g.lineWidth = 4 * u; g.strokeText('SFB', 50 * u, ty);
     const tg = g.createLinearGradient(0, ty - 24 * u, 0, ty); tg.addColorStop(0, '#fff7c9'); tg.addColorStop(0.35, '#ffd53a'); tg.addColorStop(0.75, '#f68b1e'); tg.addColorStop(1, '#d92f1b'); g.fillStyle = tg; g.fillText('SFB', 50 * u, ty); g.restore();
+    g.restore();
     if (o.border !== false) { g.strokeStyle = '#141210'; g.lineWidth = 3 * u; if (o.round) { g.beginPath(); g.roundRect(1.5 * u, 1.5 * u, n - 3 * u, n - 3 * u, 19 * u); g.stroke(); } }
     return c;
   };

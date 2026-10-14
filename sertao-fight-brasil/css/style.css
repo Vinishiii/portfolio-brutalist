@@ -616,3 +616,10 @@ button:focus-visible { outline: 3px dashed var(--yellow); outline-offset: 3px; }
 .panel.res .xp { margin: 6px 0 2px; padding: 6px 12px 8px; }
 .panel.res .xp-top b { font-size: 22px; }
 .panel.res .share-row { margin: 6px 0 0; }
+
+/* ---------- app de celular (Capacitor) e telas com entalhe ---------- */
+.pad { left: calc(24px + max(env(safe-area-inset-left, 0px), var(--safe-area-inset-left, 0px))); bottom: calc(24px + max(env(safe-area-inset-bottom, 0px), var(--safe-area-inset-bottom, 0px))); }
+.btns { right: calc(24px + max(env(safe-area-inset-right, 0px), var(--safe-area-inset-right, 0px))); bottom: calc(24px + max(env(safe-area-inset-bottom, 0px), var(--safe-area-inset-bottom, 0px))); }
+.native, .native body { overscroll-behavior: none; }
+.native body, body.touch-on { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+.native #fs { display: none !important; }

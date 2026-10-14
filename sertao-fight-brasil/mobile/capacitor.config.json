@@ -1,0 +1,29 @@
+{
+  "appId": "br.com.sertaofight.app",
+  "appName": "Sertão Fight Brasil",
+  "webDir": "www",
+  "backgroundColor": "#141210",
+  "server": {
+    "androidScheme": "https",
+    "iosScheme": "capacitor"
+  },
+  "android": {
+    "backgroundColor": "#141210",
+    "allowMixedContent": false,
+    "webContentsDebuggingEnabled": false
+  },
+  "ios": {
+    "contentInset": "never",
+    "scrollEnabled": false,
+    "backgroundColor": "#141210",
+    "preferredContentMode": "mobile"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0,
+      "launchAutoHide": true,
+      "backgroundColor": "#141210",
+      "showSpinner": false
+    }
+  }
+}

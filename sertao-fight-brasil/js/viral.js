@@ -97,6 +97,7 @@ M.clip = (function () {
   const name = kind => `sertao-fight-brasil-${kind === 'ko' ? 'nocaute' : kind === 'super' ? 'peia' : kind === 'combo' ? 'combo' : 'luta'}-${new Date().toISOString().slice(0, 10)}.${ext}`;
   async function share(c) {
     if (!c) return false;
+    if (M.native && M.native.active && await M.native.shareFile(c.blob, name(c.kind), 'Olha esse lance no Sertão Fight Brasil!')) return true;
     const file = new File([c.blob], name(c.kind), { type: c.blob.type });
     try { if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: 'Sertão Fight Brasil', text: 'Olha esse lance no Sertão Fight Brasil!' }); return true; } } catch (e) { if (e && e.name === 'AbortError') return true; }
     return save(c);
@@ -142,7 +143,7 @@ M.challenge = (function () {
       return c;
     } catch (e) { return null; }
   }
-  const base = () => location.origin && location.origin !== 'null' ? location.origin + location.pathname : 'https://sertao-fight-brasil.example/';
+  const base = () => (M.native && M.native.active) ? (M.native.webUrl || 'https://sertao-fight-brasil.example/') : (location.origin && location.origin !== 'null' ? location.origin + location.pathname : 'https://sertao-fight-brasil.example/');
   const link = (c, replayCode) => base() + '#c=' + encode(c) + (replayCode && replayCode.length <= 4200 ? '&r=' + replayCode : '');
   function fromHash() {
     const h = (location.hash || '').replace(/^#/, ''); if (!h) return null;
@@ -159,6 +160,7 @@ M.challenge = (function () {
     try { await navigator.clipboard.writeText(text); return true; } catch (e) { return false; }
   }
   async function share(text, url) {
+    if (M.native && M.native.active && await M.native.shareText(text, url)) return true;
     try { if (navigator.share) { await navigator.share({ title: 'Sertão Fight Brasil', text, url }); return true; } } catch (e) { if (e && e.name === 'AbortError') return true; }
     return copy(text + ' ' + url);
   }
@@ -214,6 +216,7 @@ M.card = (function () {
   const toBlob = c => new Promise(res => c.toBlob(b => res(b), 'image/png'));
   async function share(c, text) {
     const blob = await toBlob(c), file = new File([blob], 'sertao-fight-brasil.png', { type: 'image/png' });
+    if (M.native && M.native.active && await M.native.shareFile(blob, 'sertao-fight-brasil.png', text)) return 'shared';
     try { if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: 'Sertão Fight Brasil', text }); return 'shared'; } } catch (e) { if (e && e.name === 'AbortError') return 'shared'; }
     const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'sertao-fight-brasil.png'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000);
     return 'saved';

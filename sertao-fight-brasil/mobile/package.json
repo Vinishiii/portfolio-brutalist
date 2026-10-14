@@ -1,0 +1,33 @@
+{
+  "name": "sertao-fight-brasil-mobile",
+  "version": "2.0.0",
+  "private": true,
+  "description": "App de celular (Android e iOS) do Sertão Fight Brasil, empacotado com Capacitor a partir do jogo web.",
+  "author": "Vinícius Andrey",
+  "license": "UNLICENSED",
+  "scripts": {
+    "sync:web": "node scripts/sync-web.js",
+    "assets": "node scripts/make-assets.js && capacitor-assets generate --android --ios --assetPath assets",
+    "add:android": "cap add android && node scripts/patch-native.js",
+    "add:ios": "cap add ios && node scripts/patch-native.js",
+    "sync": "npm run sync:web && cap sync && node scripts/patch-native.js",
+    "android:debug": "npm run sync && cd android && ./gradlew assembleDebug",
+    "android:release": "npm run sync && cd android && ./gradlew bundleRelease",
+    "ios:open": "npm run sync && cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/filesystem": "^8.1.4",
+    "@capacitor/haptics": "^8.0.2",
+    "@capacitor/preferences": "^8.0.1",
+    "@capacitor/share": "^8.0.3",
+    "@capacitor/splash-screen": "^8.0.2"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.5.3",
+    "@capacitor/ios": "^8.5.3"
+  }
+}

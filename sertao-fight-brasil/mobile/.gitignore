@@ -1,0 +1,16 @@
+node_modules/
+www/
+# builds e chaves nunca vão para o git
+android/app/build/
+android/build/
+android/.gradle/
+android/local.properties
+android/app/release/
+ios/App/build/
+ios/App/Pods/
+ios/DerivedData/
+*.jks
+*.keystore
+*.p12
+*.mobileprovision
+key.properties
