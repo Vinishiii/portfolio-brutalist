@@ -445,21 +445,21 @@ O zip serve direto no itch.io (tipo HTML, "this file will be played in the brows
 
 ## 10. Arte de loja
 
-Tudo em `store/`, gerado do próprio jogo por `tools/make_assets.js` (Playwright + Chromium; regenere depois de qualquer mudança visual: `GAME_URL=http://localhost:8766/index.html NODE_PATH=$(npm root -g) node tools/make_assets.js`).
+**Use a pasta `art-kit/steam/`**, que tem os tamanhos atuais da Steamworks (header 920×430, small 462×174, main 1232×706, vertical 748×896, library capsule 600×900, hero 3840×1240, logo transparente) e 10 screenshots reais de 1920×1080. Ela é gerada do próprio jogo por `tools/art/` (veja `art-kit/README.md`). A pasta `store/` guarda a arte antiga, em tamanhos que a Steam não aceita mais.
 
 | Arquivo | Uso na Steam |
 | --- | --- |
-| `steam-header-460x215.png` | Header capsule |
-| `steam-capsule-616x353.png` | Main capsule |
-| `steam-capsule-small-231x87.png` | Small capsule |
-| `steam-capsule-vertical-374x448.png` | Vertical capsule |
-| `steam-library-capsule-600x900.png` | Library capsule |
-| `steam-library-hero-3840x1240.png` | Library hero |
-| `steam-library-logo-1280x720.png` | Library logo |
-| `screenshot-*.png` (8) | Capturas da loja, já em 1920×1080 |
-| `key-art-1920x1080.png`, `itch-cover-630x500.png` | Divulgação / itch.io |
+| `art-kit/steam/store/header-capsule_920x430.png` | Header capsule |
+| `art-kit/steam/store/main-capsule_1232x706.png` | Main capsule |
+| `art-kit/steam/store/small-capsule_462x174.png` | Small capsule |
+| `art-kit/steam/store/vertical-capsule_748x896.png` | Vertical capsule |
+| `art-kit/steam/store/featured-key-art_1920x1080.png` | Arte de destaque / imprensa |
+| `art-kit/steam/library/library-capsule_600x900.png` | Library capsule |
+| `art-kit/steam/library/library-hero_3840x1240.png` | Library hero (sem logo; lado esquerdo livre para o logo) |
+| `art-kit/steam/library/library-logo_1280x720.png` | Library logo (PNG transparente) |
+| `art-kit/steam/screenshots/*.png` (10) | Screenshots da loja |
 
-> Revise as capsules: a Steam proíbe selos de prêmio, "% OFF" e textos que não sejam o logo na arte principal. Se o título estiver pequeno nas capsules, aumente-o em `tools/make_assets.js`.
+> A Steam proíbe selos de prêmio, "% OFF" e textos que não sejam o logo na arte principal; as capsules do kit só têm o logo. A Steamworks valida os tamanhos no envio.
 
 ## 11. Antes de apertar "Publicar"
 
