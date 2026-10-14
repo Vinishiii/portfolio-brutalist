@@ -7,7 +7,7 @@ android {
         applicationId "br.com.sertaofight.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode (System.getenv("SFB_VERSION_CODE") ?: "20000").toInteger()
+        versionCode Integer.parseInt(System.getenv("SFB_VERSION_CODE") ?: "20000")
         versionName "2.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {

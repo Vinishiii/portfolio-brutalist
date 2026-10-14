@@ -57,7 +57,7 @@ public class MainActivity extends BridgeActivity {
 }
 `);
   rw(path.join(AND, 'build.gradle'), s => {
-    s = s.replace(/versionCode [^\n]+/, 'versionCode (System.getenv("SFB_VERSION_CODE") ?: "' + CODE + '").toInteger()').replace(/versionName "[^"]*"/, 'versionName "' + VERSION + '"');
+    s = s.replace(/versionCode [^\n]+/, 'versionCode Integer.parseInt(System.getenv("SFB_VERSION_CODE") ?: "' + CODE + '")').replace(/versionName "[^"]*"/, 'versionName "' + VERSION + '"');
     if (!s.includes('signingConfigs')) {
       s = s.replace('    buildTypes {', `    // Assinatura de lançamento: vem de variáveis de ambiente (CI) ou de android/key.properties (máquina local). Nada disso vai para o git.
     def keyProps = new Properties()

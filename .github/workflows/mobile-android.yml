@@ -26,8 +26,6 @@ jobs:
     defaults:
       run:
         working-directory: sertao-fight-brasil/mobile
-    env:
-      SFB_VERSION_CODE: ${{ github.run_number }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -46,7 +44,9 @@ jobs:
           yes | "$SDKM" --licenses > /dev/null || true
           echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
       - name: Dependências
-        run: npm ci
+        run: |
+          npm ci
+          echo "SFB_VERSION_CODE=$((20000 + GITHUB_RUN_NUMBER))" >> "$GITHUB_ENV"   # sempre crescente, como a Play exige
       - name: Jogo web -> app
         run: |
           node scripts/sync-web.js
