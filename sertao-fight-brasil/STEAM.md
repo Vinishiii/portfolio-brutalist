@@ -3,6 +3,8 @@
 Guia de ponta a ponta para levar o jogo à Steam (e também ao itch.io / web). O jogo já vem com tudo do lado do código: app de desktop (Electron), ponte com a Steamworks, 58 conquistas, idioma automático (PT / EN / ES), save em arquivo para o Steam Cloud, arte de loja pronta e build web.
 
 > **Estado honesto:** o jogo foi testado no navegador (Chromium) e o app de desktop foi **empacotado e executado no Linux** (Electron 33 + electron-builder, sob Xvfb): abre a janela, detecta o idioma do sistema, grava o save em arquivo, relê o progresso na abertura seguinte e fecha pelo menu "SAIR DO JOGO". **Não foi possível testar aqui:** as chamadas reais da Steamworks (conquistas, overlay, idioma da Steam — precisam do cliente Steam e de um AppID), os builds de Windows e macOS, o Steam Deck e o Steam Cloud. Faça o teste da seção 3 antes de enviar o build.
+>
+> **Atualização:** o app de desktop também compila para **Windows, macOS e Linux** no GitHub Actions (fluxo `desktop-build.yml`, sem assinatura de código). Compilar não é o mesmo que testar: o app de Windows e o de macOS ainda não foram abertos numa máquina real.
 
 ## 1. O que você precisa fora do código
 
