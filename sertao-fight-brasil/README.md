@@ -132,7 +132,11 @@ Menu ▸ **COMPETITIVO**: **ranqueada** contra uma CPU que se ajusta ao seu nív
 
 - **Web / itch.io**: `python3 tools/build_web.py` gera `sw.js` (cache offline, jogo instalável como PWA) e `dist/sertao-fight-brasil-web.zip`.
 - **Desktop / Steam**: `desktop/` é um app Electron com ponte para a Steamworks (conquistas, idioma e Steam Cloud). Passo a passo, AppID, depots, Auto-Cloud e checklist em **[STEAM.md](STEAM.md)**.
-- **Página da loja** (PT/EN/ES) em `store/STORE_PAGE.md` e arte pronta em `store/` (capsules, hero, logo, capturas de tela), gerada do próprio jogo por `tools/make_assets.js`.
+- **Página da loja** (PT/EN/ES) em `store/STORE_PAGE.md` e a arte de lançamento atual em [`art-kit/`](art-kit/README.md) (Steam nos tamanhos de 2024, Google Play, App Store e Instagram, gerada do próprio jogo por `tools/art/`). A pasta `store/` guarda a arte antiga, em tamanhos que a Steam não aceita mais.
+
+
+### Versão mobile (Android e iOS)
+A pasta [`mobile/`](mobile/README.md) empacota o mesmo jogo com Capacitor para Android e iOS (controles de toque, vibração, pausa em segundo plano, compartilhar nativo, sem permissões). Os builds rodam no GitHub Actions (`.github/workflows/mobile-android.yml` e `mobile-ios.yml`). O README de lá traz o estado verificado, o que ainda depende de você (contas, chaves, política de privacidade) e o passo a passo para Google Play e App Store.
 
 ## Som e música
 

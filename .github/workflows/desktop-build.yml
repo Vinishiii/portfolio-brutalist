@@ -1,0 +1,52 @@
+name: Desktop (Steam)
+
+# Gera o app de desktop (Electron) para Windows, macOS e Linux, sem assinatura e sem publicar nada.
+# O envio para a Steam usa o SteamCMD com a sua conta Steamworks (veja STEAM.md); aqui só se confere que os três sistemas compilam.
+on:
+  push:
+    branches: [claude/fighting-game-brasil-dwr0qv, main]
+    paths:
+      - 'sertao-fight-brasil/desktop/**'
+      - '.github/workflows/desktop-build.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            flag: --win
+            name: windows
+          - os: macos-latest
+            flag: --mac
+            name: macos
+          - os: ubuntu-latest
+            flag: --linux
+            name: linux
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: sertao-fight-brasil/desktop
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Dependências
+        run: npm install --no-audit --no-fund
+      - name: Empacotar
+        run: npx electron-builder ${{ matrix.flag }} --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sertao-fight-brasil-${{ matrix.name }}
+          path: sertao-fight-brasil/desktop/dist/*.zip
+          if-no-files-found: error
