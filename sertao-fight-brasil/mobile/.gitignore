@@ -11,6 +11,7 @@ ios/App/Pods/
 ios/DerivedData/
 *.jks
 *.keystore
+!android/app/sfb-debug.keystore
 *.p12
 *.mobileprovision
 key.properties

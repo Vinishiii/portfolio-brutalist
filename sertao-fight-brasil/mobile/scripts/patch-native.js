@@ -77,6 +77,19 @@ public class MainActivity extends BridgeActivity {
     buildTypes {`);
       s = s.replace('        release {\n            minifyEnabled false', '        release {\n            if (ks) { signingConfig signingConfigs.release }\n            minifyEnabled false');
     }
+    // APK de teste (debug): chave fixa dentro do repositório (é só de teste, sem valor). Sem isso cada build do CI nasce com uma chave nova
+    // e o Android se recusa a instalar a versão nova por cima da anterior (seria preciso desinstalar e perder o progresso).
+    if (!s.includes('sfb-debug.keystore')) {
+      s = s.replace('    signingConfigs {\n', `    signingConfigs {
+        debug {
+            storeFile file('sfb-debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
+`);
+      s = s.replace('    buildTypes {\n', '    buildTypes {\n        debug { signingConfig signingConfigs.debug }\n');
+    }
     return s;
   });
 }

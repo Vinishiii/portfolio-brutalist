@@ -59,6 +59,10 @@ jobs:
       - name: APK de teste (debug)
         working-directory: sertao-fight-brasil/mobile/android
         run: ./gradlew assembleDebug --no-daemon --stacktrace
+      - name: Impressão digital da assinatura (igual em toda build = o APK novo instala por cima do anterior)
+        run: |
+          APKSIGNER=$(ls -d "$ANDROID_HOME"/build-tools/*/apksigner | tail -1)
+          "$APKSIGNER" verify --print-certs android/app/build/outputs/apk/debug/*.apk | grep -i "SHA-256"
       - uses: actions/upload-artifact@v4
         with:
           name: sertao-fight-brasil-android-debug

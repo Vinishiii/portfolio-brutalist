@@ -33,6 +33,7 @@ mobile/
 
 ## Gerar um APK de teste
 - **Pelo GitHub:** Actions ▸ *Mobile Android* ▸ artefato `sertao-fight-brasil-android-debug`. Baixe, ative "instalar apps desconhecidos" no celular e abra o `.apk`, ou use `adb install`.
+- **Atualizar um APK já instalado:** baixe o APK novo do mesmo jeito e abra por cima (não precisa desinstalar). O APK de teste é assinado com uma chave fixa do repositório (`android/app/sfb-debug.keystore`, só de teste) e o `versionCode` sobe a cada build, então o Android aceita a atualização e **mantém o progresso**. Não existe atualização automática fora da Play Store: é preciso baixar a versão nova. Builds anteriores a esta chave fixa foram assinados com chaves aleatórias e **precisam ser desinstalados uma única vez**.
 - **Na sua máquina:** Node 22, JDK 21 e o Android SDK 36 (Android Studio). Depois `cd mobile && npm ci && npm run android:debug`.
 
 ## Publicar no Google Play

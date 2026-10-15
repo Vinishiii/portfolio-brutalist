@@ -22,6 +22,12 @@ android {
     if (keyFile.exists()) { keyFile.withInputStream { keyProps.load(it) } }
     def ks = System.getenv("SFB_KEYSTORE") ?: keyProps.getProperty("storeFile")
     signingConfigs {
+        debug {
+            storeFile file('sfb-debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
         release {
             if (ks) {
                 storeFile file(ks)
@@ -32,6 +38,7 @@ android {
         }
     }
     buildTypes {
+        debug { signingConfig signingConfigs.debug }
         release {
             if (ks) { signingConfig signingConfigs.release }
             minifyEnabled false
