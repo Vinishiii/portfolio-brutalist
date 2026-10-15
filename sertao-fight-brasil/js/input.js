@@ -15,6 +15,7 @@ M.input = (function () {
   let queue = [];
   let anyFlag = false, pauseFlag = false;
   const virtual = { p1: {}, p2: {} };
+  const dashReq = { p1: false, p2: false };   // botão DASH do toque: vira dash para o lado da alavanca (ou para a frente)
   let vQueue = [];
   const pads = { p1: null, p2: null };
   const players = { p1: mk(), p2: mk() };
@@ -34,21 +35,44 @@ M.input = (function () {
     if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code) && M.state !== 'menu-text') e.preventDefault();
   });
   window.addEventListener('keyup', e => { keys[e.code] = false; });
-  window.addEventListener('blur', () => { for (const k in keys) keys[k] = false; for (const p in virtual) virtual[p] = {}; });
+  window.addEventListener('blur', () => { for (const k in keys) keys[k] = false; resetVirtual(); if (window.M && M.touch) M.touch.reset(); });
 
   // ---- toque (controles virtuais) ----
+  // A alavanca (js/touch.js) e os botões usam o mesmo estado virtual do teclado: segurado + "apertou agora" (vQueue).
+  function vSet(p, act, on) {
+    if (on) { if (!virtual[p][act]) { virtual[p][act] = true; vQueue.push({ p, act }); anyFlag = true; } }
+    else virtual[p][act] = false;
+  }
+  // botões que valem por mais de uma ação (EX = forte + especial no mesmo quadro)
+  const CHORD = { ex: ['heavy', 'special'] };
   function bindTouch(root) {
     if (!root) return;
+    const preview = () => root.classList.contains('preview');   // tela de ajuste dos controles de toque: só mostra, não joga
     root.querySelectorAll('[data-act]').forEach(el => {
-      const act = el.dataset.act, p = el.dataset.p || 'p1';
-      const down = e => { e.preventDefault(); if (!virtual[p][act]) { virtual[p][act] = true; vQueue.push({ p, act }); anyFlag = true; if (act === 'pause') pauseFlag = true; } el.classList.add('on'); };
-      const up = e => { e.preventDefault(); virtual[p][act] = false; el.classList.remove('on'); };
+      const act = el.dataset.act, p = el.dataset.p || 'p1', acts = CHORD[act] || [act];
+      let held = false;
+      const down = e => {
+        e.preventDefault(); el.classList.add('on'); if (preview() || held) return; held = true;
+        if (act === 'dash') { dashReq[p] = true; anyFlag = true; return; }
+        if (acts.length > 1) for (const a of acts) virtual[p][a] = false;   // combinação (EX): sempre conta como um toque novo nos dois botões, mesmo com FORTE já preso por outro dedo
+        for (const a of acts) vSet(p, a, true);
+        if (act === 'pause') pauseFlag = true;
+      };
+      const up = e => {
+        if (e) e.preventDefault(); el.classList.remove('on'); if (!held) return; held = false;
+        if (act !== 'dash') for (const a of acts) vSet(p, a, false);
+      };
       el.addEventListener('pointerdown', down);
       el.addEventListener('pointerup', up);
       el.addEventListener('pointercancel', up);
       el.addEventListener('pointerleave', up);
       el.addEventListener('contextmenu', e => e.preventDefault());
     });
+  }
+  function resetVirtual() {
+    for (const p in virtual) virtual[p] = {};
+    dashReq.p1 = dashReq.p2 = false; vQueue = [];
+    document.querySelectorAll('#touch .tbtn.on').forEach(el => el.classList.remove('on'));
   }
 
   // ---- gamepad ----
@@ -95,12 +119,19 @@ M.input = (function () {
         }
         if (!o.held[d]) tap.rel = true;
       }
+      if (dashReq[p]) {
+        // botão DASH: para o lado em que a alavanca está; com a alavanca parada, para a frente (rumo ao adversário)
+        dashReq[p] = false;
+        let dir = o.held.left && !o.held.right ? 'left' : o.held.right && !o.held.left ? 'right' : null;
+        if (!dir) { const f = M.match && (p === 'p1' ? M.match.p1 : M.match.p2); dir = f && f.facing === -1 ? 'left' : 'right'; }
+        if (dir === 'left') o.dashLeft = true; else o.dashRight = true;
+      }
     }
     queue = []; vQueue = [];
   }
 
   return {
-    update, bindTouch,
+    update, bindTouch, vSet, resetVirtual,
     get: p => players[p],
     anyKey() { const f = anyFlag; anyFlag = false; return f; },
     pausePressed() { const f = pauseFlag; pauseFlag = false; return f; },

@@ -43,7 +43,7 @@ Aqui não existe barra de especial para cada um: existe uma barra só, no meio d
 • Competitivo: ranqueada contra uma CPU que se ajusta ao seu nível, torneio local e replays.
 • Sempre uma razão para mais uma: nível, maestria por lutador, missões do dia, títulos, molduras e cores ganhos jogando. Sem caixa de sorte, sem anúncios, sem compras.
 • Clipe automático do nocaute e cartão de resultado para compartilhar.
-• Controles de toque na tela, feitos para jogar na horizontal.
+• Alavanca de fliperama de 8 direções e botões na tela para todos os golpes, feitos para jogar na horizontal.
 • Música sintetizada ao vivo em zabumba, triângulo, ganzá, sanfona, pífano, violão e baixo.
 • Em português, inglês e espanhol.
 
@@ -80,7 +80,7 @@ There is no separate super meter per fighter: there is one bar, in the middle of
 • Competitive: ranked play against a CPU that adapts to your level, local tournaments and replays.
 • Always a reason for one more: level, mastery for every fighter, daily missions, titles, frames and colors earned by playing. No loot boxes, no ads, no purchases.
 • Automatic knockout clip and a result card to share.
-• On-screen touch controls, made for landscape play.
+• Arcade joystick (8-way) and on-screen buttons for every move, made for landscape play.
 • Music synthesized live — zabumba, triangle, ganzá, accordion, fife, guitar and bass.
 • In Portuguese, English and Spanish.
 
@@ -117,7 +117,7 @@ Aquí no hay una barra de súper por cada luchador: hay una sola barra, en medio
 • Competitivo: ranked contra una CPU que se ajusta a tu nivel, torneo local y repeticiones.
 • Siempre una razón para una más: nivel, maestría por luchador, misiones diarias, títulos, marcos y colores ganados jugando. Sin cajas de botín, sin anuncios, sin compras.
 • Clip automático del nocaut y tarjeta de resultado para compartir.
-• Controles táctiles en pantalla, hechos para jugar en horizontal.
+• Palanca de arcade de 8 direcciones y botones en pantalla para todos los golpes, hechos para jugar en horizontal.
 • Música sintetizada en vivo — zabumba, triángulo, ganzá, acordeón, pífano, guitarra y bajo.
 • En portugués, inglés y español.
 

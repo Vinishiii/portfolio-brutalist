@@ -299,13 +299,17 @@
       M.ui.ending('lendas', { frames: S.frames, patuas: S.patuas, deaths: S.deaths, difficulty: S.difficulty }, () => M.ui.menu());
     },
     // ---- toque ----
+    touchPreview: false,   // tela de ajuste dos controles de toque: mostra o painel sem estar numa luta
     updateTouch() {
       const s = M.store.data.settings.touch;
       const hasTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
       const el = document.getElementById('touch');
       const on = (s === 'on' || (s === 'auto' && hasTouch)) && !M.store.data.settings.broadcast;
-      el.classList.toggle('show', on && M.state === 'fight');
+      const show = on && (M.state === 'fight' || flow.touchPreview);
+      el.classList.toggle('show', show);
+      el.classList.toggle('preview', show && M.state !== 'fight');
       document.body.classList.toggle('touch-on', on);
+      if (M.touch) M.touch.sync(show);
     }
   };
 
@@ -332,6 +336,7 @@
     M.ui.init();
     M.paint.init(canvas, document.getElementById('post'));
     M.input.bindTouch(document.getElementById('touch'));
+    M.touch.init();
     resize();
     ambient = makeAmbient('porto', ['zeca', 'cinzas']);
     const unlock = () => { M.audio.init(); M.audio.resume(); };

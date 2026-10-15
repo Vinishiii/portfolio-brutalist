@@ -46,7 +46,7 @@ M.store = {
     try { if (window.steam && window.steam.loadSave) raw = window.steam.loadSave() || null; } catch (e) { /* ignora */ }
     try { if (!raw) raw = localStorage.getItem(this.key); this.data = JSON.parse(raw) || {}; } catch (e) { this.data = {}; }
     const d = this.data;
-    d.settings = Object.assign({ volume: 0.8, music: true, sfx: true, shake: true, hitboxes: false, difficulty: 'brabo', touch: 'auto', paint: true, post: true, lang: null, speed: 1, reduceFlash: false, quality: 'auto', keys: null, broadcast: false, clips: true, bubbles: true, haptics: true }, d.settings || {});
+    d.settings = Object.assign({ volume: 0.8, music: true, sfx: true, shake: true, hitboxes: false, difficulty: 'brabo', touch: 'auto', paint: true, post: true, lang: null, speed: 1, reduceFlash: false, quality: 'auto', keys: null, broadcast: false, clips: true, bubbles: true, haptics: true, stick: 'fixed', tsize: 'm', thand: 'left' }, d.settings || {});
     d.progress = Object.assign({ storyDone: false, endings: [], cinzas: false, bestTime: null, freeBest: null, wins: 0, legendsDone: false, bestGrade: null, bonds: {} }, d.progress || {});
     d.story = d.story || null;
     d.legends = d.legends || null;

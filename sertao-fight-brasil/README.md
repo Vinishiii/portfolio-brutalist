@@ -35,6 +35,24 @@ Funciona em desktop (teclado ou gamepad) e no celular (controles de toque, melho
 | Fôlego (EX) | K + L | Num 2 + Num 3 |
 | Pausa | ESC | ESC |
 
+### No celular (toque)
+
+Uma **alavanca de fliperama** de 8 direções (fixa ou flutuante, em Opções ▸ CONTROLES DE TOQUE) faz o papel de W A S D, e cada golpe do teclado tem um botão na tela. Os botões são os mesmos do computador, e a alavanca dá as mesmas diagonais (↘ + forte, ▼ + especial...).
+
+| Ação | Como fazer no toque |
+| --- | --- |
+| Mover / pular / agachar | alavanca ◀ ▶ anda, ▲ pula, ▼ agacha (diagonais valem) |
+| Leve / Forte / Especial | botões LEVE, FORTE, ESP. |
+| Arreda (esquiva) / Peia / Provocar | botões ARREDA, PEIA, PROVOCA |
+| Agarrão | botão AGARRA |
+| Dash / Golpe corrido / Correr | botão DASH (ou toque duplo ◀ ▶ na alavanca); DASH + FORTE; DASH e segurar a alavanca pra frente |
+| Dash aéreo | DASH no ar |
+| Super pulo / Pulo na parede / Rolar | alavanca ▼ e logo ▲ / ▲ na borda / ◀ ▶ no chão |
+| Fôlego (EX) | botão EX (forte + especial no mesmo toque) |
+| Pausa | botão II |
+
+Tamanho (pequeno, médio, grande) e lado da alavanca (esquerdo/direito) são ajustáveis, com o painel aparecendo ao vivo atrás da tela de opções. O arquivo [`js/touch.js`](js/touch.js) desenha e lê a alavanca; os botões alimentam o mesmo estado do teclado em `js/input.js`, então a simulação não sabe a origem do comando.
+
 As teclas são **remapeáveis** em Opções ▸ CONTROLES (TECLAS). Com controle (padrão Xbox), os menus navegam pelo direcional e a luta usa A/B/X/Y e gatilhos; Start pausa.
 
 Variações: agachado + golpe (baixo), frente + forte (comando), dash + forte (golpe corrido), golpes no ar, agachado + especial. Lançadores aceitam pulo-cancel para combos aéreos.

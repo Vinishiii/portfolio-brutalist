@@ -33,11 +33,12 @@ M.native = (function () {
   let wasPlaying = false;
   function hidden() {
     if (M.state === 'fight' && M.match) window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Escape' }));   // abre a pausa (consumida no próximo quadro)
+    try { if (M.touch) M.touch.reset(); } catch (e) { /* ignora */ }   // solta a alavanca e os botões
     try { const ctx = M.audio.A.ctx; if (ctx && ctx.state === 'running') { wasPlaying = true; ctx.suspend(); } } catch (e) { /* ignora */ }
   }
   function shown() {
     try { const ctx = M.audio.A.ctx; if (ctx && wasPlaying) { wasPlaying = false; ctx.resume(); } } catch (e) { /* ignora */ }
-    try { M.input.clear(); } catch (e) { /* ignora */ }
+    try { M.input.clear(); if (M.touch) M.touch.reset(); } catch (e) { /* ignora */ }
   }
   if (active || touchDevice) document.addEventListener('visibilitychange', () => { if (document.hidden) hidden(); else shown(); });
   if (active && P.App) P.App.addListener('appStateChange', s => { if (s && s.isActive === false) hidden(); else shown(); });

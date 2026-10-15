@@ -27,20 +27,17 @@
   <button id="fs" title="Tela cheia" aria-label="Tela cheia">⛶</button>
   <div id="rotate"><div>↻<br>Vire o celular<br><small>SERTÃO FIGHT BRASIL joga melhor na horizontal</small></div></div>
   <div id="touch" aria-hidden="true">
-    <div class="pad">
-      <div class="tbtn up" data-act="up">▲</div>
-      <div class="tbtn left" data-act="left">◀</div>
-      <div class="tbtn right" data-act="right">▶</div>
-      <div class="tbtn down" data-act="down">▼</div>
-    </div>
+    <div id="stickArea"><div id="stick"><canvas width="230" height="230"></canvas></div></div>
     <div class="btns">
       <div class="tbtn a l" data-act="light">LEVE</div>
       <div class="tbtn a h" data-act="heavy">FORTE</div>
       <div class="tbtn a s" data-act="special">ESP.</div>
+      <div class="tbtn a x" data-act="ex">EX</div>
       <div class="tbtn a g" data-act="ginga">ARREDA</div>
-      <div class="tbtn a m" data-act="mandinga">PEIA</div>
-      <div class="tbtn a t" data-act="taunt">PROVOCA</div>
       <div class="tbtn a th" data-act="throw">AGARRA</div>
+      <div class="tbtn a m" data-act="mandinga">PEIA</div>
+      <div class="tbtn a d" data-act="dash">DASH</div>
+      <div class="tbtn sm t" data-act="taunt">PROVOCA</div>
     </div>
     <div class="tbtn pause" data-act="pause">II</div>
   </div>
@@ -53,6 +50,7 @@
 <script src="js/lang/extras.js"></script>
 <script src="js/lang/comp.js"></script>
 <script src="js/lang/viral.js"></script>
+<script src="js/lang/touch.js"></script>
 <script src="js/lang/folk2.js"></script>
 <script src="js/achievements.js"></script>
 <script src="js/audio.js"></script>
@@ -84,6 +82,7 @@
 <script src="js/ui5.js"></script>
 <script src="js/party.js"></script>
 <script src="js/paint.js"></script>
+<script src="js/touch.js"></script>
 <script src="js/native.js"></script>
 <script src="js/main.js"></script>
 <script>if ("serviceWorker" in navigator && location.protocol.startsWith("http") && !window.steam && !window.Capacitor) navigator.serviceWorker.register("sw.js").catch(function () {});</script>

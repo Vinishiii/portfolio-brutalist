@@ -9,6 +9,7 @@ O app de celular é o jogo web empacotado com **Capacitor**: o mesmo jogo roda d
 | Projetos nativos Android (Gradle) e iOS (Xcode, Swift Package Manager) | Gerados e no repositório |
 | Ícone, ícone adaptativo e splash nos tamanhos de cada sistema | Gerados da arte do jogo |
 | Ponte nativa do jogo (`js/native.js`) | Testada contra um simulador do Capacitor no navegador: salvamento duplo e restauração, pausa em segundo plano, botão voltar, vibração, compartilhar. O jogo no navegador e no Steam não muda |
+| Controles de toque (`js/touch.js`): alavanca de fliperama de 8 direções + botões LEVE, FORTE, ESP., EX, ARREDA, AGARRA, PEIA, DASH, PROVOCA | Testados com toques simultâneos reais (Chromium em modo celular, vários dedos): cada golpe de cada um dos 20 lutadores sai pelo toque (normais, agachado, para a frente/trás, no ar, corrido, agarrão, EX, Peia), além de pulo, super pulo, dash, esquiva e pausa. **Sensação e tamanho dos botões nos dedos de verdade ainda dependem do seu teste**: ajuste em Opções ▸ Controles de toque |
 | Compilação do iOS (simulador e aparelho, sem assinatura) | Conferida no GitHub Actions |
 | Compilação do Android (APK de teste) | Conferida no GitHub Actions |
 | **Teste em aparelho real** | **Ainda não feito.** Desempenho do WebGL, áudio no iOS, gravação de clipes, vibração, entalhe e botão voltar precisam ser vistos num celular de verdade |

@@ -4,16 +4,16 @@
 // arremessos, chefe, tutorial, câmera e HUD.
 // ============================================================
 M.TUTORIAL = [
-  { text: 'SPARRING: o Mestre luta de verdade. Use A / D (ou ← →) para andar e chegue perto dele.', check: G => Math.abs(G.p1.x - G.p2.x) < 170, mestre: 'passive' },
-  { text: 'W = pular. Pule duas vezes. (Segure pra frente pra pular por cima dele.)', check: G => G.p1.stats.jumps >= 2, mestre: 'passive' },
-  { text: 'J = golpe leve. Acerte o Mestre 3 vezes. Dica: J, J, J vira uma string de três golpes!', check: G => G.p1.stats.hits >= 3, mestre: 'passive' },
-  { text: 'K = golpe forte. Agachado (S + K) é a RASTEIRA, que derruba. Acerte uma.', check: G => (G.p1.stats.landed.cH || 0) >= 1, mestre: 'passive' },
-  { text: 'L = especial. S + L é o ANTI-AÉREO. Acerte 2 especiais.', check: G => ((G.p1.stats.landed.S || 0) + (G.p1.stats.landed.dS || 0) + (G.p1.stats.landed.aS || 0)) >= 2, mestre: 'passive' },
+  { text: 'SPARRING: o Mestre luta de verdade. Use A / D (ou ← →) para andar e chegue perto dele.', t: 'SPARRING: o Mestre luta de verdade. Use a alavanca ◀ ▶ para andar e chegue perto dele.', check: G => Math.abs(G.p1.x - G.p2.x) < 170, mestre: 'passive' },
+  { text: 'W = pular. Pule duas vezes. (Segure pra frente pra pular por cima dele.)', t: 'Alavanca ▲ = pular. Pule duas vezes. (Alavanca na diagonal ↗ pula por cima dele.)', check: G => G.p1.stats.jumps >= 2, mestre: 'passive' },
+  { text: 'J = golpe leve. Acerte o Mestre 3 vezes. Dica: J, J, J vira uma string de três golpes!', t: 'LEVE = golpe leve. Acerte o Mestre 3 vezes. Dica: LEVE, LEVE, LEVE vira uma string de três golpes!', check: G => G.p1.stats.hits >= 3, mestre: 'passive' },
+  { text: 'K = golpe forte. Agachado (S + K) é a RASTEIRA, que derruba. Acerte uma.', t: 'FORTE = golpe forte. Alavanca ▼ + FORTE é a RASTEIRA, que derruba. Acerte uma.', check: G => (G.p1.stats.landed.cH || 0) >= 1, mestre: 'passive' },
+  { text: 'L = especial. S + L é o ANTI-AÉREO. Acerte 2 especiais.', t: 'ESP. = especial. Alavanca ▼ + ESP. é o ANTI-AÉREO. Acerte 2 especiais.', check: G => ((G.p1.stats.landed.S || 0) + (G.p1.stats.landed.dS || 0) + (G.p1.stats.landed.aS || 0)) >= 2, mestre: 'passive' },
   { text: 'Segure PRA TRÁS para DEFENDER. Agache para bloquear golpes baixos. Defenda 3 golpes.', check: G => G.tut.blocks >= 3, mestre: 'attack' },
-  { text: 'H (ou J + K juntos) = AGARRÃO. Quebra a defesa de quem só bloqueia. Agarre o Mestre.', check: G => (G.p1.stats.landed.TH || 0) >= 1, mestre: 'guard' },
-  { text: 'ESPAÇO = ARREDA (esquiva). Esquive NO MOMENTO do golpe: ESQUIVA PERFEITA.', check: G => G.tut.perfect >= 1, mestre: 'attack' },
+  { text: 'H (ou J + K juntos) = AGARRÃO. Quebra a defesa de quem só bloqueia. Agarre o Mestre.', t: 'AGARRA (ou LEVE + FORTE juntos) = AGARRÃO. Quebra a defesa de quem só bloqueia. Agarre o Mestre.', check: G => (G.p1.stats.landed.TH || 0) >= 1, mestre: 'guard' },
+  { text: 'ESPAÇO = ARREDA (esquiva). Esquive NO MOMENTO do golpe: ESQUIVA PERFEITA.', t: 'ARREDA = esquiva. Esquive NO MOMENTO do golpe: ESQUIVA PERFEITA.', check: G => G.tut.perfect >= 1, mestre: 'attack' },
   { text: 'A barra de ENERGIA é o público. Golpes variados, esquivas e acertos NO COMPASSO da zabumba enchem seu lado. Chegue a 70%.', check: G => G.axe >= 0.7, mestre: 'dummy' },
-  { text: 'U = PEIA! Solte sua técnica máxima.', check: G => G.p1.stats.supers >= 1, mestre: 'passive', holdEnergy: true },
+  { text: 'U = PEIA! Solte sua técnica máxima.', t: 'PEIA! Solte sua técnica máxima.', check: G => G.p1.stats.supers >= 1, mestre: 'passive', holdEnergy: true },
   { text: '"Chega por hoje, menino. A rinha escuta quem escuta a rinha." — Mestre Cinzas', check: G => G.tutT > 30, mestre: 'passive', final: true }
 ];
 
@@ -865,10 +865,10 @@ M.Match = class Match {
       if (step) {
         ctx.fillStyle = C.paper; ctx.fillRect(130, 400, W - 260, 64); ctx.lineWidth = 4; ctx.strokeStyle = C.ink; ctx.strokeRect(130, 400, W - 260, 64);
         M.text(ctx, `TREINO ${Math.min(this.tut.step + 1, M.TUTORIAL.length - 1)}/${M.TUTORIAL.length - 1}`, 142, 414, { size: 13, align: 'left', color: C.red, stroke: false });
-        wrapText(ctx, step.text, W / 2, 440, W - 300, 17, C.ink);
+        wrapText(ctx, (step.t && document.body.classList.contains('touch-on')) ? step.t : step.text, W / 2, 440, W - 300, 17, C.ink);
       }
     }
-    if (this.mode === 'training' && this.phase === 'fight') { const lbl = { stand: 'PARADO', block: 'DEFENDE', jump: 'PULA', cpu: 'LUTA (CPU)' }[this.dummyMode] || this.dummyMode; M.text(ctx, 'TREINO — BONECO: ' + lbl + '  (ESC pra mudar)', W / 2, 92, { size: 13, color: this.dummyMode === 'stand' && this.frame % 60 < 40 ? C.yellow : C.paper, lw: 2.5 });  this.trainingHud(ctx); }
+    if (this.mode === 'training' && this.phase === 'fight') { const lbl = { stand: 'PARADO', block: 'DEFENDE', jump: 'PULA', cpu: 'LUTA (CPU)' }[this.dummyMode] || this.dummyMode; M.text(ctx, 'TREINO — BONECO: ' + lbl + (document.body.classList.contains('touch-on') ? '  (pause pra mudar)' : '  (ESC pra mudar)'), W / 2, 92, { size: 13, color: this.dummyMode === 'stand' && this.frame % 60 < 40 ? C.yellow : C.paper, lw: 2.5 });  this.trainingHud(ctx); }
     if (this.phase === 'fight' && this.frame < 240 && this.mode !== 'training' && !this.tutorial && this.p1.ctrl === 'human') { }
   }
 };

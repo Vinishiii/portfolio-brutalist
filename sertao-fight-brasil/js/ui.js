@@ -6,6 +6,7 @@ M.ui = (function () {
   let root, current = null, items = [], idx = 0, typing = null;
   let menuMem = 0; // item do menu principal em foco ao voltar de outra tela
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const touchUI = () => document.body.classList.contains('touch-on');   // painel de toque ativo (celular ou opção SEMPRE)
   const KEYS_CONFIRM = ['Enter', 'Space', 'KeyJ', 'Numpad1', 'Comma', 'NumpadEnter'];
   const KEYS_BACK = ['Escape', 'KeyK', 'Backspace', 'Numpad2', 'Period'];
 
@@ -448,7 +449,7 @@ M.ui = (function () {
         <button class="mi" data-go="options">OPÇÕES</button>
         <button class="mi" data-go="quit">SAIR PRO MENU</button>
       </nav>
-      <p class="tiny">P1: WASD • J leve • K forte • L especial • H agarrão • ESPAÇO arreda • U peia • O provoca</p>
+      <p class="tiny">${touchUI() ? 'Toque: alavanca + LEVE • FORTE • ESP. • EX • AGARRA • ARREDA • PEIA • DASH • PROVOCA' : 'P1: WASD • J leve • K forte • L especial • H agarrão • ESPAÇO arreda • U peia • O provoca'}</p>
     </div></div>`, {
       onBack: opts.resume, backLabel: 'CONTINUAR',
       actions: {
@@ -499,7 +500,7 @@ M.ui = (function () {
         music: () => { s.music = !s.music; save(); }, sfx: () => { s.sfx = !s.sfx; save(); }, shake: () => { s.shake = !s.shake; save(); }, hitboxes: () => { s.hitboxes = !s.hitboxes; save(); },
         reduceFlash: () => { s.reduceFlash = !s.reduceFlash; save(); M.paint.apply(); }, bubbles: () => { s.bubbles = !s.bubbles; save(); }, haptics: () => { s.haptics = s.haptics === false; save(); if (s.haptics !== false && M.native) M.native.haptic('medium'); }, clips: () => { s.clips = !s.clips; save(); },
         broadcast: () => { s.broadcast = !s.broadcast; save(); M.flow.updateTouch(); },
-        touch: () => { s.touch = { auto: 'on', on: 'off', off: 'auto' }[s.touch]; save(); M.flow.updateTouch(); },
+        touch: () => touchOptions(() => options(onBack)),
         paint: () => { s.paint = !s.paint; save(); M.paint.apply(); }, post: () => { s.post = !s.post; save(); M.paint.apply(); },
         quality: () => { s.quality = { auto: 'high', high: 'low', low: 'auto' }[s.quality || 'auto']; M.paint.P.autoLow = false; save(); M.paint.apply(); },
         speed: () => { const i = SPEEDS.findIndex(x => x[0] === s.speed); s.speed = SPEEDS[(i + 1) % SPEEDS.length][0]; save(); },
@@ -514,6 +515,36 @@ M.ui = (function () {
     function save() { M.store.save(); M.audio.A.settings.volume = s.volume; M.audio.A.settings.music = s.music; M.audio.A.settings.sfx = s.sfx; M.audio.applySettings(); const i = idx; options(onBack); idx = i; focus(); }
     document.getElementById('vol').addEventListener('input', e => { s.volume = parseFloat(e.target.value); M.store.save(); M.audio.A.settings.volume = s.volume; M.audio.applySettings(); });
     document.getElementById('vol').addEventListener('change', () => M.audio.play('ui'));
+  }
+
+  // ---------- CONTROLES DE TOQUE (alavanca e botões) ----------
+  // O painel de toque aparece de verdade atrás desta tela: o jogador ajusta tamanho, lado e modo vendo o resultado.
+  function touchOptions(onBack) {
+    const s = M.store.data.settings;
+    const back = () => { M.flow.touchPreview = false; M.flow.updateTouch(); onBack(); };
+    const L = { auto: 'AUTO', on: 'SEMPRE', off: 'NUNCA' }, ST = { fixed: 'FIXA', float: 'FLUTUANTE' }, SZ = { p: 'PEQUENO', m: 'MÉDIO', g: 'GRANDE' }, HD = { left: 'ESQUERDO', right: 'DIREITO' };
+    const redraw = () => { M.touch.layout(); const i = idx; touchOptions(onBack); idx = i; focus(); };
+    M.flow.touchPreview = true; M.flow.updateTouch();
+    show(`<div class="screen center overlay"><div class="panel opts tchopt">
+      <div class="stamp">CONTROLES DE TOQUE</div>
+      <button class="mi" data-go="mode">PAINEL DE TOQUE <b>${L[s.touch] || 'AUTO'}</b></button>
+      <button class="mi" data-go="stick">ALAVANCA <b>${ST[s.stick] || 'FIXA'}</b></button>
+      <button class="mi" data-go="size">TAMANHO <b>${SZ[s.tsize] || 'MÉDIO'}</b></button>
+      <button class="mi" data-go="hand">LADO DA ALAVANCA <b>${HD[s.thand] || 'ESQUERDO'}</b></button>
+      ${M.native && M.native.active ? `<button class="mi" data-go="haptics">VIBRAÇÃO <b>${s.haptics === false ? 'DESLIGADO' : 'LIGADO'}</b></button>` : ''}
+      <p class="tiny">Alavanca de 8 direções: cima pula, baixo agacha. Dash: toque duplo para o lado ou botão DASH. EX: FORTE + ESPECIAL juntos. Toque na alavanca e nos botões para testar.</p>
+      <button class="mi back" data-go="back">VOLTAR</button>
+    </div></div>`, {
+      onBack: back, idx: 0,
+      actions: {
+        mode: () => { s.touch = { auto: 'on', on: 'off', off: 'auto' }[s.touch]; M.store.save(); M.flow.updateTouch(); redraw(); },
+        stick: () => { s.stick = s.stick === 'float' ? 'fixed' : 'float'; M.store.save(); redraw(); },
+        size: () => { s.tsize = { p: 'm', m: 'g', g: 'p' }[s.tsize || 'm']; M.store.save(); redraw(); },
+        hand: () => { s.thand = s.thand === 'right' ? 'left' : 'right'; M.store.save(); redraw(); },
+        haptics: () => { s.haptics = s.haptics === false; M.store.save(); if (s.haptics !== false && M.native) M.native.haptic('medium'); redraw(); },
+        back
+      }
+    });
   }
 
   // ---------- CONTROLES (remapeamento) ----------
@@ -553,12 +584,9 @@ M.ui = (function () {
   }
 
   // ---------- COMO JOGAR ----------
-  function howto(onBack) {
-    show(`<div class="screen center"><div class="panel wide howto">
-      <div class="stamp">COMO JOGAR</div>
-      <div class="cols">
-        <div><h3>CONTROLES</h3>
-          <table><tr><th></th><th>P1</th><th>P2</th></tr>
+  function howto(onBack, mode) {
+    mode = mode || (touchUI() ? 'touch' : 'kb');
+    const kb = `<table><tr><th></th><th>P1</th><th>P2</th></tr>
           <tr><td>Mover / pular / agachar</td><td>W A S D</td><td>Setas</td></tr>
           <tr><td>Golpe leve</td><td>J</td><td>Num 1 / ,</td></tr>
           <tr><td>Golpe forte</td><td>K</td><td>Num 2 / .</td></tr>
@@ -578,7 +606,34 @@ M.ui = (function () {
           <tr><td>Fôlego (especial EX)</td><td colspan="2">K + L juntos (gasta 25% de Energia)</td></tr>
           <tr><td>Pausa</td><td colspan="2">ESC</td></tr>
           <tr><td>Esconder o painel (vídeos e prints)</td><td colspan="2">F9</td></tr></table>
-          <p class="tiny">Controle (gamepad) também funciona: analógico/d-pad, X leve, Y forte, B especial, A arreda, RB peia, LB provocar, LT agarrão, Start pausa.</p>
+          <p class="tiny">Controle (gamepad) também funciona: analógico/d-pad, X leve, Y forte, B especial, A arreda, RB peia, LB provocar, LT agarrão, Start pausa.</p>`;
+    // celular: a alavanca faz o papel de W A S D e cada golpe do teclado tem um botão (ou combinação) na tela
+    const touch = `<table>
+          <tr><td>Mover / pular / agachar</td><td>alavanca: ◀ ▶ anda • ▲ pula • ▼ agacha (as diagonais valem)</td></tr>
+          <tr><td>Golpe leve</td><td>LEVE</td></tr>
+          <tr><td>Golpe forte</td><td>FORTE</td></tr>
+          <tr><td>Especial</td><td>ESP.</td></tr>
+          <tr><td>Arreda (esquiva)</td><td>ARREDA (com a alavanca pra frente, atravessa o rival)</td></tr>
+          <tr><td>Peia (super)</td><td>PEIA</td></tr>
+          <tr><td>Provocar</td><td>PROVOCA</td></tr>
+          <tr><td>Agarrão</td><td>AGARRA (ou LEVE + FORTE juntos)</td></tr>
+          <tr><td>Dash</td><td>botão DASH, ou toque duplo na alavanca ◀ ▶</td></tr>
+          <tr><td>Golpe corrido</td><td>DASH e logo FORTE</td></tr>
+          <tr><td>Técnica 2 / Golpe 2</td><td>alavanca pra frente + ESP. • pra trás + FORTE (exclusivos de cada lutador)</td></tr>
+          <tr><td>Correr</td><td>DASH e segurar a alavanca pra frente</td></tr>
+          <tr><td>Dash aéreo</td><td>DASH no ar (1 por pulo)</td></tr>
+          <tr><td>Super pulo</td><td>alavanca ▼ e logo ▲</td></tr>
+          <tr><td>Pulo na parede</td><td>▲ encostado na borda</td></tr>
+          <tr><td>Rolar ao levantar</td><td>◀ ou ▶ no chão</td></tr>
+          <tr><td>Fôlego (especial EX)</td><td>botão EX (gasta 25% de Energia)</td></tr>
+          <tr><td>Rasteira / anti-aéreo</td><td>alavanca ▼ + FORTE / ▼ + ESP.</td></tr>
+          <tr><td>Pausa</td><td>botão II (ou o botão voltar do Android)</td></tr></table>
+          <p class="tiny">Ajuste tamanho, lado e tipo da alavanca em OPÇÕES › CONTROLES DE TOQUE.</p>`;
+    show(`<div class="screen center"><div class="panel wide howto">
+      <div class="stamp">COMO JOGAR</div>
+      <div class="cols">
+        <div><h3>${mode === 'touch' ? 'CONTROLES DE TOQUE' : 'CONTROLES'}</h3>
+          ${mode === 'touch' ? touch : kb}
         </div>
         <div><h3>A RINHA</h3>
           <p><b>ENERGIA</b> é uma barra só, no meio: o público. Cada golpe, esquiva e provocação puxa a barra pro seu lado. Com 70% ela libera sua <b>PEIA</b>.</p>
@@ -596,8 +651,8 @@ M.ui = (function () {
           <p><b>SEQUÊNCIAS</b>: leve ▸ leve ▸ forte ▸ especial ▸ peia, se os golpes acertarem. Lançou o oponente pro alto? Aperte PULAR na hora (<b>PULO-CANCEL</b>) e continue no ar.</p>
         </div>
       </div>
-      <nav><button class="mi back" data-go="back">VOLTAR</button></nav>
-    </div></div>`, { onBack, actions: { back: onBack } });
+      <nav><button class="mi" data-go="swap">${mode === 'touch' ? 'VER CONTROLES DO TECLADO' : 'VER CONTROLES DE TOQUE'}</button><button class="mi back" data-go="back">VOLTAR</button></nav>
+    </div></div>`, { onBack, actions: { back: onBack, swap: () => howto(onBack, mode === 'touch' ? 'kb' : 'touch') } });
   }
   function credits() {
     const done = M.store.data.progress.storyDone;
@@ -605,5 +660,5 @@ M.ui = (function () {
     show(`<div class="screen center"><div class="panel wide"><div class="stamp">CRÉDITOS</div>${epi}<p class="credits">${esc(M.STORY.credits).replace(/\n/g, '<br>')}</p><p class="credits-author">Criado por <b>Vinícius Andrey</b> — 2026</p><nav><button class="mi back" data-go="back">VOLTAR</button></nav></div></div>`, { onBack: menu, actions: { back: menu } });
   }
 
-  return { esc, diffLabel, init, show, hide, controls, achievements, title, menu, storyStart, cordel, dialogue, camp, versusCard, nightMap, fightReport, patua, choice, results, ending, charselect, pause, options, howto, credits, portrait };
+  return { esc, diffLabel, init, show, hide, controls, touchOptions, achievements, title, menu, storyStart, cordel, dialogue, camp, versusCard, nightMap, fightReport, patua, choice, results, ending, charselect, pause, options, howto, credits, portrait };
 })();
